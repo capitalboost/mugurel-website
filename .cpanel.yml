@@ -2,4 +2,11 @@
 deployment:
   tasks:
     - export DEPLOYPATH=/home/mugurel/public_html/
-    - /bin/cp -R . $DEPLOYPATH
+    - /bin/cp -R css $DEPLOYPATH
+    - /bin/cp -R img $DEPLOYPATH
+    - /bin/cp -R js $DEPLOYPATH
+    - /bin/cp *.html $DEPLOYPATH
+    - /bin/cp *.txt $DEPLOYPATH
+    - /bin/cp *.xml $DEPLOYPATH
+    - /bin/cp *.svg $DEPLOYPATH
+    - /bin/cp *.png $DEPLOYPATH
