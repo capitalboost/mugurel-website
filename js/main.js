@@ -74,6 +74,28 @@ document.addEventListener('DOMContentLoaded', function () {
     if (a.getAttribute('href') === current) a.classList.add('active');
   });
 
+  // Header search
+  var searchInput = document.querySelector('.searchbar input');
+  var searchBtn = document.querySelector('.searchbar button');
+  function doSearch() {
+    var q = searchInput ? searchInput.value.trim() : '';
+    if (q.length < 2) return;
+    window.location.href = 'catalog.html?q=' + encodeURIComponent(q);
+  }
+  if (searchBtn) searchBtn.addEventListener('click', doSearch);
+  if (searchInput) {
+    searchInput.addEventListener('keydown', function (e) {
+      if (e.key === 'Enter') doSearch();
+    });
+    // On catalog page: apply query from URL
+    var params = new URLSearchParams(window.location.search);
+    var q = params.get('q');
+    if (q) {
+      searchInput.value = q;
+      searchCatalog(q);
+    }
+  }
+
 
 });
 
@@ -99,6 +121,28 @@ function updateResultCount() {
   const visible = Array.from(cards).filter(c => c.style.display !== 'none').length;
   const counter = document.getElementById('result-count');
   if (counter) counter.textContent = visible;
+}
+
+/* ── Catalog search by text ── */
+function searchCatalog(q) {
+  if (!q) return;
+  var term = q.toLowerCase();
+  var cards = document.querySelectorAll('.prod-card');
+  var visible = 0;
+  cards.forEach(function (card) {
+    var text = card.textContent.toLowerCase();
+    if (text.indexOf(term) >= 0) {
+      card.style.display = '';
+      visible++;
+    } else {
+      card.style.display = 'none';
+    }
+  });
+  var counter = document.getElementById('result-count');
+  if (counter) counter.textContent = visible;
+  // Show search heading
+  var heading = document.querySelector('.catalog-title, h1');
+  if (heading && q) heading.textContent = 'Rezultate pentru: "' + q + '" (' + visible + ')';
 }
 
 /* ── GDPR Cookie Banner ── */
