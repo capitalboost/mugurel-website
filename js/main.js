@@ -16,8 +16,12 @@ document.addEventListener('DOMContentLoaded', function () {
   // Sidebar expand/collapse
   document.querySelectorAll('.sidebar-cat-head').forEach(function (btn) {
     btn.addEventListener('click', function (e) {
-      e.preventDefault();
       const cat = btn.closest('.sidebar-cat');
+      const sub = cat.querySelector('.sidebar-sub');
+      const href = btn.getAttribute('href') || '';
+      // no sub-items OR direct page link → navigate normally
+      if (!sub || href.endsWith('.html')) return;
+      e.preventDefault();
       const isOpen = cat.classList.contains('open');
       // close all
       document.querySelectorAll('.sidebar-cat').forEach(c => c.classList.remove('open'));
@@ -96,3 +100,31 @@ function updateResultCount() {
   const counter = document.getElementById('result-count');
   if (counter) counter.textContent = visible;
 }
+
+/* ── GDPR Cookie Banner ── */
+(function () {
+  if (localStorage.getItem('gdpr_consent')) return;
+
+  const banner = document.createElement('div');
+  banner.id = 'gdpr-banner';
+  banner.innerHTML =
+    '<div class="gdpr-text">Folosim cookie-uri pentru a asigura functionarea corecta a site-ului. Prin continuarea navigarii esti de acord cu utilizarea acestora. <a href="politica-confidentialitate.html">Politica de confidentialitate</a></div>' +
+    '<div class="gdpr-btns">' +
+    '<button class="gdpr-decline" id="gdpr-decline">Refuz</button>' +
+    '<button class="gdpr-accept" id="gdpr-accept">Accept</button>' +
+    '</div>';
+
+  document.body.appendChild(banner);
+  requestAnimationFrame(function () {
+    requestAnimationFrame(function () { banner.classList.add('gdpr-show'); });
+  });
+
+  function dismiss(val) {
+    localStorage.setItem('gdpr_consent', val);
+    banner.classList.remove('gdpr-show');
+    setTimeout(function () { banner.remove(); }, 320);
+  }
+
+  document.getElementById('gdpr-accept').addEventListener('click', function () { dismiss('accepted'); });
+  document.getElementById('gdpr-decline').addEventListener('click', function () { dismiss('declined'); });
+}());

@@ -1,0 +1,60 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 630" width="1200" height="630">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#06363A"/>
+      <stop offset="100%" stop-color="#0A5258"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Background -->
+  <rect width="1200" height="630" fill="url(#bg)"/>
+
+  <!-- Decorative grid pattern -->
+  <rect x="700" y="0" width="500" height="630" fill="rgba(255,255,255,0.03)"/>
+  <line x1="800" y1="0" x2="800" y2="630" stroke="rgba(255,255,255,0.04)" stroke-width="1"/>
+  <line x1="900" y1="0" x2="900" y2="630" stroke="rgba(255,255,255,0.04)" stroke-width="1"/>
+  <line x1="1000" y1="0" x2="1000" y2="630" stroke="rgba(255,255,255,0.04)" stroke-width="1"/>
+  <line x1="1100" y1="0" x2="1100" y2="630" stroke="rgba(255,255,255,0.04)" stroke-width="1"/>
+  <line x1="700" y1="100" x2="1200" y2="100" stroke="rgba(255,255,255,0.04)" stroke-width="1"/>
+  <line x1="700" y1="200" x2="1200" y2="200" stroke="rgba(255,255,255,0.04)" stroke-width="1"/>
+  <line x1="700" y1="300" x2="1200" y2="300" stroke="rgba(255,255,255,0.04)" stroke-width="1"/>
+  <line x1="700" y1="400" x2="1200" y2="400" stroke="rgba(255,255,255,0.04)" stroke-width="1"/>
+  <line x1="700" y1="500" x2="1200" y2="500" stroke="rgba(255,255,255,0.04)" stroke-width="1"/>
+
+  <!-- House icon -->
+  <g transform="translate(80, 120)">
+    <path d="M100 40 L180 90 L180 170 L130 170 L130 130 L70 130 L70 170 L20 170 L20 90 Z" fill="none" stroke="rgba(255,255,255,0.15)" stroke-width="3" stroke-linejoin="round"/>
+    <path d="M70 170 L70 130 L130 130 L130 170" fill="#25D366" opacity="0.7"/>
+  </g>
+
+  <!-- Brand name -->
+  <text x="80" y="320" font-family="Arial Black, Arial, sans-serif" font-size="88" font-weight="900" fill="#ffffff" letter-spacing="-2">MUGUREL</text>
+
+  <!-- Tagline -->
+  <text x="82" y="380" font-family="Arial, sans-serif" font-size="28" fill="rgba(255,255,255,0.65)" letter-spacing="4">MATERIALE CONSTRUCTII</text>
+
+  <!-- Divider -->
+  <rect x="80" y="408" width="120" height="3" fill="#25D366" rx="2"/>
+
+  <!-- Location & phone -->
+  <text x="80" y="460" font-family="Arial, sans-serif" font-size="24" fill="rgba(255,255,255,0.5)">Dăbuleni, Dolj</text>
+  <text x="80" y="500" font-family="Arial Black, Arial, sans-serif" font-size="32" font-weight="900" fill="#25D366">0749 130 565</text>
+
+  <!-- WA badge -->
+  <rect x="80" y="535" width="220" height="48" rx="24" fill="#25D366"/>
+  <text x="190" y="566" font-family="Arial, sans-serif" font-size="18" font-weight="700" fill="#ffffff" text-anchor="middle">Cere oferta WhatsApp</text>
+
+  <!-- Right side categories -->
+  <g font-family="Arial, sans-serif" font-size="20" fill="rgba(255,255,255,0.4)">
+    <text x="780" y="120">Constructii &amp; Acoperis</text>
+    <text x="780" y="160">Izolatie &amp; Gips-Carton</text>
+    <text x="780" y="200">Electrice &amp; Incalzire</text>
+    <text x="780" y="240">Sanitare &amp; Apa-Canal</text>
+    <text x="780" y="280">Gradina &amp; Mobilier</text>
+    <text x="780" y="320">Electrocasnice</text>
+    <text x="780" y="360">Scule &amp; Unelte</text>
+  </g>
+
+  <!-- Domain -->
+  <text x="1180" y="610" font-family="Arial, sans-serif" font-size="18" fill="rgba(255,255,255,0.3)" text-anchor="end">mugurel-bricolaj.ro</text>
+</svg>
