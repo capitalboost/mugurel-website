@@ -70,19 +70,18 @@ document.addEventListener('DOMContentLoaded', function () {
     if (a.getAttribute('href') === current) a.classList.add('active');
   });
 
-  // Sidebar sub-items filter
+  // Sidebar sub-items filter (doar pe paginile cu grila de produse)
   document.querySelectorAll('.sidebar-sub-item[data-filter]').forEach(function (item) {
     item.addEventListener('click', function (e) {
+      if (!document.querySelector('.prod-card[data-cat]')) return; // navigare normala
       e.preventDefault();
       const filter = item.getAttribute('data-filter');
       document.querySelectorAll('.sidebar-sub-item').forEach(i => i.classList.remove('active'));
       item.classList.add('active');
       filterProducts(filter);
-      // Also update chip
       document.querySelectorAll('.chip[data-filter]').forEach(c => c.classList.remove('active'));
       const matchChip = document.querySelector('.chip[data-filter="' + filter + '"]');
       if (matchChip) matchChip.classList.add('active');
-      // Update result count
       updateResultCount();
     });
   });
