@@ -304,7 +304,10 @@ img { max-width: 100%; }
   .cat-grid { grid-template-columns: repeat(2, 1fr); gap: 8px; }
   .prods-grid { grid-template-columns: repeat(2, 1fr); gap: 8px; }
   .trust-bar { grid-template-columns: 1fr; gap: 8px; }
-  .footer-top { grid-template-columns: 1fr; gap: 20px; }
+  .footer-top { grid-template-columns: 1fr 1fr; gap: 16px; }
+  .f-about { grid-column: 1 / -1; }
+  .f-about p { display: none; }
+  .f-bottom { flex-direction: column; align-items: flex-start; gap: 4px; }
   .contact-grid { grid-template-columns: 1fr; }
   .about-values { grid-template-columns: 1fr; }
   .promo-strip-inner { gap: 10px; }
@@ -320,10 +323,24 @@ img { max-width: 100%; }
 @media (max-width: 480px) {
   .cat-grid { grid-template-columns: repeat(2, 1fr); }
   .prods-grid { grid-template-columns: 1fr; }
-  .prod-grid { grid-template-columns: 1fr; }
+  .prod-grid { grid-template-columns: 1fr 1fr; }
   .hero-title { font-size: 24px; }
   .stat-val { font-size: 22px; }
   .promo-sep { display: none; }
+  .btn-wa-prod { padding: 7px 6px; font-size: 11px; gap: 4px; }
+  .btn-wa-prod svg { width: 12px; height: 12px; }
+  .prod-footer { gap: 4px; }
+  .prod-price { font-size: 10px; }
+  /* Hero CTA buttons pe mobil mic */
+  .btn-wa-hero { font-size: 13px; padding: 10px 16px; width: 100%; justify-content: center; }
+  .btn-catalog-hero { font-size: 12px; padding: 9px 14px; width: 100%; justify-content: center; }
+  .hero-ctas { flex-direction: column; gap: 8px; }
+  /* Despre grid 1 coloana */
+  .despre-grid { grid-template-columns: 1fr !important; }
+}
+
+@media (max-width: 768px) {
+  .despre-grid { grid-template-columns: 1fr !important; }
 }
 
 /* ── EXTRA CLASSES (matched to HTML) ── */
