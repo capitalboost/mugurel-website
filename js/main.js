@@ -68,6 +68,21 @@ document.addEventListener('DOMContentLoaded', function () {
     });
   });
 
+  // Footer accordion pe mobil
+  if (window.innerWidth <= 600) {
+    document.querySelectorAll('.f-col').forEach(function(col) {
+      var h4 = col.querySelector('h4');
+      if (!h4) return;
+      if (h4.textContent.trim() === 'Contact') {
+        col.classList.add('open');
+        return;
+      }
+      h4.addEventListener('click', function() {
+        col.classList.toggle('open');
+      });
+    });
+  }
+
   // Active nav link
   const current = window.location.pathname.split('/').pop() || 'index.html';
   document.querySelectorAll('.nav-item[href]').forEach(function (a) {
