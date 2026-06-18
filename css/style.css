@@ -327,10 +327,9 @@ img { max-width: 100%; }
   .hero-title { font-size: 24px; }
   .stat-val { font-size: 22px; }
   .promo-sep { display: none; }
-  .btn-wa-prod { padding: 7px 6px; font-size: 11px; gap: 4px; }
-  .btn-wa-prod svg { width: 12px; height: 12px; }
-  .prod-footer { gap: 4px; }
-  .prod-price { font-size: 10px; }
+  .prod-footer { flex-direction: column; gap: 6px; align-items: stretch; }
+  .btn-wa-prod { width: 100%; font-size: 12px; padding: 9px 10px; }
+  .prod-price { font-size: 11px; }
   /* Hero CTA buttons pe mobil mic */
   .btn-wa-hero { font-size: 13px; padding: 10px 16px; width: 100%; justify-content: center; }
   .btn-catalog-hero { font-size: 12px; padding: 9px 14px; width: 100%; justify-content: center; }
