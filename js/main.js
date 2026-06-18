@@ -73,7 +73,7 @@ document.addEventListener('DOMContentLoaded', function () {
   // Sidebar sub-items filter (doar pe paginile cu grila de produse)
   document.querySelectorAll('.sidebar-sub-item[data-filter]').forEach(function (item) {
     item.addEventListener('click', function (e) {
-      if (!document.querySelector('.prod-card[data-cat]')) return; // navigare normala
+      if (!document.getElementById('prod-grid')) return; // navigare normala (doar pe catalog.html)
       e.preventDefault();
       const filter = item.getAttribute('data-filter');
       document.querySelectorAll('.sidebar-sub-item').forEach(i => i.classList.remove('active'));
