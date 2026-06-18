@@ -337,6 +337,7 @@ img { max-width: 100%; }
 .hero-ctas { display: flex; gap: 10px; flex-wrap: wrap; }
 .hero-img-area { flex-shrink: 0; }
 .hero-img-placeholder { width: 220px; height: 180px; background: rgba(255,255,255,0.05); border-radius: 8px; border: 1px dashed rgba(255,255,255,0.15); display: flex; flex-direction: column; align-items: center; justify-content: center; }
+.hero-illustration { width: 340px; height: 276px; border-radius: 14px; display: block; filter: drop-shadow(0 8px 32px rgba(0,0,0,0.4)); }
 .btn-catalog-hero { display: inline-flex; align-items: center; gap: 6px; background: rgba(255,255,255,0.12); color: #fff; font-size: 13px; font-weight: 600; padding: 11px 20px; border-radius: var(--radius); text-decoration: none; border: 1px solid rgba(255,255,255,0.2); transition: background 150ms; }
 .btn-catalog-hero:hover { background: rgba(255,255,255,0.2); }
 .btn-catalog-hero svg { width: 15px; height: 15px; }
