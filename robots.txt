@@ -27,4 +27,10 @@ Disallow: /
 User-agent: Bytespider
 Disallow: /
 
+User-agent: anthropic-ai
+Disallow: /
+
+User-agent: FacebookBot
+Allow: /
+
 Sitemap: https://mugurel-bricolaj.ro/sitemap.xml
