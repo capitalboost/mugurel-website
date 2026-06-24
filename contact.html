@@ -79,7 +79,7 @@
 <header class="header">
   <div class="hdr">
     <a href="index.html" class="logo">
-      <img src="img/logo.svg" alt="Logo Mugurel" width="160" height="44" loading="lazy" decoding="async">
+      <img src="img/logo.svg" alt="Logo Mugurel" width="160" height="44" loading="eager" decoding="async">
       <div class="logo-text">
         <div class="logo-name">MUGUREL</div>
         <div class="logo-sub">Materiale constructii</div>
@@ -230,7 +230,7 @@
   <div class="footer-inner">
     <div class="footer-top">
       <div class="f-about">
-        <img src="img/logo.svg" alt="Mugurel" class="f-logo" width="160" height="44" loading="lazy" decoding="async">
+        <img src="img/logo.svg" alt="Mugurel" class="f-logo" width="160" height="44" loading="eager" decoding="async">
         <p>Magazin de materiale de constructii, mobilier si electrocasnice. Oferta completa A-Z pentru casa ta.</p>
         <div class="f-social">
           <a href="https://www.facebook.com/byMUGUREL" class="soc-btn" target="_blank" rel="noopener" aria-label="Facebook"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"/></svg></a>
@@ -281,11 +281,25 @@
 
 <div class="mobile-menu" id="mobile-menu">
   <div class="mobile-menu-header">
-    <a href="index.html" class="logo"><img src="img/logo.svg" alt="Mugurel" style="height:36px;" width="160" height="44" loading="lazy" decoding="async"></a>
-    <button class="mobile-close" id="mobile-close" aria-label="Inchide"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
+    <a href="index.html" class="logo"><img src="img/logo.svg" alt="Mugurel" style="height:36px;"></a>
+    <button class="mobile-close" id="mobile-close" aria-label="Inchide meniu"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
   </div>
   <a href="index.html" class="mobile-nav-item">Acasa</a>
   <a href="catalog.html" class="mobile-nav-item">Catalog produse</a>
+  <a href="catalog.html?cat=constructii" class="mobile-nav-item">Constructii</a>
+  <a href="acoperis.html" class="mobile-nav-item" style="padding-left:28px;font-size:14px;color:#555;">Acoperis</a>
+  <a href="izolatie.html" class="mobile-nav-item" style="padding-left:28px;font-size:14px;color:#555;">Izolatie</a>
+  <a href="gips-carton.html" class="mobile-nav-item" style="padding-left:28px;font-size:14px;color:#555;">Gips-carton</a>
+  <a href="zidarie-bca.html" class="mobile-nav-item" style="padding-left:28px;font-size:14px;color:#555;">Zidarie &amp; BCA</a>
+  <a href="electrice.html" class="mobile-nav-item">Electrice</a>
+  <a href="incalzire.html" class="mobile-nav-item">Incalzire</a>
+  <a href="sanitare.html" class="mobile-nav-item">Sanitare</a>
+  <a href="apa-canal.html" class="mobile-nav-item">Apa &amp; Canal</a>
+  <a href="gradina.html" class="mobile-nav-item">Gradina</a>
+  <a href="mobilier.html" class="mobile-nav-item">Mobilier</a>
+  <a href="electrocasnice.html" class="mobile-nav-item">Electrocasnice</a>
+  <a href="scule-unelte.html" class="mobile-nav-item">Scule &amp; Unelte</a>
+  <a href="gard-imprejmuiri.html" class="mobile-nav-item">Gard &amp; Imprejmuiri</a>
   <a href="despre-noi.html" class="mobile-nav-item">Despre noi</a>
   <a href="contact.html" class="mobile-nav-item">Contact</a>
   <a href="https://wa.me/40749130565?text=Buna%20ziua!%20Va%20contactez%20de%20pe%20site-ul%20Mugurel." class="mobile-wa" target="_blank" rel="noopener">
@@ -293,6 +307,10 @@
     Scrie-ne pe WhatsApp — 0749 130 565
   </a>
 </div>
+
+<button class="back-to-top" id="back-to-top" aria-label="Inapoi sus">
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="18 15 12 9 6 15"/></svg>
+</button>
 
 <script src="js/main.js"></script>
 </body>

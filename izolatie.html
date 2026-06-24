@@ -58,7 +58,7 @@
 <header class="header">
   <div class="hdr">
     <a href="index.html" class="logo">
-      <img src="img/logo.svg" alt="Logo Mugurel" width="160" height="44" loading="lazy" decoding="async">
+      <img src="img/logo.svg" alt="Logo Mugurel" width="160" height="44" loading="eager" decoding="async">
       <div class="logo-text"><div class="logo-name">MUGUREL</div><div class="logo-sub">Materiale constructii</div></div>
     </a>
     <div class="searchbar">
@@ -194,7 +194,7 @@
         <!-- POLISTIREN EPS GRAFITAT -->
         <div class="material-card">
           <div class="material-img-wrap">
-            <img src="img/polistiren-eps.jpg" alt="Polistiren EPS grafitat" class="material-img" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
+            <img src="img/polistiren-eps.jpg" alt="Polistiren EPS grafitat" class="material-img" onerror="this.closest('.material-img-wrap').style.display='none'">
             <div class="material-img-ph" style="display:none">
               <svg viewBox="0 0 80 60" fill="none" stroke="currentColor" stroke-width="1.5">
                 <rect x="10" y="10" width="60" height="40" rx="3"/>
@@ -242,7 +242,7 @@
         <!-- POLISTIREN XPS -->
         <div class="material-card">
           <div class="material-img-wrap">
-            <img src="img/polistiren-xps.jpg" alt="Polistiren XPS extrudat" class="material-img" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
+            <img src="img/polistiren-xps.jpg" alt="Polistiren XPS extrudat" class="material-img" onerror="this.closest('.material-img-wrap').style.display='none'">
             <div class="material-img-ph" style="display:none">
               <svg viewBox="0 0 80 60" fill="none" stroke="currentColor" stroke-width="1.5">
                 <rect x="8" y="8" width="64" height="44" rx="3"/>
@@ -300,7 +300,7 @@
         <!-- VATA BAZALTICA -->
         <div class="material-card">
           <div class="material-img-wrap">
-            <img src="img/vata-bazaltica.jpg" alt="Vata minerala bazaltica" class="material-img" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
+            <img src="img/vata-bazaltica.jpg" alt="Vata minerala bazaltica" class="material-img" onerror="this.closest('.material-img-wrap').style.display='none'">
             <div class="material-img-ph" style="display:none">
               <svg viewBox="0 0 80 60" fill="none" stroke="currentColor" stroke-width="1.2">
                 <path d="M10 15 Q15 10 20 15 Q25 10 30 15 Q35 10 40 15 Q45 10 50 15 Q55 10 60 15 Q65 10 70 15"/>
@@ -347,7 +347,7 @@
         <!-- VATA FIBRA STICLA -->
         <div class="material-card">
           <div class="material-img-wrap">
-            <img src="img/vata-sticla.jpg" alt="Vata minerala fibra de sticla" class="material-img" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
+            <img src="img/vata-sticla.jpg" alt="Vata minerala fibra de sticla" class="material-img" onerror="this.closest('.material-img-wrap').style.display='none'">
             <div class="material-img-ph" style="display:none">
               <svg viewBox="0 0 80 60" fill="none" stroke="currentColor" stroke-width="1.2">
                 <path d="M5 30 Q20 10 35 30 Q50 50 65 30 Q72 18 75 30"/>
@@ -761,6 +761,83 @@
       </div>
     </section>
 
+    <!-- ═══ SECTIUNEA NOUA: ACCESORII IZOLATIE CU IMAGINI ═══ -->
+    <section class="cat-section-block">
+      <div class="cat-section-header">
+        <h2 class="cat-section-title">Accesorii Izolatie</h2>
+        <p class="cat-section-desc">Adezivi, membrane, plase si coltare pentru sisteme de izolatie termica la exterior.</p>
+      </div>
+      <div class="accessories-grid">
+
+        <div class="accessory-card">
+          <div class="accessory-img-wrap">
+            <img src="img/adeziv-polistiren.jpg" alt="Adeziv-grund bicomponent pentru polistiren EPS XPS" class="accessory-img" onerror="this.closest('.accessory-img-wrap').style.display='none'">
+          </div>
+          <div class="accessory-body">
+            <h4>Adeziv pentru polistiren</h4>
+            <p>Adeziv-grund bicomponent pentru lipirea placilor de polistiren EPS/XPS pe suport. Consum 4-6 kg/m², sac 25 kg, rezistenta la umiditate.</p>
+            <a href="https://wa.me/40749130565?text=Buna%20ziua!%20Am%20nevoie%20de%20adeziv%20pentru%20polistiren%20EPS%2FXPS." class="btn-wa-acc" target="_blank" rel="noopener">Afla disponibilitate</a>
+          </div>
+        </div>
+
+        <div class="accessory-card">
+          <div class="accessory-img-wrap">
+            <img src="img/adeziv-vata.jpg" alt="Mortar adeziv special pentru vata bazaltica si vata de sticla" class="accessory-img" onerror="this.closest('.accessory-img-wrap').style.display='none'">
+          </div>
+          <div class="accessory-body">
+            <h4>Adeziv pentru vata minerala</h4>
+            <p>Mortar adeziv special pentru vata bazaltica si vata de sticla. Adezivitate superioara, sac 25 kg, se aplica pe toata suprafata placii.</p>
+            <a href="https://wa.me/40749130565?text=Buna%20ziua!%20Am%20nevoie%20de%20adeziv%20pentru%20vata%20minerala%20bazaltica." class="btn-wa-acc" target="_blank" rel="noopener">Afla disponibilitate</a>
+          </div>
+        </div>
+
+        <div class="accessory-card">
+          <div class="accessory-img-wrap">
+            <img src="img/coltar-aluminiu.jpg" alt="Coltar de armare din aluminiu cu plasa fibra de sticla" class="accessory-img" onerror="this.closest('.accessory-img-wrap').style.display='none'">
+          </div>
+          <div class="accessory-body">
+            <h4>Coltar aluminiu cu plasa</h4>
+            <p>Coltar de armare din aluminiu cu plasa fibra de sticla pentru protectia muchiilor la fatade. Lungime 2.5m, latime 10×10 cm.</p>
+            <a href="https://wa.me/40749130565?text=Buna%20ziua!%20Am%20nevoie%20de%20coltar%20aluminiu%20cu%20plasa%20pentru%20fatada." class="btn-wa-acc" target="_blank" rel="noopener">Afla disponibilitate</a>
+          </div>
+        </div>
+
+        <div class="accessory-card">
+          <div class="accessory-img-wrap">
+            <img src="img/coltar-pvc.jpg" alt="Coltar flexibil PVC cu plasa fibra de sticla pentru fatade" class="accessory-img" onerror="this.closest('.accessory-img-wrap').style.display='none'">
+          </div>
+          <div class="accessory-body">
+            <h4>Coltar PVC cu plasa</h4>
+            <p>Coltar flexibil din PVC cu plasa fibra de sticla pentru armare colturi fatade. Rezistent la alcali, bara 2.5m.</p>
+            <a href="https://wa.me/40749130565?text=Buna%20ziua!%20Am%20nevoie%20de%20coltar%20PVC%20cu%20plasa%20pentru%20fatada." class="btn-wa-acc" target="_blank" rel="noopener">Afla disponibilitate</a>
+          </div>
+        </div>
+
+        <div class="accessory-card">
+          <div class="accessory-img-wrap">
+            <img src="img/membrana-bituminoasa.jpg" alt="Membrana hidroizolanta bituminoasa APP SBS pentru terase si fundatii" class="accessory-img" onerror="this.closest('.accessory-img-wrap').style.display='none'">
+          </div>
+          <div class="accessory-body">
+            <h4>Membrana bituminoasa</h4>
+            <p>Membrana hidroizolanta bituminoasa APP sau SBS pentru terase, fundatii si acoperisuri. Grosime 3-4 mm, latime 1m, rola 10m.</p>
+            <a href="https://wa.me/40749130565?text=Buna%20ziua!%20Am%20nevoie%20de%20membrana%20bituminoasa%20pentru%20terasa%20sau%20fundatie." class="btn-wa-acc" target="_blank" rel="noopener">Afla disponibilitate</a>
+          </div>
+        </div>
+
+        <div class="accessory-card">
+          <div class="accessory-img-wrap">
+            <img src="img/plasa-fibra.jpg" alt="Plasa din fibra de sticla anti-alcali pentru armare fatade" class="accessory-img" onerror="this.closest('.accessory-img-wrap').style.display='none'">
+          </div>
+          <div class="accessory-body">
+            <h4>Plasa armare fibra de sticla</h4>
+            <p>Plasa din fibra de sticla tratata anti-alcali pentru armarea stratului de baza la fatade. 145 g/m², rola 50m, latime 1m.</p>
+            <a href="https://wa.me/40749130565?text=Buna%20ziua!%20Am%20nevoie%20de%20plasa%20fibra%20de%20sticla%20pentru%20armare%20fatada." class="btn-wa-acc" target="_blank" rel="noopener">Afla disponibilitate</a>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
     <!-- WA CTA BANNER -->
     <div class="cat-wa-banner">
       <div class="cat-wa-banner-text">
@@ -995,7 +1072,7 @@
   <div class="footer-inner">
     <div class="footer-top">
       <div class="f-about">
-        <img src="img/logo.svg" alt="Mugurel" class="f-logo" width="160" height="44" loading="lazy" decoding="async">
+        <img src="img/logo.svg" alt="Mugurel" class="f-logo" width="160" height="44" loading="eager" decoding="async">
         <p>Magazin de materiale de constructii, mobilier si electrocasnice. Oferta completa A-Z pentru casa ta.</p>
         <div class="f-social">
           <a href="https://www.facebook.com/byMUGUREL" class="soc-btn" target="_blank" rel="noopener" aria-label="Facebook"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"/></svg></a>
@@ -1044,18 +1121,36 @@
 
 <div class="mobile-menu" id="mobile-menu">
   <div class="mobile-menu-header">
-    <a href="index.html" class="logo"><img src="img/logo.svg" alt="Mugurel" style="height:36px;" width="160" height="44" loading="lazy" decoding="async"></a>
-    <button class="mobile-close" id="mobile-close" aria-label="Inchide"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
+    <a href="index.html" class="logo"><img src="img/logo.svg" alt="Mugurel" style="height:36px;"></a>
+    <button class="mobile-close" id="mobile-close" aria-label="Inchide meniu"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
   </div>
   <a href="index.html" class="mobile-nav-item">Acasa</a>
   <a href="catalog.html" class="mobile-nav-item">Catalog produse</a>
+  <a href="catalog.html?cat=constructii" class="mobile-nav-item">Constructii</a>
+  <a href="acoperis.html" class="mobile-nav-item" style="padding-left:28px;font-size:14px;color:#555;">Acoperis</a>
+  <a href="izolatie.html" class="mobile-nav-item" style="padding-left:28px;font-size:14px;color:#555;">Izolatie</a>
+  <a href="gips-carton.html" class="mobile-nav-item" style="padding-left:28px;font-size:14px;color:#555;">Gips-carton</a>
+  <a href="zidarie-bca.html" class="mobile-nav-item" style="padding-left:28px;font-size:14px;color:#555;">Zidarie &amp; BCA</a>
+  <a href="electrice.html" class="mobile-nav-item">Electrice</a>
+  <a href="incalzire.html" class="mobile-nav-item">Incalzire</a>
+  <a href="sanitare.html" class="mobile-nav-item">Sanitare</a>
+  <a href="apa-canal.html" class="mobile-nav-item">Apa &amp; Canal</a>
+  <a href="gradina.html" class="mobile-nav-item">Gradina</a>
+  <a href="mobilier.html" class="mobile-nav-item">Mobilier</a>
+  <a href="electrocasnice.html" class="mobile-nav-item">Electrocasnice</a>
+  <a href="scule-unelte.html" class="mobile-nav-item">Scule &amp; Unelte</a>
+  <a href="gard-imprejmuiri.html" class="mobile-nav-item">Gard &amp; Imprejmuiri</a>
   <a href="despre-noi.html" class="mobile-nav-item">Despre noi</a>
   <a href="contact.html" class="mobile-nav-item">Contact</a>
-  <a href="https://wa.me/40749130565?text=Buna%20ziua!" class="mobile-wa" target="_blank" rel="noopener">
+  <a href="https://wa.me/40749130565?text=Buna%20ziua!%20Va%20contactez%20de%20pe%20site-ul%20Mugurel." class="mobile-wa" target="_blank" rel="noopener">
     <svg viewBox="0 0 24 24" fill="currentColor" style="width:20px;height:20px;"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 0 1-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 0 1-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 0 1 2.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0 0 12.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 0 0 5.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 0 0-3.48-8.413z"/></svg>
-    Scrie-ne pe WhatsApp
+    Scrie-ne pe WhatsApp — 0749 130 565
   </a>
 </div>
+
+<button class="back-to-top" id="back-to-top" aria-label="Inapoi sus">
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="18 15 12 9 6 15"/></svg>
+</button>
 
 <script src="js/main.js"></script>
 <script>
