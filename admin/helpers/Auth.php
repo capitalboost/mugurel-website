@@ -6,6 +6,7 @@ class Auth {
         ini_set('session.cookie_secure',   '1');
         ini_set('session.cookie_samesite', 'Strict');
         ini_set('session.use_strict_mode', '1');
+        ini_set('session.use_only_cookies', '1');
         session_start();
     }
 
@@ -41,6 +42,9 @@ class Auth {
             self::logout(); return false;
         }
         if (($_SESSION['ip'] ?? '') !== ($_SERVER['REMOTE_ADDR'] ?? '')) {
+            self::logout(); return false;
+        }
+        if (($_SESSION['ua'] ?? '') !== ($_SERVER['HTTP_USER_AGENT'] ?? '')) {
             self::logout(); return false;
         }
         $_SESSION['last_active'] = $now;

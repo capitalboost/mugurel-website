@@ -17,7 +17,9 @@ class Flash {
     public static function html(): string {
         $flash = self::get();
         if (!$flash) return '';
-        $type = htmlspecialchars($flash['type'], ENT_QUOTES, 'UTF-8');
+        $type = in_array($flash['type'], ['success', 'error', 'warning', 'info'], true)
+              ? $flash['type']
+              : 'info';
         $msg  = htmlspecialchars($flash['msg'],  ENT_QUOTES, 'UTF-8');
         return "<div class=\"flash flash--{$type}\">{$msg}</div>";
     }
