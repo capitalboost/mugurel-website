@@ -5,8 +5,14 @@ deployment:
     - /bin/cp -R css $DEPLOYPATH
     - /bin/cp -R img $DEPLOYPATH
     - /bin/cp -R js $DEPLOYPATH
+    - /bin/cp -R admin $DEPLOYPATH
+    - /bin/cp -R includes $DEPLOYPATH
+    - /bin/cp -R templates $DEPLOYPATH
+    - /bin/cp -R uploads $DEPLOYPATH
+    - /bin/cp router.php $DEPLOYPATH
+    - /bin/cp .htaccess $DEPLOYPATH
     - /bin/cp *.html $DEPLOYPATH
     - /bin/cp *.txt $DEPLOYPATH
     - /bin/cp *.xml $DEPLOYPATH
     - /bin/cp *.svg $DEPLOYPATH
-    - /bin/cp *.png $DEPLOYPATH
+    - /bin/cp *.php $DEPLOYPATH
