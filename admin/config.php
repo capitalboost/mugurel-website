@@ -1,8 +1,13 @@
 <?php
-define('DB_HOST', 'localhost');
-define('DB_NAME', 'mugurel_cms');
-define('DB_USER', 'mugurel_db');
-define('DB_PASS', 'SCHIMBA_PAROLA_AICI');
+// Credentiale reale in config.local.php (negituit, editat manual pe server)
+if (file_exists(__DIR__ . '/config.local.php')) {
+    require_once __DIR__ . '/config.local.php';
+} else {
+    define('DB_HOST', 'localhost');
+    define('DB_NAME', 'mugurel_cms');
+    define('DB_USER', 'SCHIMBA_USER');
+    define('DB_PASS', 'SCHIMBA_PAROLA');
+}
 
 define('UPLOAD_MAX_BYTES', 2 * 1024 * 1024); // 2MB
 define('UPLOAD_DIR',  __DIR__ . '/../uploads/products/');
