@@ -1,0 +1,7 @@
+# Blochează execuția PHP în directorul de upload
+<FilesMatch "\.php[0-9]?$">
+    Order Deny,Allow
+    Deny from all
+</FilesMatch>
+Options -ExecCGI -Indexes
+AddType text/plain .php .php3 .php4 .php5 .phtml
