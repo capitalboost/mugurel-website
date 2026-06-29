@@ -20,7 +20,7 @@ document.addEventListener('DOMContentLoaded', function () {
       const sub = cat.querySelector('.sidebar-sub');
       const href = btn.getAttribute('href') || '';
       // no sub-items OR direct page link → navigate normally
-      if (!sub || href.endsWith('.html')) return;
+      if (!sub) return;
       e.preventDefault();
       const isOpen = cat.classList.contains('open');
       // close all
