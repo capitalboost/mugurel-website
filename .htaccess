@@ -1,4 +1,25 @@
 # ============================================================
+# URL Routing — categorii si pagini statice catre router.php
+# ============================================================
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+
+    # Admin — nu atinge
+    RewriteRule ^admin/ - [L]
+
+    # Fisiere si directoare reale (css, js, img, uploads, etc.)
+    RewriteCond %{REQUEST_FILENAME} -f [OR]
+    RewriteCond %{REQUEST_FILENAME} -d
+    RewriteRule ^ - [L]
+
+    # /slug.html sau /slug.htm → router.php
+    RewriteRule ^([a-z0-9][a-z0-9-]*)\.html?$ /router.php?slug=$1 [L,QSA]
+
+    # /slug/ sau /slug → router.php
+    RewriteRule ^([a-z0-9][a-z0-9-]*)/? /router.php?slug=$1 [L,QSA]
+</IfModule>
+
+# ============================================================
 # Security Headers
 # ============================================================
 <IfModule mod_headers.c>
