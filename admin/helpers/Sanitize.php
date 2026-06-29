@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 class Sanitize {
     public static function text(string $input, int $max = 500): string {
         $clean = strip_tags(trim($input));
