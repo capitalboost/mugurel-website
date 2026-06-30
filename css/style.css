@@ -72,6 +72,8 @@ img { max-width: 100%; }
 .nav-item { display: flex; align-items: center; gap: 5px; padding: 10px 13px; color: rgba(255,255,255,0.8); font-size: 13px; font-weight: 600; cursor: pointer; white-space: nowrap; border-bottom: 2px solid transparent; text-decoration: none; transition: background 150ms, border-color 150ms, color 150ms; }
 .nav-item:hover, .nav-item.active { background: rgba(255,255,255,0.1); border-bottom-color: rgba(255,255,255,0.5); color: #fff; }
 .nav-item svg { width: 13px; height: 13px; }
+.nav-item--eu { margin-left: auto; background: rgba(255,255,255,0.08); }
+.nav-item--eu svg { width: 18px; height: 13px; flex-shrink: 0; }
 
 /* ── PAGE LAYOUT ── */
 .body-wrap { max-width: 1280px; margin: 0 auto; padding: 20px 24px; display: flex; gap: 20px; align-items: flex-start; }
