@@ -4,6 +4,7 @@ deployment:
     - export DEPLOYPATH=/home/mugurel/public_html/
     - /bin/cp -R css $DEPLOYPATH
     - /bin/cp -R img $DEPLOYPATH
+    - /bin/cp -R finantari-europene $DEPLOYPATH
     - /bin/cp -R js $DEPLOYPATH
     - /bin/cp -R admin $DEPLOYPATH
     - /bin/cp -R includes $DEPLOYPATH
