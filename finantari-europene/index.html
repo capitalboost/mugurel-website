@@ -60,9 +60,29 @@
   .eu-tech-card p:last-child { margin-bottom: 0; }
   .eu-tech-card .eu-tech-label { font-weight: 700; color: var(--rosu); }
   @media (max-width: 600px) { .eu-obj-grid { grid-template-columns: 1fr; } }
+
+  /* Bara MFE secundara */
+  .eu-mfe-bar--mfe { background: #003399; margin-top: 8px; }
+
+  /* Beneficiar in comunicat */
+  .eu-beneficiar { display: flex; align-items: center; gap: 16px; margin-top: 20px; padding-top: 16px; border-top: 1px solid #e2e2e2; }
+  .eu-beneficiar-logo { height: 40px; width: auto; flex-shrink: 0; }
+  .eu-beneficiar-info { font-size: 13px; line-height: 1.6; }
+  .eu-beneficiar-info strong { display: block; color: var(--verde); }
+  .eu-beneficiar-info a { color: var(--verde); text-decoration: none; }
+  .eu-beneficiar-info a:hover { text-decoration: underline; }
+  @media (max-width: 480px) { .eu-beneficiar { flex-direction: column; align-items: flex-start; gap: 10px; } }
 </style>
 </head>
 <body>
+
+<!-- BANDA UE OBLIGATORIE — deasupra de tot, centrata -->
+<div class="eu-topband-wrap">
+  <img class="eu-topband-img" src="/img/proiect-digitalizare/header_sigle_obligatorii.png" alt="Cofinanțat de Uniunea Europeană — Guvernul României — Programul Regional Sud-Vest Oltenia 2021-2027">
+  <div class="eu-mfe-inline">
+    Pentru informații detaliate despre celelalte programe cofinanțate de Uniunea Europeană, vă invităm să vizitați <a href="https://www.mfe.gov.ro/" target="_blank" rel="noopener">www.mfe.gov.ro</a>
+  </div>
+</div>
 
 <!-- PROMO STRIP -->
 <div class="promo-strip">
@@ -117,9 +137,6 @@
 <!-- CONTINUT PAGINA FINANTARI EUROPENE -->
 <div class="eu-page">
 
-  <div class="eu-band-wrap">
-    <img class="eu-band" src="/img/proiect-digitalizare/header_sigle_obligatorii.png" alt="Cofinanțat de Uniunea Europeană — Guvernul României — Programul Regional Sud-Vest Oltenia 2021-2027">
-  </div>
   <p class="eu-date">Iulie 2026</p>
 
   <h1 class="eu-title">Comunicat de presă</h1>
@@ -155,7 +172,13 @@
 
     <p>Proiect cofinanțat din Fondul European de Dezvoltare Regională, Prioritatea 2 – Digitalizare în beneficiul cetățenilor și al firmelor, Obiectivul specific 1.2 – Valorificarea avantajelor digitalizării, în beneficiul cetățenilor, al companiilor, al organizațiilor de cercetare și al autorităților publice.</p>
 
-    <p>SC DUNLITE COM SRL — <a href="mailto:dunlite@gmail.com">dunlite@gmail.com</a></p>
+    <div class="eu-beneficiar">
+      <img src="/img/logo.svg" alt="Mugurel — DUNLITE COM SRL" class="eu-beneficiar-logo">
+      <div class="eu-beneficiar-info">
+        <strong>SC DUNLITE COM SRL</strong><br>
+        <a href="https://mugurel-bricolaj.ro">mugurel-bricolaj.ro</a> &nbsp;|&nbsp; <a href="mailto:dunlite@gmail.com">dunlite@gmail.com</a>
+      </div>
+    </div>
   </div>
 
   <h2 class="eu-section-title">Despre proiect și investiție</h2>
@@ -199,6 +222,10 @@
 
   <div class="eu-mfe-bar">
     Pentru informații detaliate despre Programul Regional Sud-Vest Oltenia, vă invităm să vizitați <a href="https://www.adroltenia.ro/" target="_blank" rel="noopener">www.adroltenia.ro</a>
+  </div>
+
+  <div class="eu-mfe-bar eu-mfe-bar--mfe">
+    Pentru informații detaliate despre celelalte programe cofinanțate de Uniunea Europeană, vă invităm să vizitați <a href="https://www.mfe.gov.ro/" target="_blank" rel="noopener">www.mfe.gov.ro</a>
   </div>
 
   <p class="eu-disclaimer">Conținutul acestui material nu reprezintă în mod obligatoriu poziția oficială a Uniunii Europene sau a Guvernului României.</p>

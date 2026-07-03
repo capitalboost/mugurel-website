@@ -31,6 +31,14 @@
 </head>
 <body>
 
+<!-- BANDA UE OBLIGATORIE -->
+<div class="eu-topband-wrap">
+  <img class="eu-topband-img" src="/img/proiect-digitalizare/header_sigle_obligatorii.png" alt="Cofinanțat de Uniunea Europeană — Guvernul României — Programul Regional Sud-Vest Oltenia 2021-2027">
+  <div class="eu-mfe-inline">
+    Pentru informații detaliate despre celelalte programe cofinanțate de Uniunea Europeană, vă invităm să vizitați <a href="https://www.mfe.gov.ro/" target="_blank" rel="noopener">www.mfe.gov.ro</a>
+  </div>
+</div>
+
 <!-- PROMO STRIP -->
 <div class="promo-strip">
   <div class="promo-strip-inner">

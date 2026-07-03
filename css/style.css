@@ -1,4 +1,4 @@
-/* ═══════════════════════════════════════════════════
+﻿/* ═══════════════════════════════════════════════════
    MUGUREL — Magazin Materiale Constructii
    Stil principal — bazat pe Concept C Functional Trade
    ═══════════════════════════════════════════════════ */
@@ -577,3 +577,10 @@ img { max-width: 100%; }
 .back-to-top.visible { opacity: 1; pointer-events: auto; }
 .back-to-top:hover { transform: translateY(-2px); background: var(--verde-mid); }
 .back-to-top svg { width: 18px; height: 18px; }
+
+/* ── BANDA UE OBLIGATORIE (Programul Regional Sud-Vest Oltenia) ── */
+.eu-topband-wrap { background: #fff; border-bottom: 1px solid #ddd; text-align: center; padding: 10px 20px 0; }
+.eu-topband-img { height: 72px; width: auto; max-width: 100%; display: inline-block; }
+.eu-mfe-inline { background: #003399; color: #fff; text-align: center; font-size: 12px; font-family: 'Open Sans', sans-serif; padding: 6px 16px; line-height: 1.4; margin-top: 10px; margin-left: -20px; margin-right: -20px; }
+.eu-mfe-inline a { color: #FFCC00; font-weight: 700; text-decoration: none; }
+.eu-mfe-inline a:hover { text-decoration: underline; }
