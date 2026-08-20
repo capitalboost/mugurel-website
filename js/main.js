@@ -138,22 +138,66 @@ var SUBCAT_PARENT = {
   living: 'mobilier', dormitor: 'mobilier', bucatarie: 'mobilier'
 };
 
-/* ── Product filter ── */
+/* Etichete afisabile pentru categorii si subcategorii (folosite si de catalog.html) */
+var CAT_LABELS = {
+  constructii: 'Constructii', electrice: 'Electrice', incalzire: 'Incalzire',
+  sanitare: 'Sanitare', 'apa-canal': 'Apa & Canal', gradina: 'Gradina',
+  mobilier: 'Mobilier', electrocasnice: 'Electrocasnice', scule: 'Scule & Unelte',
+  cabluri: 'Cabluri & Conductori', becuri: 'Becuri LED', aparataj: 'Aparataj Electric',
+  iluminat: 'Corpuri Iluminat', centrale: 'Centrale termice', radiatoare: 'Radiatoare',
+  'aer-conditionat': 'Aer conditionat', sobe: 'Sobe & Seminee', baterii: 'Baterii de apa',
+  'mobilier-baie': 'Mobilier baie', 'accesorii-baie': 'Accesorii baie',
+  tevi: 'Tevi & Fitting', canalizare: 'Canalizare PVC', pompe: 'Pompe de apa',
+  living: 'Living', dormitor: 'Dormitor', bucatarie: 'Bucatarie'
+};
+
+/* ── Product filter ──
+   Suporta 3 tipuri de filtru:
+   - 'all'          → toate produsele
+   - categorie L1   → dupa data-cat (ex. incalzire)
+   - subcategorie   → dupa data-subcat (ex. centrale). Daca subcategoria nu are
+                      inca produse listate, afiseaza categoria parinte + o nota
+                      explicita, ca vizitatorul sa nu creada ca produsele afisate
+                      sunt exact ce a cerut. */
 function filterProducts(filter) {
-  filter = SUBCAT_PARENT[filter] || filter;
   const cards = document.querySelectorAll('.prod-card[data-cat]');
+  const parent = SUBCAT_PARENT[filter];
+  const hasExact = parent && Array.from(cards).some(function (c) {
+    return c.getAttribute('data-subcat') === filter;
+  });
   let visible = 0;
   cards.forEach(function (card) {
-    const cat = card.getAttribute('data-cat');
-    if (filter === 'all' || cat === filter) {
-      card.style.display = '';
-      visible++;
-    } else {
-      card.style.display = 'none';
-    }
+    let match;
+    if (filter === 'all') match = true;
+    else if (parent && hasExact) match = card.getAttribute('data-subcat') === filter;
+    else if (parent) match = card.getAttribute('data-cat') === parent;
+    else match = card.getAttribute('data-cat') === filter;
+    card.style.display = match ? '' : 'none';
+    if (match) visible++;
   });
+  showFallbackNote(parent && !hasExact ? filter : null);
   const counter = document.getElementById('result-count');
   if (counter) counter.textContent = visible;
+}
+
+/* Nota afisata cand o subcategorie nu are inca produse in catalogul de pe site */
+function showFallbackNote(subcat) {
+  let note = document.getElementById('cat-fallback-note');
+  if (!subcat) { if (note) note.style.display = 'none'; return; }
+  const grid = document.getElementById('prod-grid');
+  if (!grid) return;
+  if (!note) {
+    note = document.createElement('div');
+    note.id = 'cat-fallback-note';
+    note.className = 'cat-fallback-note';
+    grid.parentNode.insertBefore(note, grid);
+  }
+  const sub = CAT_LABELS[subcat] || subcat;
+  const par = CAT_LABELS[SUBCAT_PARENT[subcat]] || SUBCAT_PARENT[subcat];
+  note.innerHTML = '<strong>Nu avem inca produse listate online la „' + sub + '”.</strong> ' +
+    'Mai jos vezi restul produselor din ' + par + '. Avem peste 3000 de produse in magazin — ' +
+    '<a href="https://wa.me/40749130565">scrie-ne pe WhatsApp</a> si iti spunem imediat daca avem ce cauti.';
+  note.style.display = '';
 }
 
 function updateResultCount() {
