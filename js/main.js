@@ -179,7 +179,7 @@ function searchCatalog(q) {
   const banner = document.createElement('div');
   banner.id = 'gdpr-banner';
   banner.innerHTML =
-    '<div class="gdpr-text">Folosim cookie-uri pentru a asigura functionarea corecta a site-ului. Prin continuarea navigarii esti de acord cu utilizarea acestora. <a href="politica-confidentialitate.html">Politica de confidentialitate</a></div>' +
+    '<div class="gdpr-text">Folosim cookie-uri pentru functionarea corecta a site-ului si pentru a intelege cum este folosit. Daca accepti, ne ajuti sa imbunatatim site-ul si sa iti oferim o experienta mai buna. <a href="politica-confidentialitate.html">Politica de confidentialitate</a></div>' +
     '<div class="gdpr-btns">' +
     '<button class="gdpr-decline" id="gdpr-decline">Refuz</button>' +
     '<button class="gdpr-accept" id="gdpr-accept">Accept</button>' +
