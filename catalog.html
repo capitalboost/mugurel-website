@@ -877,13 +877,20 @@
       filterProducts(cat);
       // Activate chip
       document.querySelectorAll('.chip[data-filter]').forEach(function(c) { c.classList.remove('active'); });
-      var matchChip = document.querySelector('.chip[data-filter="' + cat + '"]');
+      var chipCat = (typeof SUBCAT_PARENT !== 'undefined' && SUBCAT_PARENT[cat]) || cat;
+      var matchChip = document.querySelector('.chip[data-filter="' + chipCat + '"]');
       if (matchChip) matchChip.classList.add('active');
       // Update page title
       var titles = {
         constructii: 'Constructii', electrice: 'Electrice', incalzire: 'Incalzire',
         sanitare: 'Sanitare', 'apa-canal': 'Apa & Canal', gradina: 'Gradina',
-        mobilier: 'Mobilier', electrocasnice: 'Electrocasnice', scule: 'Scule & Unelte'
+        mobilier: 'Mobilier', electrocasnice: 'Electrocasnice', scule: 'Scule & Unelte',
+        // subcategorii din sidebar — filtreaza pe categoria parinte, dar pastreaza numele corect
+        cabluri: 'Cabluri & Conductori', becuri: 'Becuri LED', aparataj: 'Aparataj Electric', iluminat: 'Corpuri Iluminat',
+        centrale: 'Centrale termice', radiatoare: 'Radiatoare', 'aer-conditionat': 'Aer conditionat', sobe: 'Sobe & Seminee',
+        baterii: 'Baterii de apa', 'mobilier-baie': 'Mobilier baie', 'accesorii-baie': 'Accesorii baie',
+        tevi: 'Tevi & Fitting', canalizare: 'Canalizare PVC', pompe: 'Pompe de apa',
+        living: 'Living', dormitor: 'Dormitor', bucatarie: 'Bucatarie'
       };
       var label = titles[cat] || cat;
       var titleEl = document.getElementById('page-title');

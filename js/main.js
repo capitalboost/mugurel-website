@@ -126,8 +126,21 @@ document.addEventListener('DOMContentLoaded', function () {
 
 });
 
+/* ── Subcategorii → categoria parinte ──
+   Produsele sunt etichetate doar cu categoria de nivel 1 (data-cat), dar sidebar-ul
+   linkuieste subcategorii (ex. catalog.html?cat=centrale). Fara maparea de mai jos
+   filtrul nu gaseste nimic si pagina apare goala. */
+var SUBCAT_PARENT = {
+  cabluri: 'electrice', becuri: 'electrice', aparataj: 'electrice', iluminat: 'electrice',
+  centrale: 'incalzire', radiatoare: 'incalzire', 'aer-conditionat': 'incalzire', sobe: 'incalzire',
+  baterii: 'sanitare', 'mobilier-baie': 'sanitare', 'accesorii-baie': 'sanitare',
+  tevi: 'apa-canal', canalizare: 'apa-canal', pompe: 'apa-canal',
+  living: 'mobilier', dormitor: 'mobilier', bucatarie: 'mobilier'
+};
+
 /* ── Product filter ── */
 function filterProducts(filter) {
+  filter = SUBCAT_PARENT[filter] || filter;
   const cards = document.querySelectorAll('.prod-card[data-cat]');
   let visible = 0;
   cards.forEach(function (card) {
