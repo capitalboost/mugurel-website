@@ -167,11 +167,14 @@ function filterProducts(filter) {
   });
   let visible = 0;
   cards.forEach(function (card) {
+    // data-cat poate contine mai multe categorii separate prin spatiu
+    // (ex. teava PPR apare si la Incalzire, si la Apa & Canal)
+    const cats = (card.getAttribute('data-cat') || '').split(/\s+/);
     let match;
     if (filter === 'all') match = true;
     else if (parent && hasExact) match = card.getAttribute('data-subcat') === filter;
-    else if (parent) match = card.getAttribute('data-cat') === parent;
-    else match = card.getAttribute('data-cat') === filter;
+    else if (parent) match = cats.indexOf(parent) >= 0;
+    else match = cats.indexOf(filter) >= 0;
     card.style.display = match ? '' : 'none';
     if (match) visible++;
   });
