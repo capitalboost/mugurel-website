@@ -12,8 +12,14 @@ Options -Indexes
 </FilesMatch>
 
 # Forțează HTTPS
+# Exceptie doar pentru dezvoltare locala: localhost si domeniile .test ale Laragon.
+# Domeniul de productie (mugurel-bricolaj.ro) nu se potriveste cu niciuna dintre
+# conditii, deci continua sa fie redirectionat catre HTTPS ca pana acum.
 <IfModule mod_rewrite.c>
     RewriteCond %{HTTPS} off
+    RewriteCond %{HTTP_HOST} !^localhost$ [NC]
+    RewriteCond %{HTTP_HOST} !^127\.0\.0\.1$ [NC]
+    RewriteCond %{HTTP_HOST} !\.test$ [NC]
     RewriteRule ^ https://%{HTTP_HOST}%{REQUEST_URI} [R=301,L]
 </IfModule>
 

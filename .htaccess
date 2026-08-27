@@ -6,6 +6,22 @@
 # php -- END cPanel-generated handler, do not edit
 
 # ============================================================
+# Dezvoltare locala (Laragon / mod_php)
+# ------------------------------------------------------------
+# Handlerul cPanel de mai sus (ea-php81) nu exista in afara serverului, iar
+# Apache local ar servi fisierele .php ca text in loc sa le execute.
+# Blocul se activeaza DOAR unde php_module e incarcat, adica local.
+# Pe cPanel (LSAPI) php_module nu exista, deci nimic din ce urmeaza nu se aplica
+# si comportamentul productiei ramane neschimbat.
+# ============================================================
+<IfModule php_module>
+    RemoveHandler .php .php8 .phtml
+    <IfModule mime_module>
+        AddType application/x-httpd-php .php
+    </IfModule>
+</IfModule>
+
+# ============================================================
 # URL Routing — categorii si pagini statice catre router.php
 # ============================================================
 <IfModule mod_rewrite.c>
