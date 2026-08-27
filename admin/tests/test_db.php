@@ -17,10 +17,18 @@ try {
     ok(false, 'Conexiune DB: ' . $e->getMessage());
 }
 
-// Test: query simplu pe categories
-$stmt = Database::get()->query('SELECT COUNT(*) FROM categories');
-$count = (int)$stmt->fetchColumn();
-ok($count === 13, "13 categorii în DB (got $count)");
+// Test: ierarhia de categorii dupa migrarea 002
+$count = (int)Database::get()->query('SELECT COUNT(*) FROM categories')->fetchColumn();
+ok($count === 31, "31 categorii în DB (got $count)");
+
+$l1 = (int)Database::get()->query('SELECT COUNT(*) FROM categories WHERE parent_id IS NULL')->fetchColumn();
+ok($l1 === 9, "9 categorii de nivel 1 (got $l1)");
+
+$orfane = (int)Database::get()->query(
+    'SELECT COUNT(*) FROM categories c WHERE c.parent_id IS NOT NULL
+       AND NOT EXISTS (SELECT 1 FROM (SELECT id FROM categories) p WHERE p.id = c.parent_id)'
+)->fetchColumn();
+ok($orfane === 0, "nicio subcategorie orfana (got $orfane)");
 
 // Test: singleton — aceeași instanță
 ok(Database::get() === Database::get(), 'Singleton returnează aceeași instanță');
