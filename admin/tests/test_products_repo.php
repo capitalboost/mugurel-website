@@ -31,13 +31,16 @@ ok(count($secMaterialOnly) === 4, "sectiunea cabluri-conductori, tip 'material' 
 $secWrongKind = productsForSection('electrice', 'cabluri-conductori', 'accessory');
 ok($secWrongKind === [], 'sectiune de materiale ceruta cu tip accessory => []');
 
-// Task 8C: 40 de produse existente doar in catalog.html au fost importate cu
-// page_slug='catalog', card_kind='material' — 495 + 40 = 535, materiale 231 + 40 = 271.
+// Task 8C: 39 de produse existente doar in catalog.html au fost importate cu
+// page_slug='catalog', card_kind='material' — 495 + 39 = 534, materiale 231 + 39 = 270.
+// (Al 40-lea card din catalog.html, "Set 4 scaune bucatarie tapitate", e acelasi produs
+// cu "Set 4 Scaune Bucatarie Tapitate" de pe pagina Mobilier, scris cu alta capitalizare —
+// potrivirea pe nume e insensibila la capitalizare, deci nu creeaza un rand separat.)
 $all = allProducts();
-ok(count($all) === 535, 'allProducts() => 535 (got ' . count($all) . ')');
+ok(count($all) === 534, 'allProducts() => 534 (got ' . count($all) . ')');
 
 $allMaterial = array_filter($all, fn($p) => $p['card_kind'] === 'material');
-ok(count($allMaterial) === 271, 'allProducts() contine 271 materiale (got ' . count($allMaterial) . ')');
+ok(count($allMaterial) === 270, 'allProducts() contine 270 materiale (got ' . count($allMaterial) . ')');
 
 $allAccessory = array_filter($all, fn($p) => $p['card_kind'] === 'accessory');
 ok(count($allAccessory) === 264, 'allProducts() contine 264 accesorii (got ' . count($allAccessory) . ')');
@@ -94,7 +97,7 @@ if ($cu3Plus) {
 }
 
 // ── catalogProducts / catalogCount (Task 8A) ──
-ok(catalogCount(null, null) === 535, 'catalogCount fara filtru => 535 (got ' . catalogCount(null, null) . ')');
+ok(catalogCount(null, null) === 534, 'catalogCount fara filtru => 534 (got ' . catalogCount(null, null) . ')');
 ok(count(catalogProducts(null, null, 60, 0)) === 60, 'prima pagina => 60 de produse');
 ok(catalogProducts(null, null, 60, 60)[0]['id'] !== catalogProducts(null, null, 60, 0)[0]['id'], 'offset schimba rezultatul');
 
