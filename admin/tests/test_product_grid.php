@@ -59,6 +59,33 @@ ok(str_contains(renderProdCards($multi), 'data-cat="incalzire apa-canal"'), 'pro
 $fara = $sample; $fara[0]['properties'] = [];
 ok(str_contains(renderMaterialCards($fara), 'class="prop-val"'), 'fara properties => foloseste short_description');
 
+// ── fotografie si badge (Task 5C) ──
+$cuPoza = $sample;
+$cuPoza[0]['image_path'] = 'img/cablu-myym.jpg';
+$cuPoza[0]['image_alt']  = 'Cablu MYYM';
+$cuPoza[0]['badge_label'] = 'Cel mai vandut';
+$cuPoza[0]['badge_kind']  = 'popular';
+$h = renderMaterialCards($cuPoza);
+ok(str_contains($h, 'class="material-img"'),                 'randeaza <img> cand exista fotografie');
+ok(str_contains($h, 'style="display:none"'),                 'placeholder-ul e ascuns cand exista fotografie');
+ok(str_contains($h, 'material-badge material-badge--popular'), 'badge cu modificator');
+ok(str_contains($h, 'Cel mai vandut'),                       'textul badge-ului');
+ok(str_contains($h, 'onerror='),                             'pastreaza fallback-ul onerror');
+
+$fara = $sample;
+$fara[0]['image_path'] = null; $fara[0]['badge_label'] = null;
+$h2 = renderMaterialCards($fara);
+ok(!str_contains($h2, '<img'),                    'fara fotografie => niciun <img>');
+ok(str_contains($h2, 'style="display:flex"'),     'placeholder vizibil cand nu exista fotografie');
+ok(!str_contains($h2, 'material-badge'),          'fara badge => niciun element de badge');
+
+$faraKind = $sample;
+$faraKind[0]['image_path'] = null;
+$faraKind[0]['badge_label'] = 'Reducere';
+$faraKind[0]['badge_kind'] = null;
+$h3 = renderMaterialCards($faraKind);
+ok(str_contains($h3, 'class="material-badge"'), 'badge fara modificator => clasa exacta, fara spatiu in coada');
+
 // ── lista goala ──
 ok(renderMaterialCards([]) === '', 'lista goala => string gol');
 ok(str_contains(renderEmptyNotice(), 'wa.me/40749130565'), 'mesajul gol trimite pe WhatsApp');

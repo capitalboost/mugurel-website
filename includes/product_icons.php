@@ -81,9 +81,12 @@ const PRODUCT_ICON_FALLBACK =
 /**
  * Randeaza placeholder-ul unui card. Cheile necunoscute cad pe iconita generica,
  * ca un produs adaugat din admin sa nu randeze o gaura in grila.
+ * $hidden = true cand cardul are si o fotografie reala (placeholder-ul ramane
+ * in DOM ca fallback, dar ascuns).
  */
-function renderIcon(?string $key, ?string $label): string {
+function renderIcon(?string $key, ?string $label, bool $hidden = false): string {
     $svg = ($key !== null && isset(PRODUCT_ICONS[$key])) ? PRODUCT_ICONS[$key] : PRODUCT_ICON_FALLBACK;
-    return '<div class="material-img-ph" style="display:flex">' . $svg
+    $style = $hidden ? 'display:none' : 'display:flex';
+    return '<div class="material-img-ph" style="' . $style . '">' . $svg
          . '<span>' . htmlspecialchars((string)$label, ENT_QUOTES, 'UTF-8') . '</span></div>';
 }

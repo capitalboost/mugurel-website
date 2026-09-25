@@ -59,12 +59,29 @@ function renderProps(array $p): string {
     return $out . '</div>';
 }
 
+/** Continutul lui .material-img-wrap: fotografie (daca exista), placeholder, badge. */
+function renderImgWrap(array $p): string {
+    $hasImg = !empty($p['image_path']);
+    $out = '<div class="material-img-wrap">';
+    if ($hasImg) {
+        $out .= '<img src="' . e($p['image_path']) . '" alt="' . e($p['image_alt'] ?? $p['name'])
+              . '" class="material-img"'
+              . ' onerror="this.closest(\'.material-img-wrap\').style.display=\'none\'">';
+    }
+    $out .= renderIcon($p['icon_key'], $p['icon_label'], $hasImg);
+    if (!empty($p['badge_label'])) {
+        $cls = 'material-badge' . (!empty($p['badge_kind']) ? ' material-badge--' . e($p['badge_kind']) : '');
+        $out .= '<div class="' . $cls . '">' . e($p['badge_label']) . '</div>';
+    }
+    return $out . '</div>';
+}
+
 /** Varianta din paginile de categorie. */
 function renderMaterialCards(array $products): string {
     $out = '';
     foreach ($products as $p) {
         $out .= '<div class="material-card">'
-              . '<div class="material-img-wrap">' . renderIcon($p['icon_key'], $p['icon_label']) . '</div>'
+              . renderImgWrap($p)
               . '<div class="material-body">'
               . '<h3 class="material-name">' . e($p['name']) . '</h3>'
               . renderProps($p)

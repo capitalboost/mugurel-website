@@ -17,6 +17,7 @@ require_once __DIR__ . '/../admin/models/Database.php';
 function productsBaseSql(): string {
     return "
         SELECT p.id, p.name, p.short_description, p.icon_key, p.icon_label,
+               p.image_path, p.image_alt, p.badge_label, p.badge_kind,
                p.price, p.price_unit,
                TRIM(CONCAT(
                    COALESCE(l1.slug, c.slug),
