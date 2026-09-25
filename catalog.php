@@ -22,6 +22,17 @@ function catUrl(?string $cat, ?string $q, int $page = 1): string {
     return 'catalog.html' . ($p ? '?' . http_build_query($p) : '');
 }
 
+/**
+ * Destinatia unei intrari de sidebar pentru un slug de categorie.
+ * Daca exista o pagina editoriala dedicata (<slug>.php langa catalog.php), linkul
+ * duce acolo (JSON-LD, texte, sectiuni tematice, FAQ — nu doar o lista filtrata).
+ * Altfel duce la catalogul filtrat pe acel slug. Nu hardcodam lista de slug-uri
+ * cu pagina proprie, ca sa ramana corect daca se adauga pagini noi.
+ */
+function catLink(string $slug): string {
+    return is_file(__DIR__ . '/' . $slug . '.php') ? $slug . '.html' : catUrl($slug, null);
+}
+
 /** Iconita de sidebar/nav pentru o categorie de nivel 1. Fallback generic pentru cele fara iconita dedicata. */
 function catIconSvg(string $slug): string {
     $icons = [
@@ -160,7 +171,7 @@ function catIconSvg(string $slug): string {
     <div class="sidebar-title">Categorii</div>
 
     <div class="sidebar-cat">
-      <a href="<?= e(catUrl(null, $q)) ?>" class="sidebar-cat-head<?= $cat === null ? ' sidebar-cat-head--active' : '' ?>" data-filter="all">
+      <a href="catalog.html?cat=all" class="sidebar-cat-head<?= $cat === null ? ' sidebar-cat-head--active' : '' ?>" data-filter="all">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>
         Toate produsele
       </a>
@@ -171,7 +182,7 @@ function catIconSvg(string $slug): string {
         $isOpen     = $cat === $top['slug'] || in_array($cat, $childSlugs, true);
     ?>
     <div class="sidebar-cat<?= $isOpen ? ' open' : '' ?>">
-      <a href="<?= e(catUrl($top['slug'], $q)) ?>" class="sidebar-cat-head<?= $isOpen ? ' open' : '' ?><?= $cat === $top['slug'] ? ' sidebar-cat-head--active' : '' ?>" data-filter="<?= e($top['slug']) ?>">
+      <a href="<?= e(catLink($top['slug'])) ?>" class="sidebar-cat-head<?= $isOpen ? ' open' : '' ?><?= $cat === $top['slug'] ? ' sidebar-cat-head--active' : '' ?>" data-filter="<?= e($top['slug']) ?>">
         <?= catIconSvg($top['slug']) ?>
         <?= e($top['name']) ?>
         <?php if ($top['children']): ?><svg class="arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg><?php endif; ?>
@@ -179,7 +190,7 @@ function catIconSvg(string $slug): string {
       <?php if ($top['children']): ?>
       <ul class="sidebar-sub">
         <?php foreach ($top['children'] as $sub): ?>
-        <li><a href="<?= e(catUrl($sub['slug'], $q)) ?>" class="sidebar-sub-item<?= $cat === $sub['slug'] ? ' active' : '' ?>" data-filter="<?= e($sub['slug']) ?>"><?= e($sub['name']) ?></a></li>
+        <li><a href="<?= e(catLink($sub['slug'])) ?>" class="sidebar-sub-item<?= $cat === $sub['slug'] ? ' active' : '' ?>" data-filter="<?= e($sub['slug']) ?>"><?= e($sub['name']) ?></a></li>
         <?php endforeach; ?>
       </ul>
       <?php endif; ?>
