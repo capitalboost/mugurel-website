@@ -578,6 +578,16 @@ img { max-width: 100%; }
 .cat-fallback-note a { color: var(--verde-mid); font-weight: 700; text-decoration: underline; }
 .cat-fallback-note a:hover { color: var(--verde); }
 
+.cat-empty-note {
+  background: #fffbe6;
+  border-left: 3px solid #f0c000;
+  padding: 14px 18px;
+  margin: 0 0 20px;
+  font-size: 14px;
+  color: #5a4a00;
+}
+.cat-empty-note a { color: #1a7f37; font-weight: 600; }
+
 /* ── BACK TO TOP ── */
 .back-to-top { position: fixed; bottom: 24px; left: 24px; z-index: 998; width: 40px; height: 40px; background: var(--verde); color: #fff; border: none; border-radius: 50%; cursor: pointer; display: flex; align-items: center; justify-content: center; opacity: 0; pointer-events: none; transition: opacity 200ms, transform 200ms; box-shadow: 0 2px 8px rgba(0,0,0,0.2); }
 .back-to-top.visible { opacity: 1; pointer-events: auto; }
