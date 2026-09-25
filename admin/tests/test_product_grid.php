@@ -97,7 +97,7 @@ $acc = [[
     'short_description' => 'Tablou de distributie pentru locuinte, cu sina DIN integrata.',
     'card_modifier' => null,
     'image_path' => null, 'image_alt' => null,
-    'icon_key' => null,
+    'icon_key' => null, 'icon_label' => null,
 ]];
 
 // varianta 1/4: nimic (fara fotografie, fara iconita) — cazul a 223 din 264 de accesorii reale
@@ -147,17 +147,35 @@ ok(str_contains($hIcon, 'class="accessory-img-wrap"'),   'accessory: img-wrap pr
 ok(str_contains($hIcon, 'class="accessory-img-ph" style="display:flex"'),
     'accessory: placeholder vizibil cand n-are fotografie');
 ok(!str_contains($hIcon, '<img'),                          'accessory: fara <img> cand n-are fotografie');
-ok(!str_contains($hIcon, '<span>'),                         'accessory: placeholderul accesoriului nu are eticheta');
+ok(!str_contains($hIcon, '<span>'),                         'accessory: fara icon_label => placeholder fara eticheta (12 din 20 cazuri reale)');
+
+// unele accesorii AU eticheta pe iconita (8 din 20 cazuri reale, ex. "Cot 45°") — icon_label
+// se randeaza conditionat, nu se inventeaza din nume (Task 5D, al doilea fix)
+$doarIconCuEticheta = $acc;
+$doarIconCuEticheta[0]['icon_key']   = 'icon-09304de8';
+$doarIconCuEticheta[0]['icon_label'] = 'Cot 45°';
+$hIconEticheta = renderAccessoryCards($doarIconCuEticheta);
+ok(str_contains($hIconEticheta, '<span>Cot 45°</span>'), 'accessory: eticheta randata cand icon_label exista');
 
 // varianta 4/4: si fotografie si iconita (cazul a 4 din 264) — placeholder ascuns, ramane in DOM
 $ambele = $acc;
 $ambele[0]['image_path'] = 'img/brida-burlan.jpg';
 $ambele[0]['image_alt']  = 'Brida burlan';
 $ambele[0]['icon_key']   = 'icon-09304de8';
+$ambele[0]['icon_label'] = 'Brida burlan';
 $hAmbele = renderAccessoryCards($ambele);
 ok(str_contains($hAmbele, 'class="accessory-img"'),        'accessory: fotografia e prezenta cand exista ambele');
 ok(str_contains($hAmbele, 'class="accessory-img-ph" style="display:none"'),
     'accessory: placeholder ascuns (dar in DOM) cand exista si fotografie si iconita');
+ok(str_contains($hAmbele, '<span>Brida burlan</span>'),
+    'accessory: eticheta randata si cand placeholder-ul e ascuns');
+
+// escaping pe eticheta iconitei
+$xssIcon = $acc;
+$xssIcon[0]['icon_key']   = 'icon-09304de8';
+$xssIcon[0]['icon_label'] = '<script>alert(3)</script>';
+ok(!str_contains(renderAccessoryCards($xssIcon), '<script>alert(3)</script>'),
+    'accessory: escapeaza eticheta iconitei');
 
 // iconita necunoscuta => cade pe iconita generica (acelasi tipar ca la materiale)
 $iconNecunoscuta = $acc;

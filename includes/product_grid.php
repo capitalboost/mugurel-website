@@ -146,7 +146,7 @@ function renderAccessoryCards(array $products): string {
                       . ' onerror="this.closest(\'.accessory-img-wrap\').style.display=\'none\'">';
             }
             if ($hasIcon) {
-                $out .= renderAccessoryIcon($p['icon_key'], $hasImg);
+                $out .= renderAccessoryIcon($p['icon_key'], $p['icon_label'] ?? null, $hasImg);
             }
             $out .= '</div>';
         }
