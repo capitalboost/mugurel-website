@@ -30,6 +30,11 @@
     # Admin — nu atinge
     RewriteRule ^admin/ - [L]
 
+    # /slug.html serveste slug.php cand acesta exista — URL-urile publice raman .html
+    RewriteCond %{REQUEST_FILENAME} ^(.+)\.html$
+    RewriteCond %1.php -f
+    RewriteRule ^(.+)\.html$ $1.php [L,QSA]
+
     # Fisiere si directoare reale (css, js, img, uploads, etc.)
     RewriteCond %{REQUEST_FILENAME} -f [OR]
     RewriteCond %{REQUEST_FILENAME} -d

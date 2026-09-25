@@ -17,3 +17,4 @@ deployment:
     - /bin/cp *.xml $DEPLOYPATH
     - /bin/cp *.svg $DEPLOYPATH
     - /bin/cp *.php $DEPLOYPATH
+    - cd $DEPLOYPATH && for f in *.php; do [ -f "${f%.php}.html" ] && rm -f "${f%.php}.html"; done; true
