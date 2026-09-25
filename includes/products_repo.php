@@ -78,11 +78,23 @@ function attachProperties(array $rows): array {
     }
 }
 
-function productsForSection(string $pageSlug, string $sectionKey, ?string $kind = null, ?int $limit = null, int $offset = 0): array {
+/**
+ * $modifier distinge, in interiorul aceleiasi chei de sectiune, doua grile HTML
+ * separate care impart acelasi section_key (caz intalnit cand o singura sectiune
+ * din pagina statica avea doua sub-grile cu stiluri diferite ale cardului).
+ * null = fara filtru pe card_modifier; '' = doar randurile cu card_modifier NULL;
+ * orice alt string = doar randurile cu acel card_modifier exact.
+ */
+function productsForSection(string $pageSlug, string $sectionKey, ?string $kind = null, ?int $limit = null, int $offset = 0, ?string $modifier = null): array {
     try {
         $sql = productsBaseSql() . ' AND p.page_slug = ? AND p.section_key = ?';
         $params = [$pageSlug, $sectionKey];
         if ($kind !== null) { $sql .= ' AND p.card_kind = ?'; $params[] = $kind; }
+        if ($modifier === '') {
+            $sql .= ' AND p.card_modifier IS NULL';
+        } elseif ($modifier !== null) {
+            $sql .= ' AND p.card_modifier = ?'; $params[] = $modifier;
+        }
         $sql .= ' ORDER BY p.sort_order, p.id';
         $stmt = Database::get()->prepare(withLimit($sql, $limit, $offset));
         $stmt->execute($params);
