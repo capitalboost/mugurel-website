@@ -38,7 +38,8 @@ document.addEventListener('DOMContentLoaded', function () {
     btn.addEventListener('click', function (e) {
       e.preventDefault();
       const product = btn.getAttribute('data-wa-product');
-      const msg = 'Buna ziua! Sunt interesat de produsul: ' + product + '. Puteti sa imi confirmati disponibilitatea si pretul?';
+      const custom = btn.getAttribute('data-wa-text');
+      const msg = custom || ('Buna ziua! Sunt interesat de produsul: ' + product + '. Puteti sa imi confirmati disponibilitatea si pretul?');
       window.open(waLink(msg), '_blank');
     });
   });

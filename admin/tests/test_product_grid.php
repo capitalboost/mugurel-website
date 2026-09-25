@@ -193,5 +193,55 @@ ok(!str_contains($hXss, '<script>'), 'accessory: escapeaza numele si descrierea'
 // lista goala
 ok(renderAccessoryCards([]) === '', 'accessory: lista goala => string gol');
 
+// ── mesaj WhatsApp propriu / sablon (Task 5E) ──
+
+// waLink(): custom prezent => il foloseste
+ok(waLink('Produs X', 'Mesaj scris de mana.') === 'https://wa.me/40749130565?text=' . rawurlencode('Mesaj scris de mana.'),
+    'waLink: foloseste mesajul custom cand exista');
+// waLink(): custom null => sablonul
+ok(waLink('Produs X', null) === 'https://wa.me/40749130565?text='
+    . rawurlencode('Buna ziua! Sunt interesat de: Produs X. Puteti confirma disponibilitatea?'),
+    'waLink: cade pe sablon cand custom e null');
+// waLink(): custom string gol => tot sablonul (nu text gol)
+ok(waLink('Produs X', '') === 'https://wa.me/40749130565?text='
+    . rawurlencode('Buna ziua! Sunt interesat de: Produs X. Puteti confirma disponibilitatea?'),
+    'waLink: cade pe sablon cand custom e string gol');
+
+// renderMaterialCards(): produs cu wa_text propriu => href-ul contine mesajul custom, nu sablonul
+$custom = $sample;
+$custom[0]['wa_text'] = 'Buna ziua! Sunt interesat de acest cablu.';
+$hCustom = renderMaterialCards($custom);
+ok(str_contains($hCustom, 'text=' . rawurlencode('Buna ziua! Sunt interesat de acest cablu.')),
+    'material: href contine wa_text propriu cand exista');
+ok(!str_contains($hCustom, rawurlencode('Sunt interesat de: ' . $custom[0]['name'])),
+    'material: href NU contine sablonul cand exista wa_text propriu');
+
+// renderMaterialCards(): produs fara wa_text => sablonul, ca inainte
+$faraWa = $sample;
+$faraWa[0]['wa_text'] = null;
+$hFaraWa = renderMaterialCards($faraWa);
+ok(str_contains($hFaraWa, rawurlencode('Sunt interesat de: ' . $faraWa[0]['name'])),
+    'material: href foloseste sablonul cand wa_text lipseste');
+
+// renderAccessoryCards(): acelasi comportament
+$accCustom = $acc;
+$accCustom[0]['wa_text'] = 'Buna ziua! Sunt interesat de tabloul electric.';
+$hAccCustom = renderAccessoryCards($accCustom);
+ok(str_contains($hAccCustom, 'text=' . rawurlencode('Buna ziua! Sunt interesat de tabloul electric.')),
+    'accessory: href contine wa_text propriu cand exista');
+
+$accFaraWa = $acc;
+$hAccFaraWa = renderAccessoryCards($accFaraWa);
+ok(str_contains($hAccFaraWa, rawurlencode('Sunt interesat de: ' . $accFaraWa[0]['name'])),
+    'accessory: href foloseste sablonul cand wa_text lipseste');
+
+// renderProdCards(): data-wa-text prezent doar cand exista wa_text
+$prodCustom = $sample;
+$prodCustom[0]['wa_text'] = 'Mesaj propriu produs catalog.';
+ok(str_contains(renderProdCards($prodCustom), 'data-wa-text="Mesaj propriu produs catalog."'),
+    'prod: data-wa-text randat cand exista wa_text');
+ok(!str_contains(renderProdCards($sample), 'data-wa-text'),
+    'prod: fara data-wa-text cand nu exista wa_text');
+
 echo "\nRezultat: $pass passed, $fail failed\n";
 exit($fail > 0 ? 1 : 0);

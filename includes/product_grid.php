@@ -25,10 +25,16 @@ function priceLabel(array $p): string {
          . ($p['price_unit'] ? ' / ' . e($p['price_unit']) : '');
 }
 
-/** Link-ul WhatsApp precompletat pentru un produs. */
-function waLink(string $productName): string {
-    return 'https://wa.me/' . WA_PHONE . '?text='
-         . rawurlencode('Buna ziua! Sunt interesat de: ' . $productName . '. Puteti confirma disponibilitatea?');
+/**
+ * Link-ul WhatsApp precompletat pentru un produs.
+ * $custom e mesajul scris de mana in sursa (coloana wa_text), cand exista si difera
+ * de sablon — altfel (null sau gol) se foloseste sablonul generic.
+ */
+function waLink(string $productName, ?string $custom = null): string {
+    $msg = ($custom !== null && $custom !== '')
+         ? $custom
+         : 'Buna ziua! Sunt interesat de: ' . $productName . '. Puteti confirma disponibilitatea?';
+    return 'https://wa.me/' . WA_PHONE . '?text=' . rawurlencode($msg);
 }
 
 /**
@@ -87,7 +93,7 @@ function renderMaterialCards(array $products): string {
               . renderProps($p)
               . '<div class="material-footer">'
               . '<span class="material-price">' . priceLabel($p) . '</span>'
-              . '<a href="' . e(waLink($p['name'])) . '" class="btn-wa-material" target="_blank" rel="noopener">'
+              . '<a href="' . e(waLink($p['name'], $p['wa_text'] ?? null)) . '" class="btn-wa-material" target="_blank" rel="noopener">'
               . WA_ICON . 'Afla disponibilitate</a>'
               . '</div></div></div>';
     }
@@ -106,6 +112,7 @@ function renderProdCards(array $products): string {
     $out = '';
     foreach ($products as $p) {
         $subcat = $p['subcat_slug'] ? ' data-subcat="' . e($p['subcat_slug']) . '"' : '';
+        $waText = !empty($p['wa_text']) ? ' data-wa-text="' . e($p['wa_text']) . '"' : '';
         $out .= '<div class="prod-card" data-cat="' . e($p['cat_slugs']) . '"' . $subcat . '>'
               . '<div class="prod-img-wrap">' . renderIcon($p['icon_key'], $p['icon_label']) . '</div>'
               . '<div class="prod-body">'
@@ -114,7 +121,7 @@ function renderProdCards(array $products): string {
               . '<div class="prod-desc">' . e($p['short_description']) . '</div>'
               . '<div class="prod-footer">'
               . '<div class="prod-price">' . priceLabel($p) . '</div>'
-              . '<button class="btn-wa-prod" data-wa-product="' . e($p['name']) . '">'
+              . '<button class="btn-wa-prod" data-wa-product="' . e($p['name']) . '"' . $waText . '>'
               . WA_ICON . 'Afla disponibilitate</button>'
               . '</div></div></div>';
     }
@@ -154,7 +161,7 @@ function renderAccessoryCards(array $products): string {
         $out .= '<div class="accessory-body">'
               . '<h4>' . e($p['name']) . '</h4>'
               . '<p>' . e($p['short_description']) . '</p>'
-              . '<a href="' . e(waLink($p['name'])) . '" class="btn-wa-acc" target="_blank" rel="noopener">'
+              . '<a href="' . e(waLink($p['name'], $p['wa_text'] ?? null)) . '" class="btn-wa-acc" target="_blank" rel="noopener">'
               . 'Afla disponibilitate</a>'
               . '</div></div>';
     }
