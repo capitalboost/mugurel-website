@@ -229,13 +229,13 @@
       <!-- PROFILE PERETI -->
       <h3 class="cat-subsection-title">Profile pentru pereti (sistem CW/UW)</h3>
       <div class="accessories-grid">
-<?= section('gips-carton', 'profile-metalice', 'accessory', 4, 0) ?>
+<?= section('gips-carton', 'profile-metalice', 'accessory') ?>
       </div>
 
       <!-- PROFILE TAVANE -->
       <h3 class="cat-subsection-title">Profile pentru tavane false (sistem CD/UD)</h3>
       <div class="accessories-grid">
-<?= section('gips-carton', 'profile-metalice', 'accessory', 100, 4) ?>
+<?= section('gips-carton', 'profile-metalice-2', 'accessory') ?>
       </div>
     </section>
 
@@ -273,13 +273,13 @@
       <!-- SURUBURI SI FIXARE -->
       <h3 class="cat-subsection-title">Suruburi si fixare</h3>
       <div class="accessories-grid">
-<?= section('gips-carton', 'accesorii-fixare-finisaj', 'accessory', 4, 0) ?>
+<?= section('gips-carton', 'accesorii-fixare-finisaj', 'accessory') ?>
       </div>
 
       <!-- ROSTURI SI FINISAJ -->
       <h3 class="cat-subsection-title">Rosturi, banda armare si finisaj</h3>
       <div class="accessories-grid accessories-grid--5">
-<?= section('gips-carton', 'accesorii-fixare-finisaj', 'accessory', 100, 4) ?>
+<?= section('gips-carton', 'accesorii-fixare-finisaj-2', 'accessory') ?>
       </div>
     </section>
 
