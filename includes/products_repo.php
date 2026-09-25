@@ -20,9 +20,10 @@ function productsBaseSql(): string {
                p.price, p.price_unit,
                TRIM(CONCAT(
                    COALESCE(l1.slug, c.slug),
-                   COALESCE((SELECT CONCAT(' ', GROUP_CONCAT(x.slug SEPARATOR ' '))
+                   COALESCE((SELECT CONCAT(' ', GROUP_CONCAT(COALESCE(xl1.slug, x.slug) SEPARATOR ' '))
                              FROM product_categories pc
                              JOIN categories x ON x.id = pc.category_id
+                             LEFT JOIN categories xl1 ON xl1.id = x.parent_id
                              WHERE pc.product_id = p.id), '')
                )) AS cat_slugs,
                CASE WHEN c.parent_id IS NULL THEN NULL ELSE c.slug END AS subcat_slug,
@@ -34,7 +35,11 @@ function productsBaseSql(): string {
     ";
 }
 
-/** Adauga LIMIT/OFFSET. Valorile sunt fortate la int, deci nu sunt injectabile. */
+/**
+ * Adauga LIMIT/OFFSET. Valorile sunt fortate la int, deci nu sunt injectabile.
+ * Daca $limit e null, $offset e ignorat tacit (MySQL nu accepta OFFSET fara LIMIT) —
+ * nu functioneaza independent de $limit.
+ */
 function withLimit(string $sql, ?int $limit, int $offset): string {
     if ($limit === null) { return $sql; }
     return $sql . ' LIMIT ' . max(0, $limit) . ' OFFSET ' . max(0, $offset);

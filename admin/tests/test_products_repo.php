@@ -40,5 +40,30 @@ ok(count($multi) >= 2, 'cel putin 2 produse cross-listate (got ' . count($multi)
 // Pagina inexistenta => array gol, nu eroare.
 ok(productsForPage('nu-exista') === [], 'pagina inexistenta => []');
 
+// Sectiune inexistenta pe o pagina reala => array gol, nu eroare.
+ok(productsForSection('electrice', 'sectiune-inexistenta') === [], 'sectiune inexistenta => []');
+
+// allProducts(0) nu trebuie sa arunce; verificam explicit ce intoarce.
+$zero = allProducts(0);
+ok(is_array($zero), 'allProducts(0) nu arunca, intoarce array (count=' . count($zero) . ')');
+
+// Ordinea blocurilor de proprietati respecta sort_order — verificat direct contra DB,
+// pe un produs cu cel putin 3 blocuri (randarea din Task 4 depinde de ordinea asta).
+$cu3Plus = array_values(array_filter($all, fn($p) => count($p['properties']) >= 3));
+if ($cu3Plus) {
+    $produs = $cu3Plus[0];
+    $stmt = Database::get()->prepare(
+        'SELECT label FROM product_properties WHERE product_id = ? ORDER BY sort_order'
+    );
+    $stmt->execute([$produs['id']]);
+    $labelsAsteptate = array_column($stmt->fetchAll(), 'label');
+    $labelsReale = array_column($produs['properties'], 'label');
+    ok($labelsReale === $labelsAsteptate,
+        'ordinea blocurilor respecta sort_order (produs ' . $produs['id'] . ': '
+        . implode(' -> ', $labelsReale) . ')');
+} else {
+    ok(false, 'ordinea blocurilor respecta sort_order (niciun produs cu >=3 blocuri gasit)');
+}
+
 echo "\nRezultat: $pass passed, $fail failed\n";
 exit($fail > 0 ? 1 : 0);
