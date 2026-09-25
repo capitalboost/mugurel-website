@@ -59,16 +59,6 @@ document.addEventListener('DOMContentLoaded', function () {
     if (mobileClose) mobileClose.addEventListener('click', () => mobileMenu.classList.remove('open'));
   }
 
-  // Catalog filter chips
-  document.querySelectorAll('.chip[data-filter]').forEach(function (chip) {
-    chip.addEventListener('click', function () {
-      const filter = chip.getAttribute('data-filter');
-      document.querySelectorAll('.chip[data-filter]').forEach(c => c.classList.remove('active'));
-      chip.classList.add('active');
-      filterProducts(filter);
-    });
-  });
-
   // Footer accordion pe mobil
   if (window.innerWidth <= 768) {
     document.querySelectorAll('.f-col').forEach(function(col) {
@@ -102,136 +92,27 @@ document.addEventListener('DOMContentLoaded', function () {
     if (a.getAttribute('href') === current) a.classList.add('active');
   });
 
-  // Header search
+  // Header search. Pe catalog.html campul e un <form> care trimite GET direct la server
+  // (pastreaza si filtrul de categorie prin inputul hidden) — nu are nevoie de redirect din JS.
   var searchInput = document.querySelector('.searchbar input');
   var searchBtn = document.querySelector('.searchbar button');
+  var searchIsForm = searchInput && searchInput.closest('form');
   function doSearch() {
     var q = searchInput ? searchInput.value.trim() : '';
     if (q.length < 2) return;
     window.location.href = 'catalog.html?q=' + encodeURIComponent(q);
   }
-  if (searchBtn) searchBtn.addEventListener('click', doSearch);
-  if (searchInput) {
-    searchInput.addEventListener('keydown', function (e) {
-      if (e.key === 'Enter') doSearch();
-    });
-    // On catalog page: apply query from URL
-    var params = new URLSearchParams(window.location.search);
-    var q = params.get('q');
-    if (q) {
-      searchInput.value = q;
-      searchCatalog(q);
+  if (!searchIsForm) {
+    if (searchBtn) searchBtn.addEventListener('click', doSearch);
+    if (searchInput) {
+      searchInput.addEventListener('keydown', function (e) {
+        if (e.key === 'Enter') doSearch();
+      });
     }
   }
 
 
 });
-
-/* ── Subcategorii → categoria parinte ──
-   Produsele sunt etichetate doar cu categoria de nivel 1 (data-cat), dar sidebar-ul
-   linkuieste subcategorii (ex. catalog.html?cat=centrale). Fara maparea de mai jos
-   filtrul nu gaseste nimic si pagina apare goala. */
-var SUBCAT_PARENT = {
-  cabluri: 'electrice', becuri: 'electrice', aparataj: 'electrice', iluminat: 'electrice',
-  centrale: 'incalzire', radiatoare: 'incalzire', 'aer-conditionat': 'incalzire', sobe: 'incalzire',
-  baterii: 'sanitare', 'mobilier-baie': 'sanitare', 'accesorii-baie': 'sanitare',
-  tevi: 'apa-canal', canalizare: 'apa-canal', pompe: 'apa-canal',
-  living: 'mobilier', dormitor: 'mobilier', bucatarie: 'mobilier'
-};
-
-/* Etichete afisabile pentru categorii si subcategorii (folosite si de catalog.html) */
-var CAT_LABELS = {
-  constructii: 'Constructii', electrice: 'Electrice', incalzire: 'Incalzire',
-  sanitare: 'Sanitare', 'apa-canal': 'Apa & Canal', gradina: 'Gradina',
-  mobilier: 'Mobilier', electrocasnice: 'Electrocasnice', scule: 'Scule & Unelte',
-  cabluri: 'Cabluri & Conductori', becuri: 'Becuri LED', aparataj: 'Aparataj Electric',
-  iluminat: 'Corpuri Iluminat', centrale: 'Centrale termice', radiatoare: 'Radiatoare',
-  'aer-conditionat': 'Aer conditionat', sobe: 'Sobe & Seminee', baterii: 'Baterii de apa',
-  'mobilier-baie': 'Mobilier baie', 'accesorii-baie': 'Accesorii baie',
-  tevi: 'Tevi & Fitting', canalizare: 'Canalizare PVC', pompe: 'Pompe de apa',
-  living: 'Living', dormitor: 'Dormitor', bucatarie: 'Bucatarie'
-};
-
-/* ── Product filter ──
-   Suporta 3 tipuri de filtru:
-   - 'all'          → toate produsele
-   - categorie L1   → dupa data-cat (ex. incalzire)
-   - subcategorie   → dupa data-subcat (ex. centrale). Daca subcategoria nu are
-                      inca produse listate, afiseaza categoria parinte + o nota
-                      explicita, ca vizitatorul sa nu creada ca produsele afisate
-                      sunt exact ce a cerut. */
-function filterProducts(filter) {
-  const cards = document.querySelectorAll('.prod-card[data-cat]');
-  const parent = SUBCAT_PARENT[filter];
-  const hasExact = parent && Array.from(cards).some(function (c) {
-    return c.getAttribute('data-subcat') === filter;
-  });
-  let visible = 0;
-  cards.forEach(function (card) {
-    // data-cat poate contine mai multe categorii separate prin spatiu
-    // (ex. teava PPR apare si la Incalzire, si la Apa & Canal)
-    const cats = (card.getAttribute('data-cat') || '').split(/\s+/);
-    let match;
-    if (filter === 'all') match = true;
-    else if (parent && hasExact) match = card.getAttribute('data-subcat') === filter;
-    else if (parent) match = cats.indexOf(parent) >= 0;
-    else match = cats.indexOf(filter) >= 0;
-    card.style.display = match ? '' : 'none';
-    if (match) visible++;
-  });
-  showFallbackNote(parent && !hasExact ? filter : null);
-  const counter = document.getElementById('result-count');
-  if (counter) counter.textContent = visible;
-}
-
-/* Nota afisata cand o subcategorie nu are inca produse in catalogul de pe site */
-function showFallbackNote(subcat) {
-  let note = document.getElementById('cat-fallback-note');
-  if (!subcat) { if (note) note.style.display = 'none'; return; }
-  const grid = document.getElementById('prod-grid');
-  if (!grid) return;
-  if (!note) {
-    note = document.createElement('div');
-    note.id = 'cat-fallback-note';
-    note.className = 'cat-fallback-note';
-    grid.parentNode.insertBefore(note, grid);
-  }
-  const sub = CAT_LABELS[subcat] || subcat;
-  const par = CAT_LABELS[SUBCAT_PARENT[subcat]] || SUBCAT_PARENT[subcat];
-  note.innerHTML = '<strong>Nu avem inca produse listate online la „' + sub + '”.</strong> ' +
-    'Mai jos vezi restul produselor din ' + par + '. Avem peste 3000 de produse in magazin — ' +
-    '<a href="https://wa.me/40749130565">scrie-ne pe WhatsApp</a> si iti spunem imediat daca avem ce cauti.';
-  note.style.display = '';
-}
-
-function updateResultCount() {
-  const cards = document.querySelectorAll('.prod-card[data-cat]');
-  const visible = Array.from(cards).filter(c => c.style.display !== 'none').length;
-  const counter = document.getElementById('result-count');
-  if (counter) counter.textContent = visible;
-}
-
-/* ── Catalog search by text ── */
-function searchCatalog(q) {
-  if (!q) return;
-  var term = q.toLowerCase();
-  var cards = document.querySelectorAll('.prod-card');
-  var visible = 0;
-  cards.forEach(function (card) {
-    var text = card.textContent.toLowerCase();
-    if (text.indexOf(term) >= 0) {
-      card.style.display = '';
-      visible++;
-    } else {
-      card.style.display = 'none';
-    }
-  });
-  var counter = document.getElementById('result-count');
-  if (counter) counter.textContent = visible;
-  // Show search heading
-  var heading = document.querySelector('.catalog-title, h1');
-  if (heading && q) heading.textContent = 'Rezultate pentru: "' + q + '" (' + visible + ')';
-}
 
 /* ── GDPR Cookie Banner ── */
 (function () {

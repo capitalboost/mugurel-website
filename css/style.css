@@ -606,9 +606,3 @@ img { max-width: 100%; }
 .eu-mfe-inline a { color: #FFCC00; font-weight: 700; text-decoration: none; }
 .eu-mfe-inline a:hover { text-decoration: underline; }
 
-/* ── CATALOG PAGINATION (Task 8A) ── */
-.pagination { display: flex; justify-content: center; align-items: center; gap: 6px; flex-wrap: wrap; margin: 28px 0 8px; }
-.pagination a, .pagination span { display: inline-block; min-width: 34px; padding: 7px 10px; text-align: center; font-size: 14px; border: 1px solid #d7e0e2; border-radius: 3px; color: #0a5560; text-decoration: none; }
-.pagination a:hover { background: #f0f4f4; }
-.pagination .current { background: #0a5560; border-color: #0a5560; color: #fff; font-weight: 700; }
-.pagination .gap { border: none; color: #8aa0a4; min-width: auto; padding: 7px 2px; }

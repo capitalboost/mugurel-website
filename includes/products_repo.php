@@ -168,6 +168,35 @@ function catalogProducts(?string $cat, ?string $q, int $limit, int $offset): arr
     }
 }
 
+/**
+ * Arborele de categorii (nivel 1 cu copiii lor de nivel 2), pentru sidebar si chipsuri.
+ * Fiecare nod: ['id', 'parent_id', 'slug', 'name', 'children' => [...]].
+ * NULL sorteaza inaintea oricarei valori in MySQL, deci categoriile de nivel 1
+ * (parent_id IS NULL) ies mereu primele in acest ORDER BY.
+ */
+function categoryTree(): array {
+    try {
+        $rows = Database::get()->query(
+            'SELECT id, parent_id, slug, name FROM categories WHERE is_active = 1 ORDER BY parent_id, sort_order, name'
+        )->fetchAll();
+        $byId = [];
+        foreach ($rows as $r) { $byId[$r['id']] = $r + ['children' => []]; }
+        $tree = [];
+        foreach ($byId as $id => $r) {
+            if ($r['parent_id'] === null) { $tree[$id] = $r; }
+        }
+        foreach ($byId as $id => $r) {
+            if ($r['parent_id'] !== null && isset($tree[$r['parent_id']])) {
+                $tree[$r['parent_id']]['children'][] = $r;
+            }
+        }
+        return array_values($tree);
+    } catch (Throwable $e) {
+        error_log('categoryTree: ' . $e->getMessage());
+        return [];
+    }
+}
+
 function catalogCount(?string $cat, ?string $q): int {
     try {
         [$where, $params] = catalogWhere($cat, $q);
