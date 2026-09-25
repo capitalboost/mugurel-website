@@ -91,5 +91,26 @@ if ($cu3Plus) {
     ok(false, 'ordinea blocurilor respecta sort_order (niciun produs cu >=3 blocuri gasit)');
 }
 
+// ── catalogProducts / catalogCount (Task 8A) ──
+ok(catalogCount(null, null) === 495, 'catalogCount fara filtru => 495 (got ' . catalogCount(null, null) . ')');
+ok(count(catalogProducts(null, null, 60, 0)) === 60, 'prima pagina => 60 de produse');
+ok(catalogProducts(null, null, 60, 60)[0]['id'] !== catalogProducts(null, null, 60, 0)[0]['id'], 'offset schimba rezultatul');
+
+// Categorie de nivel 1 include subcategoriile ei.
+$el = catalogCount('electrice', null);
+ok($el >= 23, "categoria electrice => cel putin 23 (got $el)");
+$cab = catalogCount('cabluri', null);
+ok($cab > 0 && $cab <= $el, "subcategoria cabluri <= categoria parinte (got $cab din $el)");
+
+// Cautarea gaseste dupa nume si dupa descriere.
+ok(catalogCount(null, 'cablu') > 0, 'cautarea dupa "cablu" gaseste rezultate');
+ok(catalogCount(null, 'zzzznuexista') === 0, 'cautare fara rezultate => 0');
+
+// Filtru + cautare se combina.
+ok(catalogCount('electrice', 'cablu') <= catalogCount(null, 'cablu'), 'filtru + cautare se restrang reciproc');
+
+// Categorie inexistenta.
+ok(catalogCount('nu-exista', null) === 0, 'categorie inexistenta => 0');
+
 echo "\nRezultat: $pass passed, $fail failed\n";
 exit($fail > 0 ? 1 : 0);

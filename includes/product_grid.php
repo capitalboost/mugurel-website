@@ -114,9 +114,9 @@ function renderProdCards(array $products): string {
         $subcat = $p['subcat_slug'] ? ' data-subcat="' . e($p['subcat_slug']) . '"' : '';
         $waText = !empty($p['wa_text']) ? ' data-wa-text="' . e($p['wa_text']) . '"' : '';
         $out .= '<div class="prod-card" data-cat="' . e($p['cat_slugs']) . '"' . $subcat . '>'
-              . '<div class="prod-img-wrap">' . renderIcon($p['icon_key'], $p['icon_label']) . '</div>'
+              . '<div class="prod-img-wrap">' . renderProdIcon($p['icon_key'], $p['icon_label']) . '</div>'
               . '<div class="prod-body">'
-              . '<div class="prod-badge">' . e($p['cat_label']) . '</div>'
+              . '<div class="' . badgeClass($p) . '">' . e($p['cat_label']) . '</div>'
               . '<h3 class="prod-name">' . e($p['name']) . '</h3>'
               . '<div class="prod-desc">' . e($p['short_description']) . '</div>'
               . '<div class="prod-footer">'
@@ -166,6 +166,26 @@ function renderAccessoryCards(array $products): string {
               . '</div></div>';
     }
     return $out;
+}
+
+/** Modificatorul de badge al unei categorii de nivel 1. Null = culoarea implicita. */
+const BADGE_KIND = [
+    'electrice'      => 'electric',
+    'incalzire'      => 'incalzire',
+    'sanitare'       => 'sanitare',
+    'scule-unelte'   => 'scule',
+    'constructii'    => 'constructii',
+    'apa-canal'      => 'apa-canal',
+    'gradina'        => 'gradina',
+    'mobilier'       => 'mobilier',
+    'electrocasnice' => 'electrocasnice',
+];
+
+/** Prima categorie de nivel 1 a produsului determina culoarea badge-ului. */
+function badgeClass(array $p): string {
+    $first = explode(' ', trim((string)$p['cat_slugs']))[0] ?? '';
+    $kind  = BADGE_KIND[$first] ?? null;
+    return 'prod-badge' . ($kind !== null ? ' prod-badge--' . $kind : '');
 }
 
 /** Afisat cand o sectiune nu are produse — inclusiv cand DB-ul e cazut. */

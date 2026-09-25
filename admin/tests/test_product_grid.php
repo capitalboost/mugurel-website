@@ -243,5 +243,47 @@ ok(str_contains(renderProdCards($prodCustom), 'data-wa-text="Mesaj propriu produ
 ok(!str_contains(renderProdCards($sample), 'data-wa-text'),
     'prod: fara data-wa-text cand nu exista wa_text');
 
+// ── renderProdIcon() (Task 8A) ──
+$icoCunoscut = renderProdIcon('inexistenta', 'Eticheta test');
+ok(str_contains($icoCunoscut, 'class="prod-img-ph"'), 'renderProdIcon: containerul .prod-img-ph');
+ok(str_contains($icoCunoscut, '<span>Eticheta test</span>'), 'renderProdIcon: eticheta randata cand exista');
+ok(str_contains($icoCunoscut, PRODUCT_ICON_FALLBACK), 'renderProdIcon: cheie necunoscuta cade pe iconita generica');
+
+$icoFaraLabel = renderProdIcon(null, null);
+ok(!str_contains($icoFaraLabel, '<span>'), 'renderProdIcon: fara <span> cand eticheta lipseste');
+
+$icoLabelGol = renderProdIcon(null, '');
+ok(!str_contains($icoLabelGol, '<span>'), 'renderProdIcon: fara <span> cand eticheta e string gol');
+
+// ── badgeClass() (Task 8A) ──
+$badgeCazuri = [
+    'electrice'      => 'prod-badge--electric',
+    'incalzire'      => 'prod-badge--incalzire',
+    'sanitare'       => 'prod-badge--sanitare',
+    'scule-unelte'   => 'prod-badge--scule',
+    'constructii'    => 'prod-badge--constructii',
+    'apa-canal'      => 'prod-badge--apa-canal',
+    'gradina'        => 'prod-badge--gradina',
+    'mobilier'       => 'prod-badge--mobilier',
+    'electrocasnice' => 'prod-badge--electrocasnice',
+];
+foreach ($badgeCazuri as $slug => $expected) {
+    $cls = badgeClass(['cat_slugs' => $slug]);
+    ok($cls === 'prod-badge ' . $expected, "badgeClass($slug) => $expected (got $cls)");
+}
+
+$badgeNecunoscut = badgeClass(['cat_slugs' => 'slug-necunoscut']);
+ok($badgeNecunoscut === 'prod-badge', 'badgeClass: slug necunoscut => doar prod-badge (got ' . $badgeNecunoscut . ')');
+
+// Produs cross-listat: prima categorie din cat_slugs determina culoarea.
+$badgeCrossListat = badgeClass(['cat_slugs' => 'incalzire apa-canal']);
+ok($badgeCrossListat === 'prod-badge prod-badge--incalzire',
+    'badgeClass: cross-listat foloseste prima categorie (got ' . $badgeCrossListat . ')');
+
+// ── renderProdCards() foloseste iconitele de catalog, nu cele de pagina de categorie ──
+$prodHtml = renderProdCards($sample);
+ok(str_contains($prodHtml, 'class="prod-img-ph"'), 'renderProdCards: foloseste .prod-img-ph');
+ok(!str_contains($prodHtml, 'class="material-img-ph"'), 'renderProdCards: NU foloseste .material-img-ph');
+
 echo "\nRezultat: $pass passed, $fail failed\n";
 exit($fail > 0 ? 1 : 0);

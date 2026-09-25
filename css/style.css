@@ -400,6 +400,11 @@ img { max-width: 100%; }
 .prod-badge--incalzire { background: var(--rosu); }
 .prod-badge--sanitare { background: #2980b9; }
 .prod-badge--scule { background: #7d5a2a; }
+.prod-badge--constructii { background: #6b7280; }
+.prod-badge--apa-canal { background: #0f8b8d; }
+.prod-badge--gradina { background: #4a7c2f; }
+.prod-badge--mobilier { background: #7a5c8a; }
+.prod-badge--electrocasnice { background: #455a64; }
 .prod-footer { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-top: auto; padding-top: 10px; }
 .prod-price { font-size: 11px; color: var(--text-muted); font-style: italic; white-space: nowrap; }
 
@@ -600,3 +605,10 @@ img { max-width: 100%; }
 .eu-mfe-inline { background: #003399; color: #fff; text-align: center; font-size: 12px; font-family: 'Open Sans', sans-serif; padding: 6px 16px; line-height: 1.4; margin-top: 10px; margin-left: -20px; margin-right: -20px; }
 .eu-mfe-inline a { color: #FFCC00; font-weight: 700; text-decoration: none; }
 .eu-mfe-inline a:hover { text-decoration: underline; }
+
+/* ── CATALOG PAGINATION (Task 8A) ── */
+.pagination { display: flex; justify-content: center; align-items: center; gap: 6px; flex-wrap: wrap; margin: 28px 0 8px; }
+.pagination a, .pagination span { display: inline-block; min-width: 34px; padding: 7px 10px; text-align: center; font-size: 14px; border: 1px solid #d7e0e2; border-radius: 3px; color: #0a5560; text-decoration: none; }
+.pagination a:hover { background: #f0f4f4; }
+.pagination .current { background: #0a5560; border-color: #0a5560; color: #fff; font-weight: 700; }
+.pagination .gap { border: none; color: #8aa0a4; min-width: auto; padding: 7px 2px; }

@@ -129,3 +129,57 @@ function allProducts(?int $limit = null, int $offset = 0): array {
         return [];
     }
 }
+
+/**
+ * Conditia comuna pentru catalog: filtrare pe categorie (nivel 1 sau 2) si cautare text.
+ * Returneaza [sqlFragment, params].
+ */
+function catalogWhere(?string $cat, ?string $q): array {
+    $sql = ''; $params = [];
+    if ($cat !== null && $cat !== '' && $cat !== 'all') {
+        // Produsul se potriveste daca e in categoria ceruta, intr-o subcategorie a ei,
+        // sau e cross-listat acolo.
+        $sql .= ' AND (c.slug = ? OR l1.slug = ? OR EXISTS (
+                    SELECT 1 FROM product_categories pc2
+                    JOIN categories xc ON xc.id = pc2.category_id
+                    LEFT JOIN categories xl1 ON xl1.id = xc.parent_id
+                    WHERE pc2.product_id = p.id AND (xc.slug = ? OR xl1.slug = ?)))';
+        $params = array_merge($params, [$cat, $cat, $cat, $cat]);
+    }
+    if ($q !== null && trim($q) !== '') {
+        $like = '%' . trim($q) . '%';
+        $sql .= ' AND (p.name LIKE ? OR p.short_description LIKE ?)';
+        $params[] = $like; $params[] = $like;
+    }
+    return [$sql, $params];
+}
+
+function catalogProducts(?string $cat, ?string $q, int $limit, int $offset): array {
+    try {
+        [$where, $params] = catalogWhere($cat, $q);
+        $sql = productsBaseSql() . $where . ' ORDER BY p.page_slug, p.sort_order, p.id'
+             . ' LIMIT ' . max(1, $limit) . ' OFFSET ' . max(0, $offset);
+        $stmt = Database::get()->prepare($sql);
+        $stmt->execute($params);
+        return attachProperties($stmt->fetchAll());
+    } catch (Throwable $e) {
+        error_log('catalogProducts: ' . $e->getMessage());
+        return [];
+    }
+}
+
+function catalogCount(?string $cat, ?string $q): int {
+    try {
+        [$where, $params] = catalogWhere($cat, $q);
+        $sql = 'SELECT COUNT(*) FROM products p
+                JOIN categories c ON c.id = p.category_id
+                LEFT JOIN categories l1 ON l1.id = c.parent_id
+                WHERE p.is_visible = 1' . $where;
+        $stmt = Database::get()->prepare($sql);
+        $stmt->execute($params);
+        return (int)$stmt->fetchColumn();
+    } catch (Throwable $e) {
+        error_log('catalogCount: ' . $e->getMessage());
+        return 0;
+    }
+}
