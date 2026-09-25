@@ -97,9 +97,10 @@ $acc = [[
     'short_description' => 'Tablou de distributie pentru locuinte, cu sina DIN integrata.',
     'card_modifier' => null,
     'image_path' => null, 'image_alt' => null,
+    'icon_key' => null,
 ]];
 
-// varianta simpla, fara fotografie, fara modificator
+// varianta 1/4: nimic (fara fotografie, fara iconita) — cazul a 223 din 264 de accesorii reale
 $a = renderAccessoryCards($acc);
 ok(str_contains($a, 'class="accessory-card">'),        'accessory: containerul .accessory-card simplu');
 ok(str_contains($a, 'class="accessory-body"'),          'accessory: corpul .accessory-body');
@@ -108,7 +109,7 @@ ok(str_contains($a, '<p>Tablou de distributie pentru locuinte, cu sina DIN integ
 ok(str_contains($a, 'class="btn-wa-acc"'),               'accessory: butonul e .btn-wa-acc');
 ok(str_contains($a, 'href="https://wa.me/40749130565'), 'accessory: link WhatsApp direct');
 ok(str_contains($a, 'target="_blank" rel="noopener"'),  'accessory: target si rel pe buton');
-ok(!str_contains($a, 'accessory-img-wrap'),              'accessory: fara img-wrap cand nu are fotografie');
+ok(!str_contains($a, 'accessory-img-wrap'),              'accessory: fara img-wrap cand nu are fotografie nici iconita');
 ok(!str_contains($a, 'accessory-card--'),                'accessory: fara modificator cand card_modifier e null');
 ok(!str_contains($a, 'class="material-card"'),           'accessory: NU foloseste clasele de materiale');
 
@@ -118,7 +119,7 @@ $sm[0]['card_modifier'] = 'sm';
 $hSm = renderAccessoryCards($sm);
 ok(str_contains($hSm, 'class="accessory-card accessory-card--sm"'), 'accessory: varianta --sm are ambele clase');
 
-// varianta cu fotografie
+// varianta 2/4: doar fotografie, fara iconita (cazul a 21 din 264)
 $cuPoza = $acc;
 $cuPoza[0]['image_path'] = 'img/jgheab-semicircular.jpg';
 $cuPoza[0]['image_alt']  = 'Jgheab semicircular';
@@ -127,6 +128,9 @@ ok(str_contains($hPoza, 'class="accessory-img-wrap"'), 'accessory: img-wrap prez
 ok(str_contains($hPoza, 'src="img/jgheab-semicircular.jpg"'), 'accessory: src-ul fotografiei');
 ok(str_contains($hPoza, 'alt="Jgheab semicircular"'),  'accessory: alt-ul fotografiei');
 ok(str_contains($hPoza, 'class="accessory-img"'),      'accessory: clasa .accessory-img');
+ok(str_contains($hPoza, "onerror=\"this.closest('.accessory-img-wrap').style.display='none'\""),
+    'accessory: fallback onerror pe fotografie');
+ok(!str_contains($hPoza, 'accessory-img-ph'),          'accessory: fara placeholder cand n-are iconita');
 
 // fara alt explicit => cade pe nume
 $faraAlt = $acc;
@@ -134,6 +138,32 @@ $faraAlt[0]['image_path'] = 'img/x.jpg';
 $faraAlt[0]['image_alt']  = null;
 $hFaraAlt = renderAccessoryCards($faraAlt);
 ok(str_contains($hFaraAlt, 'alt="Tablou electric metalic/plastic 4-8 module"'), 'accessory: alt cade pe nume cand image_alt e null');
+
+// varianta 3/4: doar iconita, fara fotografie (cazul a 16 din 264) — placeholder vizibil
+$doarIcon = $acc;
+$doarIcon[0]['icon_key'] = 'icon-09304de8';
+$hIcon = renderAccessoryCards($doarIcon);
+ok(str_contains($hIcon, 'class="accessory-img-wrap"'),   'accessory: img-wrap prezent cand exista iconita');
+ok(str_contains($hIcon, 'class="accessory-img-ph" style="display:flex"'),
+    'accessory: placeholder vizibil cand n-are fotografie');
+ok(!str_contains($hIcon, '<img'),                          'accessory: fara <img> cand n-are fotografie');
+ok(!str_contains($hIcon, '<span>'),                         'accessory: placeholderul accesoriului nu are eticheta');
+
+// varianta 4/4: si fotografie si iconita (cazul a 4 din 264) — placeholder ascuns, ramane in DOM
+$ambele = $acc;
+$ambele[0]['image_path'] = 'img/brida-burlan.jpg';
+$ambele[0]['image_alt']  = 'Brida burlan';
+$ambele[0]['icon_key']   = 'icon-09304de8';
+$hAmbele = renderAccessoryCards($ambele);
+ok(str_contains($hAmbele, 'class="accessory-img"'),        'accessory: fotografia e prezenta cand exista ambele');
+ok(str_contains($hAmbele, 'class="accessory-img-ph" style="display:none"'),
+    'accessory: placeholder ascuns (dar in DOM) cand exista si fotografie si iconita');
+
+// iconita necunoscuta => cade pe iconita generica (acelasi tipar ca la materiale)
+$iconNecunoscuta = $acc;
+$iconNecunoscuta[0]['icon_key'] = 'icon-inexistenta';
+$hNecunoscuta = renderAccessoryCards($iconNecunoscuta);
+ok(str_contains($hNecunoscuta, PRODUCT_ICON_FALLBACK), 'accessory: iconita necunoscuta cade pe fallback');
 
 // escaping
 $xssAcc = $acc;

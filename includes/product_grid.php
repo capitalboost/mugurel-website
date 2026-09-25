@@ -121,17 +121,36 @@ function renderProdCards(array $products): string {
     return $out;
 }
 
-/** Varianta accesoriilor. Card simplu: titlu, descriere, buton WhatsApp. */
+/**
+ * Varianta accesoriilor. Card simplu: titlu, descriere, buton WhatsApp.
+ *
+ * Wrap-ul de imagine (.accessory-img-wrap) se randeaza doar daca produsul are
+ * fotografie SAU iconita — marea majoritate (223 din 264) n-au niciuna. Cand
+ * exista si fotografie si iconita, placeholder-ul ramane in DOM ca fallback,
+ * dar ascuns (acelasi tipar ca la .material-img-wrap / renderImgWrap()).
+ */
 function renderAccessoryCards(array $products): string {
     $out = '';
     foreach ($products as $p) {
         $cls = 'accessory-card' . (!empty($p['card_modifier'])
              ? ' accessory-card--' . e($p['card_modifier']) : '');
         $out .= '<div class="' . $cls . '">';
-        if (!empty($p['image_path'])) {
-            $out .= '<div class="accessory-img-wrap"><img src="' . e($p['image_path'])
-                  . '" alt="' . e($p['image_alt'] ?? $p['name']) . '" class="accessory-img"></div>';
+
+        $hasImg  = !empty($p['image_path']);
+        $hasIcon = !empty($p['icon_key']);
+        if ($hasImg || $hasIcon) {
+            $out .= '<div class="accessory-img-wrap">';
+            if ($hasImg) {
+                $out .= '<img src="' . e($p['image_path']) . '" alt="' . e($p['image_alt'] ?? $p['name'])
+                      . '" class="accessory-img"'
+                      . ' onerror="this.closest(\'.accessory-img-wrap\').style.display=\'none\'">';
+            }
+            if ($hasIcon) {
+                $out .= renderAccessoryIcon($p['icon_key'], $hasImg);
+            }
+            $out .= '</div>';
         }
+
         $out .= '<div class="accessory-body">'
               . '<h4>' . e($p['name']) . '</h4>'
               . '<p>' . e($p['short_description']) . '</p>'
