@@ -18,6 +18,7 @@ function productsBaseSql(): string {
     return "
         SELECT p.id, p.name, p.short_description, p.icon_key, p.icon_label,
                p.image_path, p.image_alt, p.badge_label, p.badge_kind,
+               p.card_kind, p.card_modifier,
                p.price, p.price_unit,
                TRIM(CONCAT(
                    COALESCE(l1.slug, c.slug),
@@ -77,12 +78,14 @@ function attachProperties(array $rows): array {
     }
 }
 
-function productsForSection(string $pageSlug, string $sectionKey, ?int $limit = null, int $offset = 0): array {
+function productsForSection(string $pageSlug, string $sectionKey, ?string $kind = null, ?int $limit = null, int $offset = 0): array {
     try {
-        $sql = productsBaseSql() . ' AND p.page_slug = ? AND p.section_key = ?
-                ORDER BY p.sort_order, p.id';
+        $sql = productsBaseSql() . ' AND p.page_slug = ? AND p.section_key = ?';
+        $params = [$pageSlug, $sectionKey];
+        if ($kind !== null) { $sql .= ' AND p.card_kind = ?'; $params[] = $kind; }
+        $sql .= ' ORDER BY p.sort_order, p.id';
         $stmt = Database::get()->prepare(withLimit($sql, $limit, $offset));
-        $stmt->execute([$pageSlug, $sectionKey]);
+        $stmt->execute($params);
         return attachProperties($stmt->fetchAll());
     } catch (Throwable $e) {
         error_log('productsForSection: ' . $e->getMessage());
@@ -90,12 +93,14 @@ function productsForSection(string $pageSlug, string $sectionKey, ?int $limit = 
     }
 }
 
-function productsForPage(string $pageSlug, ?int $limit = null, int $offset = 0): array {
+function productsForPage(string $pageSlug, ?string $kind = null, ?int $limit = null, int $offset = 0): array {
     try {
-        $sql = productsBaseSql() . ' AND p.page_slug = ?
-                ORDER BY p.section_key, p.sort_order, p.id';
+        $sql = productsBaseSql() . ' AND p.page_slug = ?';
+        $params = [$pageSlug];
+        if ($kind !== null) { $sql .= ' AND p.card_kind = ?'; $params[] = $kind; }
+        $sql .= ' ORDER BY p.section_key, p.sort_order, p.id';
         $stmt = Database::get()->prepare(withLimit($sql, $limit, $offset));
-        $stmt->execute([$pageSlug]);
+        $stmt->execute($params);
         return attachProperties($stmt->fetchAll());
     } catch (Throwable $e) {
         error_log('productsForPage: ' . $e->getMessage());

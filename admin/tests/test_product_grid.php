@@ -90,5 +90,60 @@ ok(str_contains($h3, 'class="material-badge"'), 'badge fara modificator => clasa
 ok(renderMaterialCards([]) === '', 'lista goala => string gol');
 ok(str_contains(renderEmptyNotice(), 'wa.me/40749130565'), 'mesajul gol trimite pe WhatsApp');
 
+// ── renderAccessoryCards() (Task 5D) ──
+$acc = [[
+    'id' => 500,
+    'name' => 'Tablou electric metalic/plastic 4-8 module',
+    'short_description' => 'Tablou de distributie pentru locuinte, cu sina DIN integrata.',
+    'card_modifier' => null,
+    'image_path' => null, 'image_alt' => null,
+]];
+
+// varianta simpla, fara fotografie, fara modificator
+$a = renderAccessoryCards($acc);
+ok(str_contains($a, 'class="accessory-card">'),        'accessory: containerul .accessory-card simplu');
+ok(str_contains($a, 'class="accessory-body"'),          'accessory: corpul .accessory-body');
+ok(str_contains($a, '<h4>Tablou electric metalic/plastic 4-8 module</h4>'), 'accessory: numele in <h4>');
+ok(str_contains($a, '<p>Tablou de distributie pentru locuinte, cu sina DIN integrata.</p>'), 'accessory: descrierea in <p>');
+ok(str_contains($a, 'class="btn-wa-acc"'),               'accessory: butonul e .btn-wa-acc');
+ok(str_contains($a, 'href="https://wa.me/40749130565'), 'accessory: link WhatsApp direct');
+ok(str_contains($a, 'target="_blank" rel="noopener"'),  'accessory: target si rel pe buton');
+ok(!str_contains($a, 'accessory-img-wrap'),              'accessory: fara img-wrap cand nu are fotografie');
+ok(!str_contains($a, 'accessory-card--'),                'accessory: fara modificator cand card_modifier e null');
+ok(!str_contains($a, 'class="material-card"'),           'accessory: NU foloseste clasele de materiale');
+
+// varianta --sm
+$sm = $acc;
+$sm[0]['card_modifier'] = 'sm';
+$hSm = renderAccessoryCards($sm);
+ok(str_contains($hSm, 'class="accessory-card accessory-card--sm"'), 'accessory: varianta --sm are ambele clase');
+
+// varianta cu fotografie
+$cuPoza = $acc;
+$cuPoza[0]['image_path'] = 'img/jgheab-semicircular.jpg';
+$cuPoza[0]['image_alt']  = 'Jgheab semicircular';
+$hPoza = renderAccessoryCards($cuPoza);
+ok(str_contains($hPoza, 'class="accessory-img-wrap"'), 'accessory: img-wrap prezent cand exista fotografie');
+ok(str_contains($hPoza, 'src="img/jgheab-semicircular.jpg"'), 'accessory: src-ul fotografiei');
+ok(str_contains($hPoza, 'alt="Jgheab semicircular"'),  'accessory: alt-ul fotografiei');
+ok(str_contains($hPoza, 'class="accessory-img"'),      'accessory: clasa .accessory-img');
+
+// fara alt explicit => cade pe nume
+$faraAlt = $acc;
+$faraAlt[0]['image_path'] = 'img/x.jpg';
+$faraAlt[0]['image_alt']  = null;
+$hFaraAlt = renderAccessoryCards($faraAlt);
+ok(str_contains($hFaraAlt, 'alt="Tablou electric metalic/plastic 4-8 module"'), 'accessory: alt cade pe nume cand image_alt e null');
+
+// escaping
+$xssAcc = $acc;
+$xssAcc[0]['name'] = 'Test "<script>alert(1)</script>';
+$xssAcc[0]['short_description'] = 'Descriere "<script>alert(2)</script>';
+$hXss = renderAccessoryCards($xssAcc);
+ok(!str_contains($hXss, '<script>'), 'accessory: escapeaza numele si descrierea');
+
+// lista goala
+ok(renderAccessoryCards([]) === '', 'accessory: lista goala => string gol');
+
 echo "\nRezultat: $pass passed, $fail failed\n";
 exit($fail > 0 ? 1 : 0);

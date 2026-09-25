@@ -4,15 +4,41 @@ require_once __DIR__ . '/../../includes/products_repo.php';
 $pass = 0; $fail = 0;
 function ok(bool $c, string $m): void { global $pass,$fail; if($c){$pass++;echo"  ✓ $m\n";}else{$fail++;echo"  ✗ $m\n";} }
 
-// Electrice are 23 de produse, distribuite 4/4/9/6 pe patru sectiuni.
-$page = productsForPage('electrice');
-ok(count($page) === 23, 'productsForPage(electrice) => 23 (got ' . count($page) . ')');
+// Electrice are 23 de materiale, distribuite 4/4/9/6 pe patru sectiuni.
+$page = productsForPage('electrice', 'material');
+ok(count($page) === 23, "productsForPage(electrice, 'material') => 23 (got " . count($page) . ')');
+
+// Electrice are si 17 accesorii, in alte patru sectiuni (Task 5D).
+$pageAcc = productsForPage('electrice', 'accessory');
+ok(count($pageAcc) === 17, "productsForPage(electrice, 'accessory') => 17 (got " . count($pageAcc) . ')');
+
+// Fara filtru de tip, productsForPage intoarce ambele tipuri.
+$pageAll = productsForPage('electrice');
+ok(count($pageAll) === 40, 'productsForPage(electrice) fara filtru => 40 (got ' . count($pageAll) . ')');
 
 $sec = productsForSection('electrice', 'cabluri-conductori');
 ok(count($sec) === 4, 'sectiunea cabluri-conductori => 4 (got ' . count($sec) . ')');
 
+// productsForSection('electrice', '<sectiune>', 'accessory') intoarce doar accesorii (Task 5D).
+$secAcc = productsForSection('electrice', 'tablouri-sigurante', 'accessory');
+ok(count($secAcc) === 4, "sectiunea tablouri-sigurante, tip 'accessory' => 4 (got " . count($secAcc) . ')');
+ok(!array_filter($secAcc, fn($p) => $p['card_kind'] !== 'accessory'),
+    'toate randurile intoarse au card_kind = accessory');
+
+$secMaterialOnly = productsForSection('electrice', 'cabluri-conductori', 'material');
+ok(count($secMaterialOnly) === 4, "sectiunea cabluri-conductori, tip 'material' => 4 (got " . count($secMaterialOnly) . ')');
+
+$secWrongKind = productsForSection('electrice', 'cabluri-conductori', 'accessory');
+ok($secWrongKind === [], 'sectiune de materiale ceruta cu tip accessory => []');
+
 $all = allProducts();
-ok(count($all) === 231, 'allProducts() => 231 (got ' . count($all) . ')');
+ok(count($all) === 495, 'allProducts() => 495 (got ' . count($all) . ')');
+
+$allMaterial = array_filter($all, fn($p) => $p['card_kind'] === 'material');
+ok(count($allMaterial) === 231, 'allProducts() contine 231 materiale (got ' . count($allMaterial) . ')');
+
+$allAccessory = array_filter($all, fn($p) => $p['card_kind'] === 'accessory');
+ok(count($allAccessory) === 264, 'allProducts() contine 264 accesorii (got ' . count($allAccessory) . ')');
 
 // Forma randului — Task 4 depinde de exact aceste chei.
 if ($page) {

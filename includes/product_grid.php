@@ -121,6 +121,27 @@ function renderProdCards(array $products): string {
     return $out;
 }
 
+/** Varianta accesoriilor. Card simplu: titlu, descriere, buton WhatsApp. */
+function renderAccessoryCards(array $products): string {
+    $out = '';
+    foreach ($products as $p) {
+        $cls = 'accessory-card' . (!empty($p['card_modifier'])
+             ? ' accessory-card--' . e($p['card_modifier']) : '');
+        $out .= '<div class="' . $cls . '">';
+        if (!empty($p['image_path'])) {
+            $out .= '<div class="accessory-img-wrap"><img src="' . e($p['image_path'])
+                  . '" alt="' . e($p['image_alt'] ?? $p['name']) . '" class="accessory-img"></div>';
+        }
+        $out .= '<div class="accessory-body">'
+              . '<h4>' . e($p['name']) . '</h4>'
+              . '<p>' . e($p['short_description']) . '</p>'
+              . '<a href="' . e(waLink($p['name'])) . '" class="btn-wa-acc" target="_blank" rel="noopener">'
+              . 'Afla disponibilitate</a>'
+              . '</div></div>';
+    }
+    return $out;
+}
+
 /** Afisat cand o sectiune nu are produse — inclusiv cand DB-ul e cazut. */
 function renderEmptyNotice(): string {
     return '<p class="cat-empty-note">Lista de produse nu poate fi afisata momentan. '
