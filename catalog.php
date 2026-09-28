@@ -90,7 +90,7 @@ function catIconSvg(string $slug): string {
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Roboto+Condensed:wght@400;700&family=Open+Sans:wght@400;600;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="css/style.css">
+<link rel="stylesheet" href="<?= '/css/style.css?v=' . @filemtime(__DIR__ . '/css/style.css') ?>">
 <link rel="icon" type="image/svg+xml" href="favicon.svg">
 <link rel="icon" type="image/png" sizes="32x32" href="favicon.png">
 </head>
@@ -212,7 +212,7 @@ function catIconSvg(string $slug): string {
 
     <!-- FILTER BAR -->
     <div class="filter-bar">
-      <div class="results">Afisare: <strong><span id="result-count"><?= count($produse) ?></span></strong> din <?= $total ?> produse</div>
+      <div class="results">Afisare: <strong><span id="result-count"><?= count($produse) ?></span></strong> din <?= $total ?> produse<?php if ($pages > 1): ?><span class="results-page">pagina <?= $page ?> din <?= $pages ?></span><?php endif; ?></div>
       <div class="filter-chips">
         <a class="chip<?= $cat === null ? ' active' : '' ?>" data-filter="all" href="<?= e(catUrl(null, $q)) ?>">Toate</a>
         <?php foreach ($tree as $top): ?>
