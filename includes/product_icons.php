@@ -166,10 +166,15 @@ function renderAccessoryIcon(?string $key, ?string $label = null, bool $hidden =
     return $out . '</div>';
 }
 
-/** Placeholder-ul cardului de catalog. Aceeasi biblioteca de iconite, alt container. */
-function renderProdIcon(?string $key, ?string $label): string {
+/**
+ * Placeholder-ul cardului de catalog. Aceeasi biblioteca de iconite, alt container.
+ * $hidden = true cand cardul are si o fotografie reala (placeholder-ul ramane
+ * in DOM ca fallback, dar ascuns).
+ */
+function renderProdIcon(?string $key, ?string $label, bool $hidden = false): string {
     $svg = ($key !== null && isset(PRODUCT_ICONS[$key])) ? PRODUCT_ICONS[$key] : PRODUCT_ICON_FALLBACK;
-    $out = '<div class="prod-img-ph">' . $svg;
+    $style = $hidden ? 'display:none' : 'display:flex';
+    $out = '<div class="prod-img-ph" style="' . $style . '">' . $svg;
     if ($label !== null && $label !== '') {
         $out .= '<span>' . htmlspecialchars($label, ENT_QUOTES, 'UTF-8') . '</span>';
     }

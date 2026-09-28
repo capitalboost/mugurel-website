@@ -113,8 +113,16 @@ function renderProdCards(array $products): string {
     foreach ($products as $p) {
         $subcat = $p['subcat_slug'] ? ' data-subcat="' . e($p['subcat_slug']) . '"' : '';
         $waText = !empty($p['wa_text']) ? ' data-wa-text="' . e($p['wa_text']) . '"' : '';
+        $hasImg = !empty($p['image_path']);
+        $imgWrap = '<div class="prod-img-wrap">';
+        if ($hasImg) {
+            $imgWrap .= '<img src="' . e($p['image_path']) . '" alt="' . e($p['image_alt'] ?? $p['name'])
+                      . '" class="prod-img-photo"'
+                      . ' onerror="this.closest(\'.prod-img-wrap\').style.display=\'none\'">';
+        }
+        $imgWrap .= renderProdIcon($p['icon_key'], $p['icon_label'], $hasImg) . '</div>';
         $out .= '<div class="prod-card" data-cat="' . e($p['cat_slugs']) . '"' . $subcat . '>'
-              . '<div class="prod-img-wrap">' . renderProdIcon($p['icon_key'], $p['icon_label']) . '</div>'
+              . $imgWrap
               . '<div class="prod-body">'
               . '<div class="' . badgeClass($p) . '">' . e($p['cat_label']) . '</div>'
               . '<h3 class="prod-name">' . e($p['name']) . '</h3>'

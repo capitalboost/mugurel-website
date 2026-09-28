@@ -285,5 +285,24 @@ $prodHtml = renderProdCards($sample);
 ok(str_contains($prodHtml, 'class="prod-img-ph"'), 'renderProdCards: foloseste .prod-img-ph');
 ok(!str_contains($prodHtml, 'class="material-img-ph"'), 'renderProdCards: NU foloseste .material-img-ph');
 
+// ── renderProdCards() randeaza fotografia cand exista (fix inconsecventa catalog) ──
+$prodCuPoza = $sample;
+$prodCuPoza[0]['image_path'] = 'img/tabla-cutata.jpg';
+$prodCuPoza[0]['image_alt']  = 'Tabla cutata';
+$hProdPoza = renderProdCards($prodCuPoza);
+ok(str_contains($hProdPoza, 'src="img/tabla-cutata.jpg"'),   'prod: randeaza <img> cand exista fotografie');
+ok(str_contains($hProdPoza, 'alt="Tabla cutata"'),            'prod: alt-ul fotografiei');
+ok(str_contains($hProdPoza, "onerror=\"this.closest('.prod-img-wrap').style.display='none'\""),
+    'prod: fallback onerror pe fotografie');
+ok(str_contains($hProdPoza, 'class="prod-img-ph" style="display:none"'),
+    'prod: placeholder-ul ramane in DOM dar ascuns cand exista fotografie');
+
+$prodFaraPoza = $sample;
+$prodFaraPoza[0]['image_path'] = null;
+$hProdFaraPoza = renderProdCards($prodFaraPoza);
+ok(!str_contains($hProdFaraPoza, '<img'),                      'prod: fara fotografie => niciun <img>');
+ok(str_contains($hProdFaraPoza, 'class="prod-img-ph" style="display:flex"'),
+    'prod: placeholder vizibil cand nu exista fotografie');
+
 echo "\nRezultat: $pass passed, $fail failed\n";
 exit($fail > 0 ? 1 : 0);
