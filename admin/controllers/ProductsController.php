@@ -1,5 +1,6 @@
 <?php
 require_once __DIR__ . '/../models/Product.php';
+require_once __DIR__ . '/../models/ProductProperty.php';
 require_once __DIR__ . '/../helpers/Upload.php';
 require_once __DIR__ . '/../../includes/products_repo.php';
 require_once __DIR__ . '/../../includes/product_icons.php';
@@ -17,6 +18,7 @@ switch ($action) {
         $knownPageSlugs = Product::KNOWN_PAGE_SLUGS;
         $knownBadgeKinds = Product::KNOWN_BADGE_KINDS;
         $productIcons = PRODUCT_ICONS;
+        $productProperties = $id ? ProductProperty::forProduct($id) : [];
         ob_start();
         require __DIR__ . '/../views/products/edit.php';
         $bodyContent = ob_get_clean();
@@ -109,13 +111,32 @@ switch ($action) {
             exit;
         }
 
+        // Blocuri de proprietati: array-uri paralele, sort_order dedus din ordine.
+        // Blocurile cu eticheta sau continut gol se ignora la salvare.
+        $propLabels  = $_POST['prop_label'] ?? [];
+        $propBodies  = $_POST['prop_body'] ?? [];
+        $propIsList  = $_POST['prop_is_list'] ?? [];
+        $blocks = [];
+        foreach ($propLabels as $i => $rawLabel) {
+            $label = Sanitize::text($rawLabel, 60);
+            $body  = Sanitize::text($propBodies[$i] ?? '', 5000);
+            if ($label === '' || $body === '') { continue; }
+            $blocks[] = [
+                'label'   => $label,
+                'body'    => $body,
+                'is_list' => !empty($propIsList[$i]) ? 1 : 0,
+            ];
+        }
+
         if ($id) {
             Product::update($id, $data);
+            ProductProperty::replaceAll($id, $blocks);
             $db->prepare("INSERT INTO audit_log (user_id,entity_type,entity_id,action,ip_address) VALUES (?,?,?,?,?)")
                ->execute([Auth::id(), 'product', $id, 'update', $_SERVER['REMOTE_ADDR'] ?? '']);
             Flash::success('Produsul a fost actualizat.');
         } else {
             $newId = Product::create($data);
+            ProductProperty::replaceAll($newId, $blocks);
             $db->prepare("INSERT INTO audit_log (user_id,entity_type,entity_id,action,ip_address) VALUES (?,?,?,?,?)")
                ->execute([Auth::id(), 'product', $newId, 'create', $_SERVER['REMOTE_ADDR'] ?? '']);
             Flash::success('Produs creat cu succes.');

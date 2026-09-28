@@ -36,6 +36,70 @@
       <textarea name="short_description" rows="4"><?= htmlspecialchars($product['short_description']??'',ENT_QUOTES,'UTF-8') ?></textarea>
     </label>
 
+    <hr style="margin:1.5rem 0;border:none;border-top:1px solid var(--border)">
+    <h3 style="font-size:1rem;color:var(--verde);margin-bottom:1rem">Proprietati (blocuri afisate pe card)</h3>
+    <datalist id="propLabelSuggestions">
+      <?php foreach (['Avantaje','Specificatii','Descriere','Aspect','Utilizare','Unde se foloseste'] as $sugestie): ?>
+      <option value="<?= htmlspecialchars($sugestie,ENT_QUOTES,'UTF-8') ?>">
+      <?php endforeach; ?>
+    </datalist>
+
+    <template id="propBlockTemplate">
+      <div class="prop-block" style="border:1px solid var(--border);border-radius:8px;padding:1rem;margin-bottom:.8rem">
+        <div class="form-row">
+          <label>Eticheta
+            <input type="text" name="prop_label[]" list="propLabelSuggestions" maxlength="60" value="">
+          </label>
+          <label style="flex-direction:row;align-items:center;gap:.5rem;flex:none">
+            <input type="checkbox" class="prop-is-list-toggle">
+            <input type="hidden" name="prop_is_list[]" value="0">
+            Lista cu bullet-uri
+          </label>
+        </div>
+        <label>Continut
+          <textarea name="prop_body[]" rows="3"></textarea>
+        </label>
+        <small class="prop-list-hint" style="display:none">
+          Fiecare rand din continut devine un element de lista (bullet).
+        </small>
+        <div class="form-row" style="margin-top:.5rem">
+          <button type="button" class="btn prop-move-up" style="background:#eee">&uarr; Mai sus</button>
+          <button type="button" class="btn prop-move-down" style="background:#eee">&darr; Mai jos</button>
+          <button type="button" class="btn prop-remove" style="background:#fdd">Sterge blocul</button>
+        </div>
+      </div>
+    </template>
+
+    <div id="propsList">
+      <?php foreach (($productProperties ?? []) as $prop): $isList = (int)$prop['is_list'] === 1; ?>
+      <div class="prop-block" style="border:1px solid var(--border);border-radius:8px;padding:1rem;margin-bottom:.8rem">
+        <div class="form-row">
+          <label>Eticheta
+            <input type="text" name="prop_label[]" list="propLabelSuggestions" maxlength="60"
+                   value="<?= htmlspecialchars($prop['label'],ENT_QUOTES,'UTF-8') ?>">
+          </label>
+          <label style="flex-direction:row;align-items:center;gap:.5rem;flex:none">
+            <input type="checkbox" class="prop-is-list-toggle" <?= $isList ? 'checked' : '' ?>>
+            <input type="hidden" name="prop_is_list[]" value="<?= $isList ? '1' : '0' ?>">
+            Lista cu bullet-uri
+          </label>
+        </div>
+        <label>Continut
+          <textarea name="prop_body[]" rows="3"><?= htmlspecialchars($prop['body'],ENT_QUOTES,'UTF-8') ?></textarea>
+        </label>
+        <small class="prop-list-hint" style="<?= $isList ? '' : 'display:none' ?>">
+          Fiecare rand din continut devine un element de lista (bullet).
+        </small>
+        <div class="form-row" style="margin-top:.5rem">
+          <button type="button" class="btn prop-move-up" style="background:#eee">&uarr; Mai sus</button>
+          <button type="button" class="btn prop-move-down" style="background:#eee">&darr; Mai jos</button>
+          <button type="button" class="btn prop-remove" style="background:#fdd">Sterge blocul</button>
+        </div>
+      </div>
+      <?php endforeach; ?>
+    </div>
+    <button type="button" class="btn" id="propAddBtn" style="background:#eee;margin-bottom:1rem">+ Adauga bloc</button>
+
     <label>Imagine produs
       <?php if ($isEdit && $product['image_path']): ?>
       <img src="<?= htmlspecialchars($product['image_path'],ENT_QUOTES,'UTF-8') ?>" class="adm-img-preview" id="imgPreview">
@@ -195,4 +259,39 @@ function previewImg(input) {
     reader.readAsDataURL(input.files[0]);
   }
 }
+
+(function () {
+  const list = document.getElementById('propsList');
+  const template = document.getElementById('propBlockTemplate');
+  const addBtn = document.getElementById('propAddBtn');
+
+  addBtn.addEventListener('click', function () {
+    const clone = template.content.cloneNode(true);
+    list.appendChild(clone);
+  });
+
+  list.addEventListener('change', function (e) {
+    if (!e.target.classList.contains('prop-is-list-toggle')) return;
+    const block = e.target.closest('.prop-block');
+    const hidden = block.querySelector('input[name="prop_is_list[]"]');
+    const hint = block.querySelector('.prop-list-hint');
+    hidden.value = e.target.checked ? '1' : '0';
+    hint.style.display = e.target.checked ? '' : 'none';
+  });
+
+  list.addEventListener('click', function (e) {
+    const block = e.target.closest('.prop-block');
+    if (!block) return;
+
+    if (e.target.classList.contains('prop-remove')) {
+      block.remove();
+    } else if (e.target.classList.contains('prop-move-up')) {
+      const prev = block.previousElementSibling;
+      if (prev) list.insertBefore(block, prev);
+    } else if (e.target.classList.contains('prop-move-down')) {
+      const next = block.nextElementSibling;
+      if (next) list.insertBefore(next, block);
+    }
+  });
+})();
 </script>
