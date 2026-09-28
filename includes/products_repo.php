@@ -18,7 +18,7 @@ function productsBaseSql(): string {
     return "
         SELECT p.id, p.name, p.short_description, p.wa_text, p.icon_key, p.icon_label,
                p.image_path, p.image_alt, p.badge_label, p.badge_kind,
-               p.card_kind, p.card_modifier,
+               p.card_kind, p.card_modifier, p.section_key,
                p.price, p.price_unit,
                TRIM(CONCAT(
                    COALESCE(l1.slug, c.slug),
@@ -117,6 +117,36 @@ function productsForPage(string $pageSlug, ?string $kind = null, ?int $limit = n
     } catch (Throwable $e) {
         error_log('productsForPage: ' . $e->getMessage());
         return [];
+    }
+}
+
+/**
+ * Toate produsele unei pagini, grupate: [section_key][card_kind] => randuri.
+ * O singura interogare pentru produse (plus attachProperties(), tot o singura
+ * interogare pentru proprietati) — inlocuieste cele doua interogari pe care le
+ * facea inainte fiecare apel section() separat (o pagina cu 10-15 sectiuni
+ * ajungea la 20-30 de interogari; acum ajunge la 2-3, indiferent de nr. sectiuni).
+ *
+ * Rezultatul e memorat intr-o variabila static, per cerere HTTP: prima sectiune
+ * a paginii care il cere plateste interogarea completa; sectiunile urmatoare ale
+ * aceleiasi pagini (acelasi $pageSlug) citesc din memorie, fara SQL suplimentar.
+ */
+function pageProductsIndexed(string $pageSlug): array {
+    static $cache = [];
+    if (array_key_exists($pageSlug, $cache)) { return $cache[$pageSlug]; }
+    try {
+        $sql = productsBaseSql() . ' AND p.page_slug = ? ORDER BY p.section_key, p.sort_order, p.id';
+        $stmt = Database::get()->prepare($sql);
+        $stmt->execute([$pageSlug]);
+        $rows = attachProperties($stmt->fetchAll());
+        $indexed = [];
+        foreach ($rows as $r) {
+            $indexed[$r['section_key']][$r['card_kind']][] = $r;
+        }
+        return $cache[$pageSlug] = $indexed;
+    } catch (Throwable $e) {
+        error_log('pageProductsIndexed: ' . $e->getMessage());
+        return $cache[$pageSlug] = [];
     }
 }
 

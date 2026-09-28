@@ -71,7 +71,7 @@ function renderImgWrap(array $p): string {
     $out = '<div class="material-img-wrap">';
     if ($hasImg) {
         $out .= '<img src="' . e($p['image_path']) . '" alt="' . e($p['image_alt'] ?? $p['name'])
-              . '" class="material-img"'
+              . '" class="material-img" width="280" height="160" loading="lazy" decoding="async"'
               . ' onerror="this.closest(\'.material-img-wrap\').style.display=\'none\'">';
     }
     $out .= renderIcon($p['icon_key'], $p['icon_label'], $hasImg);
@@ -117,7 +117,7 @@ function renderProdCards(array $products): string {
         $imgWrap = '<div class="prod-img-wrap">';
         if ($hasImg) {
             $imgWrap .= '<img src="' . e($p['image_path']) . '" alt="' . e($p['image_alt'] ?? $p['name'])
-                      . '" class="prod-img-photo"'
+                      . '" class="prod-img-photo" width="220" height="150" loading="lazy" decoding="async"'
                       . ' onerror="this.closest(\'.prod-img-wrap\').style.display=\'none\'">';
         }
         $imgWrap .= renderProdIcon($p['icon_key'], $p['icon_label'], $hasImg) . '</div>';
@@ -157,7 +157,7 @@ function renderAccessoryCards(array $products): string {
             $out .= '<div class="accessory-img-wrap">';
             if ($hasImg) {
                 $out .= '<img src="' . e($p['image_path']) . '" alt="' . e($p['image_alt'] ?? $p['name'])
-                      . '" class="accessory-img"'
+                      . '" class="accessory-img" width="160" height="100" loading="lazy" decoding="async"'
                       . ' onerror="this.closest(\'.accessory-img-wrap\').style.display=\'none\'">';
             }
             if ($hasIcon) {

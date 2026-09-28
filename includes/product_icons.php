@@ -144,39 +144,34 @@ const PRODUCT_ICON_FALLBACK =
  * ca un produs adaugat din admin sa nu randeze o gaura in grila.
  * $hidden = true cand cardul are si o fotografie reala (placeholder-ul ramane
  * in DOM ca fallback, dar ascuns).
+ *
+ * $label nu se mai randeaza (era un <span> cu majuscule care repeta titlul de sub
+ * card — vezi raportul design/perf). Parametrul ramane in semnatura ca apelurile
+ * existente sa nu se rupa; icon_label ramane in DB neatins, doar nu se mai afiseaza.
  */
 function renderIcon(?string $key, ?string $label, bool $hidden = false): string {
     $svg = ($key !== null && isset(PRODUCT_ICONS[$key])) ? PRODUCT_ICONS[$key] : PRODUCT_ICON_FALLBACK;
     $style = $hidden ? 'display:none' : 'display:flex';
-    return '<div class="material-img-ph" style="' . $style . '">' . $svg
-         . '<span>' . htmlspecialchars((string)$label, ENT_QUOTES, 'UTF-8') . '</span></div>';
+    return '<div class="material-img-ph" style="' . $style . '">' . $svg . '</div>';
 }
 
 /**
- * Placeholder-ul unui accessory-card. Eticheta e optionala — doar o parte din
- * accesorii au <span> in placeholder-ul original (8 din 20 la data scrierii);
- * cand icon_label e null, placeholder-ul ramane fara <span>, ca in sursa.
+ * Placeholder-ul unui accessory-card. Eticheta nu se mai randeaza (acelasi motiv
+ * ca la renderIcon) — parametrul $label ramane in semnatura din compatibilitate.
  */
 function renderAccessoryIcon(?string $key, ?string $label = null, bool $hidden = false): string {
     $svg = ($key !== null && isset(PRODUCT_ICONS[$key])) ? PRODUCT_ICONS[$key] : PRODUCT_ICON_FALLBACK;
-    $out = '<div class="accessory-img-ph" style="' . ($hidden ? 'display:none' : 'display:flex') . '">' . $svg;
-    if ($label !== null && $label !== '') {
-        $out .= '<span>' . htmlspecialchars($label, ENT_QUOTES, 'UTF-8') . '</span>';
-    }
-    return $out . '</div>';
+    return '<div class="accessory-img-ph" style="' . ($hidden ? 'display:none' : 'display:flex') . '">' . $svg . '</div>';
 }
 
 /**
  * Placeholder-ul cardului de catalog. Aceeasi biblioteca de iconite, alt container.
  * $hidden = true cand cardul are si o fotografie reala (placeholder-ul ramane
- * in DOM ca fallback, dar ascuns).
+ * in DOM ca fallback, dar ascuns). Eticheta nu se mai randeaza (acelasi motiv
+ * ca la renderIcon).
  */
 function renderProdIcon(?string $key, ?string $label, bool $hidden = false): string {
     $svg = ($key !== null && isset(PRODUCT_ICONS[$key])) ? PRODUCT_ICONS[$key] : PRODUCT_ICON_FALLBACK;
     $style = $hidden ? 'display:none' : 'display:flex';
-    $out = '<div class="prod-img-ph" style="' . $style . '">' . $svg;
-    if ($label !== null && $label !== '') {
-        $out .= '<span>' . htmlspecialchars($label, ENT_QUOTES, 'UTF-8') . '</span>';
-    }
-    return $out . '</div>';
+    return '<div class="prod-img-ph" style="' . $style . '">' . $svg . '</div>';
 }

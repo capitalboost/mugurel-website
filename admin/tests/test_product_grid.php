@@ -71,6 +71,9 @@ ok(str_contains($h, 'style="display:none"'),                 'placeholder-ul e a
 ok(str_contains($h, 'material-badge material-badge--popular'), 'badge cu modificator');
 ok(str_contains($h, 'Cel mai vandut'),                       'textul badge-ului');
 ok(str_contains($h, 'onerror='),                             'pastreaza fallback-ul onerror');
+ok(str_contains($h, 'loading="lazy"'),                       'material: <img> are loading="lazy"');
+ok(str_contains($h, 'decoding="async"'),                     'material: <img> are decoding="async"');
+ok(str_contains($h, 'width="280" height="160"'),             'material: <img> are width/height');
 
 $fara = $sample;
 $fara[0]['image_path'] = null; $fara[0]['badge_label'] = null;
@@ -78,6 +81,7 @@ $h2 = renderMaterialCards($fara);
 ok(!str_contains($h2, '<img'),                    'fara fotografie => niciun <img>');
 ok(str_contains($h2, 'style="display:flex"'),     'placeholder vizibil cand nu exista fotografie');
 ok(!str_contains($h2, 'material-badge'),          'fara badge => niciun element de badge');
+ok(!str_contains($h2, '<span>'),                  'placeholder-ul fara fotografie nu are <span> cu eticheta (design curat)');
 
 $faraKind = $sample;
 $faraKind[0]['image_path'] = null;
@@ -131,6 +135,8 @@ ok(str_contains($hPoza, 'class="accessory-img"'),      'accessory: clasa .access
 ok(str_contains($hPoza, "onerror=\"this.closest('.accessory-img-wrap').style.display='none'\""),
     'accessory: fallback onerror pe fotografie');
 ok(!str_contains($hPoza, 'accessory-img-ph'),          'accessory: fara placeholder cand n-are iconita');
+ok(str_contains($hPoza, 'loading="lazy"'),             'accessory: <img> are loading="lazy"');
+ok(str_contains($hPoza, 'decoding="async"'),           'accessory: <img> are decoding="async"');
 
 // fara alt explicit => cade pe nume
 $faraAlt = $acc;
@@ -149,13 +155,13 @@ ok(str_contains($hIcon, 'class="accessory-img-ph" style="display:flex"'),
 ok(!str_contains($hIcon, '<img'),                          'accessory: fara <img> cand n-are fotografie');
 ok(!str_contains($hIcon, '<span>'),                         'accessory: fara icon_label => placeholder fara eticheta (12 din 20 cazuri reale)');
 
-// unele accesorii AU eticheta pe iconita (8 din 20 cazuri reale, ex. "Cot 45°") — icon_label
-// se randeaza conditionat, nu se inventeaza din nume (Task 5D, al doilea fix)
+// icon_label nu se mai randeaza deloc, nici cand exista (design curat, fara eticheta
+// care repeta titlul de sub card — vezi raportul design/perf) — dar ramane in DB.
 $doarIconCuEticheta = $acc;
 $doarIconCuEticheta[0]['icon_key']   = 'icon-09304de8';
 $doarIconCuEticheta[0]['icon_label'] = 'Cot 45°';
 $hIconEticheta = renderAccessoryCards($doarIconCuEticheta);
-ok(str_contains($hIconEticheta, '<span>Cot 45°</span>'), 'accessory: eticheta randata cand icon_label exista');
+ok(!str_contains($hIconEticheta, '<span>'), 'accessory: fara <span> chiar si cand icon_label exista');
 
 // varianta 4/4: si fotografie si iconita (cazul a 4 din 264) — placeholder ascuns, ramane in DOM
 $ambele = $acc;
@@ -167,8 +173,8 @@ $hAmbele = renderAccessoryCards($ambele);
 ok(str_contains($hAmbele, 'class="accessory-img"'),        'accessory: fotografia e prezenta cand exista ambele');
 ok(str_contains($hAmbele, 'class="accessory-img-ph" style="display:none"'),
     'accessory: placeholder ascuns (dar in DOM) cand exista si fotografie si iconita');
-ok(str_contains($hAmbele, '<span>Brida burlan</span>'),
-    'accessory: eticheta randata si cand placeholder-ul e ascuns');
+ok(!str_contains($hAmbele, '<span>'),
+    'accessory: fara <span> chiar si cand placeholder-ul e ascuns');
 
 // escaping pe eticheta iconitei
 $xssIcon = $acc;
@@ -243,10 +249,10 @@ ok(str_contains(renderProdCards($prodCustom), 'data-wa-text="Mesaj propriu produ
 ok(!str_contains(renderProdCards($sample), 'data-wa-text'),
     'prod: fara data-wa-text cand nu exista wa_text');
 
-// ── renderProdIcon() (Task 8A) ──
+// ── renderProdIcon() (Task 8A; eticheta eliminata la task design/perf) ──
 $icoCunoscut = renderProdIcon('inexistenta', 'Eticheta test');
 ok(str_contains($icoCunoscut, 'class="prod-img-ph"'), 'renderProdIcon: containerul .prod-img-ph');
-ok(str_contains($icoCunoscut, '<span>Eticheta test</span>'), 'renderProdIcon: eticheta randata cand exista');
+ok(!str_contains($icoCunoscut, '<span>'), 'renderProdIcon: fara <span> chiar si cand eticheta exista');
 ok(str_contains($icoCunoscut, PRODUCT_ICON_FALLBACK), 'renderProdIcon: cheie necunoscuta cade pe iconita generica');
 
 $icoFaraLabel = renderProdIcon(null, null);
@@ -294,6 +300,8 @@ ok(str_contains($hProdPoza, 'src="img/tabla-cutata.jpg"'),   'prod: randeaza <im
 ok(str_contains($hProdPoza, 'alt="Tabla cutata"'),            'prod: alt-ul fotografiei');
 ok(str_contains($hProdPoza, "onerror=\"this.closest('.prod-img-wrap').style.display='none'\""),
     'prod: fallback onerror pe fotografie');
+ok(str_contains($hProdPoza, 'loading="lazy"'),                'prod: <img> are loading="lazy"');
+ok(str_contains($hProdPoza, 'decoding="async"'),              'prod: <img> are decoding="async"');
 ok(str_contains($hProdPoza, 'class="prod-img-ph" style="display:none"'),
     'prod: placeholder-ul ramane in DOM dar ascuns cand exista fotografie');
 

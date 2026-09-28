@@ -1,5 +1,6 @@
 <?php
 require_once __DIR__ . '/../../includes/products_repo.php';
+require_once __DIR__ . '/../../includes/page_bootstrap.php';
 
 $pass = 0; $fail = 0;
 function ok(bool $c, string $m): void { global $pass,$fail; if($c){$pass++;echo"  ✓ $m\n";}else{$fail++;echo"  ✗ $m\n";} }
@@ -116,6 +117,52 @@ ok(catalogCount('electrice', 'cablu') <= catalogCount(null, 'cablu'), 'filtru + 
 
 // Categorie inexistenta.
 ok(catalogCount('nu-exista', null) === 0, 'categorie inexistenta => 0');
+
+// ── pageProductsIndexed() (task design/perf — reduce interogarile per pagina) ──
+$idx = pageProductsIndexed('electrice');
+ok(is_array($idx), 'pageProductsIndexed intoarce array');
+ok(count($idx['cabluri-conductori']['material'] ?? []) === 4,
+    "pageProductsIndexed('electrice')['cabluri-conductori']['material'] => 4 (got "
+    . count($idx['cabluri-conductori']['material'] ?? []) . ')');
+ok(count($idx['tablouri-sigurante']['accessory'] ?? []) === 4,
+    "pageProductsIndexed('electrice')['tablouri-sigurante']['accessory'] => 4 (got "
+    . count($idx['tablouri-sigurante']['accessory'] ?? []) . ')');
+ok(pageProductsIndexed('nu-exista') === [], 'pageProductsIndexed: pagina inexistenta => []');
+
+// Al doilea apel pentru aceeasi pagina trebuie sa vina din cache-ul static, nu dintr-o
+// noua interogare — verificam indirect ca rezultatul e identic (aceleasi obiecte/date).
+$idx2 = pageProductsIndexed('electrice');
+ok($idx === $idx2, 'pageProductsIndexed: al doilea apel intoarce acelasi rezultat (cache static)');
+
+// Proprietatile sunt atasate si in indexul pe pagina, nu doar in productsForSection().
+$primulCablu = $idx['cabluri-conductori']['material'][0] ?? null;
+ok($primulCablu !== null && array_key_exists('properties', $primulCablu),
+    'pageProductsIndexed: randurile au cheia properties atasata');
+
+// ── section() citeste din pageProductsIndexed(), dar parametrii optionali
+// (modifier/limit/offset) trebuie sa se comporte identic cu inainte ──
+$totalAcoperisAcc = productsForSection('acoperis', 'accesorii-acoperis', 'accessory');
+$modSm  = section('acoperis', 'accesorii-acoperis', 'accessory', null, 0, 'sm');
+$modGol = section('acoperis', 'accesorii-acoperis', 'accessory', null, 0, '');
+// numarul de carduri .accessory-card randate in fiecare varianta trebuie sa insumeze totalul
+$nSm  = substr_count($modSm,  'class="accessory-card');
+$nGol = substr_count($modGol, 'class="accessory-card');
+ok($nSm + $nGol === count($totalAcoperisAcc),
+    "section() cu modifier 'sm' + '' insumeaza totalul sectiunii ($nSm + $nGol vs " . count($totalAcoperisAcc) . ')');
+ok($nSm > 0 && $nGol > 0, "section() cu modifier 'sm' si '' intorc ambele carduri (got $nSm si $nGol)");
+
+// limit/offset aplicate in PHP peste indexul deja incarcat
+$toateCabluri  = section('electrice', 'cabluri-conductori');
+$primele2      = section('electrice', 'cabluri-conductori', 'material', 2, 0);
+$urmatoarele2  = section('electrice', 'cabluri-conductori', 'material', 2, 2);
+ok(substr_count($toateCabluri, 'class="material-card"') === 4, 'section(): fara limit => toate cele 4 randuri');
+ok(substr_count($primele2, 'class="material-card"') === 2, 'section(): limit=2, offset=0 => 2 randuri');
+ok(substr_count($urmatoarele2, 'class="material-card"') === 2, 'section(): limit=2, offset=2 => alte 2 randuri');
+ok($primele2 !== $urmatoarele2, 'section(): limit/offset produc subseturi diferite');
+
+// sectiune/pagina inexistenta => mesajul de indisponibilitate, nu eroare
+ok(str_contains(section('nu-exista', 'nu-exista'), 'wa.me/40749130565'),
+    'section(): pagina inexistenta => mesajul de indisponibilitate');
 
 echo "\nRezultat: $pass passed, $fail failed\n";
 exit($fail > 0 ? 1 : 0);
