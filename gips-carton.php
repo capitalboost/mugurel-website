@@ -306,11 +306,6 @@
       </a>
     </div>
 
-  </main>
-</div>
-
-<!-- FOOTER -->
-
     <section class="cat-section-block">
       <div class="cat-section-header">
         <h2 class="cat-section-title">Placi Gips Carton Speciale</h2>
@@ -331,7 +326,6 @@
       </div>
     </section>
 
-    
     <section class="cat-section-block">
       <div class="cat-section-header">
         <h2 class="cat-section-title">Produse Disponibile in Magazin</h2>
@@ -341,6 +335,11 @@
 <?= section('gips-carton', 'produse-disponibile-in-magazin') ?>
       </div>
     </section>
+
+  </main>
+</div>
+
+<!-- FOOTER -->
 
     <section class="faq-section" style="background:#f5f5f5;padding:40px 0;margin-top:0;">
   <div class="container" style="max-width:820px;margin:0 auto;padding:0 24px;">
