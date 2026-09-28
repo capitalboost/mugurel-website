@@ -65,16 +65,41 @@ function renderProps(array $p): string {
     return $out . '</div>';
 }
 
-/** Continutul lui .material-img-wrap: fotografie (daca exista), placeholder, badge. */
+/**
+ * Panou generat determinist din numele produsului: fundal si forme calculate
+ * din md5(nume), mereu identice pentru acelasi produs, practic niciodata la
+ * fel intre produse. Randat ca strat de baza in toate zonele de imagine —
+ * si sub fotografie (cand exista), ca plasa de siguranta daca fisierul lipseste.
+ */
+function panouGenerat(string $name): string {
+    $h = md5($name);
+    $tonuri = ['#0A5258', '#0E6A66', '#127A6E', '#14655F', '#0C4E55', '#16806F'];
+    $bg = $tonuri[hexdec(substr($h, 0, 2)) % count($tonuri)];
+    $rot = hexdec(substr($h, 2, 2)) % 45;
+    $o = [];
+    for ($i = 0; $i < 6; $i++) {
+        $x = hexdec(substr($h, 4 + $i * 4, 2)) % 100;
+        $y = hexdec(substr($h, 6 + $i * 4, 2)) % 100;
+        $r = 8 + (hexdec(substr($h, 4 + $i * 2, 1)) % 14);
+        $op = 0.06 + (hexdec(substr($h, 5 + $i * 2, 1)) % 6) * 0.018;
+        $o[] = ($i % 2 === 0)
+            ? '<circle cx="' . $x . '" cy="' . $y . '" r="' . $r . '" fill="#fff" opacity="' . round($op, 3) . '"/>'
+            : '<rect x="' . $x . '" y="' . $y . '" width="' . ($r * 2) . '" height="' . ($r * 2) . '" fill="#fff" opacity="' . round($op, 3) . '" transform="rotate(' . $rot . ' ' . $x . ' ' . $y . ')"/>';
+    }
+    return '<div class="v-gen" style="background:' . $bg . '">'
+         . '<svg viewBox="0 0 100 100" preserveAspectRatio="xMidYMid slice" aria-hidden="true">' . implode('', $o) . '</svg>'
+         . '</div>';
+}
+
+/** Continutul lui .material-img-wrap: panou generat (strat de baza), fotografie (daca exista), badge. */
 function renderImgWrap(array $p): string {
     $hasImg = !empty($p['image_path']);
-    $out = '<div class="material-img-wrap">';
+    $out = '<div class="material-img-wrap">' . panouGenerat($p['name']);
     if ($hasImg) {
         $out .= '<img src="' . e($p['image_path']) . '" alt="' . e($p['image_alt'] ?? $p['name'])
               . '" class="material-img" width="280" height="160" loading="lazy" decoding="async"'
-              . ' onerror="this.closest(\'.material-img-wrap\').style.display=\'none\'">';
+              . ' onerror="this.style.display=\'none\'">';
     }
-    $out .= renderIcon($p['icon_key'], $p['icon_label'], $hasImg);
     if (!empty($p['badge_label'])) {
         $cls = 'material-badge' . (!empty($p['badge_kind']) ? ' material-badge--' . e($p['badge_kind']) : '');
         $out .= '<div class="' . $cls . '">' . e($p['badge_label']) . '</div>';
@@ -114,13 +139,13 @@ function renderProdCards(array $products): string {
         $subcat = $p['subcat_slug'] ? ' data-subcat="' . e($p['subcat_slug']) . '"' : '';
         $waText = !empty($p['wa_text']) ? ' data-wa-text="' . e($p['wa_text']) . '"' : '';
         $hasImg = !empty($p['image_path']);
-        $imgWrap = '<div class="prod-img-wrap">';
+        $imgWrap = '<div class="prod-img-wrap">' . panouGenerat($p['name']);
         if ($hasImg) {
             $imgWrap .= '<img src="' . e($p['image_path']) . '" alt="' . e($p['image_alt'] ?? $p['name'])
                       . '" class="prod-img-photo" width="220" height="150" loading="lazy" decoding="async"'
-                      . ' onerror="this.closest(\'.prod-img-wrap\').style.display=\'none\'">';
+                      . ' onerror="this.style.display=\'none\'">';
         }
-        $imgWrap .= renderProdIcon($p['icon_key'], $p['icon_label'], $hasImg) . '</div>';
+        $imgWrap .= '</div>';
         $out .= '<div class="prod-card" data-cat="' . e($p['cat_slugs']) . '"' . $subcat . '>'
               . $imgWrap
               . '<div class="prod-body">'
@@ -141,8 +166,8 @@ function renderProdCards(array $products): string {
  *
  * Wrap-ul de imagine (.accessory-img-wrap) se randeaza doar daca produsul are
  * fotografie SAU iconita — marea majoritate (223 din 264) n-au niciuna. Cand
- * exista si fotografie si iconita, placeholder-ul ramane in DOM ca fallback,
- * dar ascuns (acelasi tipar ca la .material-img-wrap / renderImgWrap()).
+ * se randeaza, panoul generat e stratul de baza; fotografia (cand exista) sta
+ * deasupra lui (acelasi tipar ca la .material-img-wrap / renderImgWrap()).
  */
 function renderAccessoryCards(array $products): string {
     $out = '';
@@ -154,14 +179,11 @@ function renderAccessoryCards(array $products): string {
         $hasImg  = !empty($p['image_path']);
         $hasIcon = !empty($p['icon_key']);
         if ($hasImg || $hasIcon) {
-            $out .= '<div class="accessory-img-wrap">';
+            $out .= '<div class="accessory-img-wrap">' . panouGenerat($p['name']);
             if ($hasImg) {
                 $out .= '<img src="' . e($p['image_path']) . '" alt="' . e($p['image_alt'] ?? $p['name'])
                       . '" class="accessory-img" width="160" height="100" loading="lazy" decoding="async"'
-                      . ' onerror="this.closest(\'.accessory-img-wrap\').style.display=\'none\'">';
-            }
-            if ($hasIcon) {
-                $out .= renderAccessoryIcon($p['icon_key'], $p['icon_label'] ?? null, $hasImg);
+                      . ' onerror="this.style.display=\'none\'">';
             }
             $out .= '</div>';
         }

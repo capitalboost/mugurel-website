@@ -390,7 +390,7 @@ img { max-width: 100%; }
 /* Product grid alias */
 .prod-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-bottom: 20px; }
 .prod-img-wrap { height: 150px; background: var(--verde-light); display: flex; align-items: center; justify-content: center; position: relative; overflow: hidden; }
-.prod-img-wrap img { width: 100%; height: 100%; object-fit: cover; }
+.prod-img-wrap img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; z-index: 1; }
 .prod-img-ph { display: flex; flex-direction: column; align-items: center; gap: 6px; color: var(--verde-mid); }
 .prod-img-ph svg { width: 56px; height: 42px; }
 
@@ -487,9 +487,11 @@ img { max-width: 100%; }
 .material-card:hover { box-shadow: 0 6px 20px rgba(0,0,0,0.12); transform: translateY(-2px); }
 
 .material-img-wrap { position: relative; height: 160px; overflow: hidden; background: var(--verde-light); }
-.material-img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.material-img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; display: block; z-index: 1; }
 .material-img-ph { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 8px; width: 100%; height: 100%; color: var(--verde-mid); }
 .material-img-ph svg { width: 72px; height: 54px; }
+.v-gen { position: absolute; inset: 0; width: 100%; height: 100%; overflow: hidden; }
+.v-gen svg { width: 100%; height: 100%; display: block; }
 .material-badge { position: absolute; top: 10px; left: 10px; background: var(--rosu); color: #fff; font-size: 10px; font-weight: 700; padding: 3px 8px; border-radius: 3px; text-transform: uppercase; letter-spacing: 0.05em; }
 .material-badge--popular { background: var(--rosu); }
 .material-badge--premium { background: #7B4F12; }
@@ -515,8 +517,8 @@ img { max-width: 100%; }
 
 .accessory-card { background: #fff; border: 1px solid var(--border); border-radius: var(--radius); overflow: hidden; display: flex; flex-direction: column; }
 .accessory-card--sm { }
-.accessory-img-wrap { height: 100px; background: var(--verde-light); overflow: hidden; }
-.accessory-img { width: 100%; height: 100%; object-fit: cover; }
+.accessory-img-wrap { position: relative; height: 100px; background: var(--verde-light); overflow: hidden; }
+.accessory-img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; z-index: 1; }
 .accessory-img-ph { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; width: 100%; height: 100%; color: var(--verde-mid); }
 .accessory-img-ph svg { width: 48px; height: 36px; }
 .accessory-body { padding: 12px; flex: 1; display: flex; flex-direction: column; gap: 6px; }

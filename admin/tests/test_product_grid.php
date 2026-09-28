@@ -67,21 +67,38 @@ $cuPoza[0]['badge_label'] = 'Cel mai vandut';
 $cuPoza[0]['badge_kind']  = 'popular';
 $h = renderMaterialCards($cuPoza);
 ok(str_contains($h, 'class="material-img"'),                 'randeaza <img> cand exista fotografie');
-ok(str_contains($h, 'style="display:none"'),                 'placeholder-ul e ascuns cand exista fotografie');
+ok(str_contains($h, 'class="v-gen"'),                         'panoul generat e prezent si cand exista fotografie (strat de baza)');
 ok(str_contains($h, 'material-badge material-badge--popular'), 'badge cu modificator');
 ok(str_contains($h, 'Cel mai vandut'),                       'textul badge-ului');
-ok(str_contains($h, 'onerror='),                             'pastreaza fallback-ul onerror');
+ok(str_contains($h, "onerror=\"this.style.display='none'\""), 'onerror ascunde doar <img>-ul, nu tot blocul');
 ok(str_contains($h, 'loading="lazy"'),                       'material: <img> are loading="lazy"');
 ok(str_contains($h, 'decoding="async"'),                     'material: <img> are decoding="async"');
 ok(str_contains($h, 'width="280" height="160"'),             'material: <img> are width/height');
+ok(!str_contains($h, 'material-img-ph'),                     'material: nicio iconita placeholder cand exista fotografie');
 
 $fara = $sample;
 $fara[0]['image_path'] = null; $fara[0]['badge_label'] = null;
 $h2 = renderMaterialCards($fara);
 ok(!str_contains($h2, '<img'),                    'fara fotografie => niciun <img>');
-ok(str_contains($h2, 'style="display:flex"'),     'placeholder vizibil cand nu exista fotografie');
+ok(str_contains($h2, 'class="v-gen"'),            'panoul generat e prezent cand nu exista fotografie');
 ok(!str_contains($h2, 'material-badge'),          'fara badge => niciun element de badge');
-ok(!str_contains($h2, '<span>'),                  'placeholder-ul fara fotografie nu are <span> cu eticheta (design curat)');
+ok(!str_contains($h2, 'material-img-ph'),         'material: nicio iconita placeholder ramasa');
+ok(!str_contains($h2, '<span>'),                  'panoul fara fotografie nu are <span> cu eticheta (design curat)');
+
+// ── panoul generat: determinism si varietate (Task panou-generat) ──
+$panou1 = panouGenerat('Tabla Zincata Simpla');
+$panou2 = panouGenerat('Tabla Zincata Simpla');
+ok($panou1 === $panou2, 'panouGenerat: acelasi nume => rezultat identic (determinism)');
+ok(panouGenerat('Robinet cu Sfera') !== panouGenerat('Teava PPR 20mm'),
+    'panouGenerat: nume diferite => panouri diferite');
+ok(str_contains($panou1, 'class="v-gen"'),        'panouGenerat: containerul .v-gen');
+ok(str_contains($panou1, 'aria-hidden="true"'),   'panouGenerat: svg-ul e aria-hidden');
+
+// panou prezent cand nu exista poza — pe cardul de tip material (Task panou-generat, verif. 1)
+$faraPoza = $sample;
+$faraPoza[0]['image_path'] = null;
+ok(str_contains(renderMaterialCards($faraPoza), 'class="v-gen"'),
+    'material: panoul generat e prezent cand nu exista poza');
 
 $faraKind = $sample;
 $faraKind[0]['image_path'] = null;
@@ -132,9 +149,10 @@ ok(str_contains($hPoza, 'class="accessory-img-wrap"'), 'accessory: img-wrap prez
 ok(str_contains($hPoza, 'src="img/jgheab-semicircular.jpg"'), 'accessory: src-ul fotografiei');
 ok(str_contains($hPoza, 'alt="Jgheab semicircular"'),  'accessory: alt-ul fotografiei');
 ok(str_contains($hPoza, 'class="accessory-img"'),      'accessory: clasa .accessory-img');
-ok(str_contains($hPoza, "onerror=\"this.closest('.accessory-img-wrap').style.display='none'\""),
-    'accessory: fallback onerror pe fotografie');
-ok(!str_contains($hPoza, 'accessory-img-ph'),          'accessory: fara placeholder cand n-are iconita');
+ok(str_contains($hPoza, 'class="v-gen"'),              'accessory: panoul generat e strat de baza si cu fotografie');
+ok(str_contains($hPoza, "onerror=\"this.style.display='none'\""),
+    'accessory: onerror ascunde doar <img>-ul, nu tot blocul');
+ok(!str_contains($hPoza, 'accessory-img-ph'),          'accessory: fara placeholder de iconita cand n-are iconita');
 ok(str_contains($hPoza, 'loading="lazy"'),             'accessory: <img> are loading="lazy"');
 ok(str_contains($hPoza, 'decoding="async"'),           'accessory: <img> are decoding="async"');
 
@@ -145,15 +163,16 @@ $faraAlt[0]['image_alt']  = null;
 $hFaraAlt = renderAccessoryCards($faraAlt);
 ok(str_contains($hFaraAlt, 'alt="Tablou electric metalic/plastic 4-8 module"'), 'accessory: alt cade pe nume cand image_alt e null');
 
-// varianta 3/4: doar iconita, fara fotografie (cazul a 16 din 264) — placeholder vizibil
+// varianta 3/4: doar iconita, fara fotografie (cazul a 16 din 264) — iconita nu se mai randeaza,
+// dar zona de imagine tot se randeaza, cu panoul generat ca strat de baza.
 $doarIcon = $acc;
 $doarIcon[0]['icon_key'] = 'icon-09304de8';
 $hIcon = renderAccessoryCards($doarIcon);
 ok(str_contains($hIcon, 'class="accessory-img-wrap"'),   'accessory: img-wrap prezent cand exista iconita');
-ok(str_contains($hIcon, 'class="accessory-img-ph" style="display:flex"'),
-    'accessory: placeholder vizibil cand n-are fotografie');
+ok(str_contains($hIcon, 'class="v-gen"'),                 'accessory: panoul generat vizibil cand n-are fotografie');
 ok(!str_contains($hIcon, '<img'),                          'accessory: fara <img> cand n-are fotografie');
-ok(!str_contains($hIcon, '<span>'),                         'accessory: fara icon_label => placeholder fara eticheta (12 din 20 cazuri reale)');
+ok(!str_contains($hIcon, 'accessory-img-ph'),               'accessory: iconita nu se mai randeaza (icon_key ramane in DB, doar nu se afiseaza)');
+ok(!str_contains($hIcon, '<span>'),                         'accessory: fara icon_label => nimic randat (12 din 20 cazuri reale)');
 
 // icon_label nu se mai randeaza deloc, nici cand exista (design curat, fara eticheta
 // care repeta titlul de sub card — vezi raportul design/perf) — dar ramane in DB.
@@ -163,7 +182,8 @@ $doarIconCuEticheta[0]['icon_label'] = 'Cot 45°';
 $hIconEticheta = renderAccessoryCards($doarIconCuEticheta);
 ok(!str_contains($hIconEticheta, '<span>'), 'accessory: fara <span> chiar si cand icon_label exista');
 
-// varianta 4/4: si fotografie si iconita (cazul a 4 din 264) — placeholder ascuns, ramane in DOM
+// varianta 4/4: si fotografie si iconita (cazul a 4 din 264) — iconita nu se mai randeaza,
+// fotografia sta deasupra panoului generat.
 $ambele = $acc;
 $ambele[0]['image_path'] = 'img/brida-burlan.jpg';
 $ambele[0]['image_alt']  = 'Brida burlan';
@@ -171,23 +191,18 @@ $ambele[0]['icon_key']   = 'icon-09304de8';
 $ambele[0]['icon_label'] = 'Brida burlan';
 $hAmbele = renderAccessoryCards($ambele);
 ok(str_contains($hAmbele, 'class="accessory-img"'),        'accessory: fotografia e prezenta cand exista ambele');
-ok(str_contains($hAmbele, 'class="accessory-img-ph" style="display:none"'),
-    'accessory: placeholder ascuns (dar in DOM) cand exista si fotografie si iconita');
+ok(str_contains($hAmbele, 'class="v-gen"'),                'accessory: panoul generat ramane strat de baza sub fotografie');
+ok(!str_contains($hAmbele, 'accessory-img-ph'),
+    'accessory: iconita nu se mai randeaza chiar daca icon_key si icon_label exista');
 ok(!str_contains($hAmbele, '<span>'),
-    'accessory: fara <span> chiar si cand placeholder-ul e ascuns');
+    'accessory: fara <span> chiar si cand exista icon_label');
 
-// escaping pe eticheta iconitei
-$xssIcon = $acc;
-$xssIcon[0]['icon_key']   = 'icon-09304de8';
-$xssIcon[0]['icon_label'] = '<script>alert(3)</script>';
-ok(!str_contains(renderAccessoryCards($xssIcon), '<script>alert(3)</script>'),
-    'accessory: escapeaza eticheta iconitei');
-
-// iconita necunoscuta => cade pe iconita generica (acelasi tipar ca la materiale)
+// icon_key necunoscut nu produce nicio eroare (iconita oricum nu se mai randeaza)
 $iconNecunoscuta = $acc;
 $iconNecunoscuta[0]['icon_key'] = 'icon-inexistenta';
 $hNecunoscuta = renderAccessoryCards($iconNecunoscuta);
-ok(str_contains($hNecunoscuta, PRODUCT_ICON_FALLBACK), 'accessory: iconita necunoscuta cade pe fallback');
+ok(!str_contains($hNecunoscuta, PRODUCT_ICON_FALLBACK), 'accessory: nicio iconita (nici fallback) cand icon_key e necunoscut');
+ok(str_contains($hNecunoscuta, 'class="v-gen"'), 'accessory: panoul generat randat in locul iconitei necunoscute');
 
 // escaping
 $xssAcc = $acc;
@@ -286,10 +301,11 @@ $badgeCrossListat = badgeClass(['cat_slugs' => 'incalzire apa-canal']);
 ok($badgeCrossListat === 'prod-badge prod-badge--incalzire',
     'badgeClass: cross-listat foloseste prima categorie (got ' . $badgeCrossListat . ')');
 
-// ── renderProdCards() foloseste iconitele de catalog, nu cele de pagina de categorie ──
+// ── renderProdCards() nu mai randeaza iconita placeholder — panoul generat ii ia locul ──
 $prodHtml = renderProdCards($sample);
-ok(str_contains($prodHtml, 'class="prod-img-ph"'), 'renderProdCards: foloseste .prod-img-ph');
+ok(!str_contains($prodHtml, 'class="prod-img-ph"'), 'renderProdCards: nu mai foloseste .prod-img-ph');
 ok(!str_contains($prodHtml, 'class="material-img-ph"'), 'renderProdCards: NU foloseste .material-img-ph');
+ok(str_contains($prodHtml, 'class="v-gen"'), 'renderProdCards: panoul generat e prezent');
 
 // ── renderProdCards() randeaza fotografia cand exista (fix inconsecventa catalog) ──
 $prodCuPoza = $sample;
@@ -298,19 +314,19 @@ $prodCuPoza[0]['image_alt']  = 'Tabla cutata';
 $hProdPoza = renderProdCards($prodCuPoza);
 ok(str_contains($hProdPoza, 'src="img/tabla-cutata.jpg"'),   'prod: randeaza <img> cand exista fotografie');
 ok(str_contains($hProdPoza, 'alt="Tabla cutata"'),            'prod: alt-ul fotografiei');
-ok(str_contains($hProdPoza, "onerror=\"this.closest('.prod-img-wrap').style.display='none'\""),
-    'prod: fallback onerror pe fotografie');
+ok(str_contains($hProdPoza, "onerror=\"this.style.display='none'\""),
+    'prod: onerror ascunde doar <img>-ul, nu tot blocul');
 ok(str_contains($hProdPoza, 'loading="lazy"'),                'prod: <img> are loading="lazy"');
 ok(str_contains($hProdPoza, 'decoding="async"'),              'prod: <img> are decoding="async"');
-ok(str_contains($hProdPoza, 'class="prod-img-ph" style="display:none"'),
-    'prod: placeholder-ul ramane in DOM dar ascuns cand exista fotografie');
+ok(str_contains($hProdPoza, 'class="v-gen"'),
+    'prod: panoul generat ramane strat de baza cand exista fotografie');
 
 $prodFaraPoza = $sample;
 $prodFaraPoza[0]['image_path'] = null;
 $hProdFaraPoza = renderProdCards($prodFaraPoza);
 ok(!str_contains($hProdFaraPoza, '<img'),                      'prod: fara fotografie => niciun <img>');
-ok(str_contains($hProdFaraPoza, 'class="prod-img-ph" style="display:flex"'),
-    'prod: placeholder vizibil cand nu exista fotografie');
+ok(str_contains($hProdFaraPoza, 'class="v-gen"'),
+    'prod: panoul generat prezent cand nu exista fotografie');
 
 echo "\nRezultat: $pass passed, $fail failed\n";
 exit($fail > 0 ? 1 : 0);
