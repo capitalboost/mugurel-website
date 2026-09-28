@@ -1,6 +1,8 @@
 <?php
 require_once __DIR__ . '/../models/Product.php';
 require_once __DIR__ . '/../helpers/Upload.php';
+require_once __DIR__ . '/../../includes/products_repo.php';
+require_once __DIR__ . '/../../includes/product_icons.php';
 
 $db = Database::get();
 
@@ -10,7 +12,11 @@ switch ($action) {
         $id = Sanitize::posInt($_GET['id'] ?? 0);
         $product = $id ? Product::byId($id) : null;
         if ($id && !$product) { Flash::error('Produsul nu exista.'); header('Location: /admin/?page=products'); exit; }
-        $categories = Product::categories();
+        $categoryTree = categoryTree();
+        $sectionsByPage = Product::sectionsByPage();
+        $knownPageSlugs = Product::KNOWN_PAGE_SLUGS;
+        $knownBadgeKinds = Product::KNOWN_BADGE_KINDS;
+        $productIcons = PRODUCT_ICONS;
         ob_start();
         require __DIR__ . '/../views/products/edit.php';
         $bodyContent = ob_get_clean();
@@ -41,6 +47,17 @@ switch ($action) {
             }
         }
 
+        // section_key: fie una din cele existente (select), fie una noua (text) — textul are prioritate.
+        $sectionKeyNew = Sanitize::slug($_POST['section_key_new'] ?? '');
+        $sectionKeyExisting = Sanitize::slug($_POST['section_key_existing'] ?? '');
+        $sectionKey = $sectionKeyNew !== '' ? $sectionKeyNew : $sectionKeyExisting;
+
+        $pageSlug   = Sanitize::slug($_POST['page_slug'] ?? '');
+        $cardKind   = $_POST['card_kind'] ?? 'material';
+        $cardModifier = Sanitize::slug($_POST['card_modifier'] ?? '');
+        $iconKey    = Sanitize::text($_POST['icon_key'] ?? '', 40);
+        $badgeKind  = Sanitize::slug($_POST['badge_kind'] ?? '');
+
         $data = [
             'category_id'       => Sanitize::posInt($_POST['category_id'] ?? 0),
             'name'              => Sanitize::text($_POST['name'] ?? '', 200),
@@ -52,10 +69,42 @@ switch ($action) {
             'is_visible'        => isset($_POST['is_visible']) ? 1 : 0,
             'sort_order'        => Sanitize::posInt($_POST['sort_order'] ?? 0),
             'created_by'        => Auth::id(),
+            'page_slug'         => $pageSlug,
+            'section_key'       => $sectionKey !== '' ? $sectionKey : null,
+            'card_kind'         => $cardKind,
+            'card_modifier'     => $cardModifier !== '' ? $cardModifier : null,
+            'icon_key'          => $iconKey !== '' ? $iconKey : null,
+            'icon_label'        => Sanitize::text($_POST['icon_label'] ?? '', 120),
+            'badge_label'       => Sanitize::text($_POST['badge_label'] ?? '', 60),
+            'badge_kind'        => $badgeKind !== '' ? $badgeKind : null,
+            'wa_text'           => Sanitize::text($_POST['wa_text'] ?? '', 400),
         ];
+        if ($data['wa_text'] === '') { $data['wa_text'] = null; }
+        if ($data['icon_label'] === '') { $data['icon_label'] = null; }
+        if ($data['badge_label'] === '') { $data['badge_label'] = null; }
 
+        $errors = [];
         if (empty($data['name']) || $data['category_id'] === 0) {
-            Flash::error('Numele si categoria sunt obligatorii.');
+            $errors[] = 'Numele si categoria sunt obligatorii.';
+        }
+        if (!in_array($data['page_slug'], Product::KNOWN_PAGE_SLUGS, true)) {
+            $errors[] = 'Pagina aleasa nu este valida.';
+        }
+        if (!in_array($data['card_kind'], ['material', 'accessory'], true)) {
+            $errors[] = 'Tipul de card nu este valid.';
+        }
+        if ($data['card_modifier'] !== null && $data['card_modifier'] !== 'sm') {
+            $errors[] = 'Modificatorul de card nu este valid.';
+        }
+        if ($data['icon_key'] !== null && !isset(PRODUCT_ICONS[$data['icon_key']])) {
+            $errors[] = 'Iconita aleasa nu este valida.';
+        }
+        if ($data['badge_kind'] !== null && !in_array($data['badge_kind'], Product::KNOWN_BADGE_KINDS, true)) {
+            $errors[] = 'Tipul de badge nu este valid.';
+        }
+
+        if ($errors) {
+            Flash::error(implode(' ', $errors));
             header('Location: /admin/?page=products&action=' . ($id ? 'edit&id=' . $id : 'new'));
             exit;
         }
@@ -87,10 +136,12 @@ switch ($action) {
         exit;
 
     default: // index
-        $search     = Sanitize::text($_GET['q'] ?? '', 100);
-        $catId      = Sanitize::posInt($_GET['cat'] ?? 0);
-        $products   = Product::all($catId, $search);
-        $categories = Product::categories();
+        $search      = Sanitize::text($_GET['q'] ?? '', 100);
+        $catId       = Sanitize::posInt($_GET['cat'] ?? 0);
+        $pageSlug    = Sanitize::slug($_GET['page_slug'] ?? '');
+        $products    = Product::all($catId, $search, $pageSlug);
+        $categories  = Product::categories();
+        $knownPageSlugs = Product::KNOWN_PAGE_SLUGS;
         ob_start();
         require __DIR__ . '/../views/products/list.php';
         $bodyContent = ob_get_clean();

@@ -15,12 +15,20 @@
       </option>
       <?php endforeach; ?>
     </select>
+    <select name="page_slug">
+      <option value="">Toate paginile</option>
+      <?php foreach ($knownPageSlugs as $slug): ?>
+      <option value="<?= htmlspecialchars($slug,ENT_QUOTES,'UTF-8') ?>" <?= ($pageSlug??'')===$slug?'selected':'' ?>>
+        <?= $slug==='catalog' ? 'Doar in catalog' : htmlspecialchars($slug,ENT_QUOTES,'UTF-8') ?>
+      </option>
+      <?php endforeach; ?>
+    </select>
     <button type="submit" class="btn btn--primary">Filtreaza</button>
   </form>
 
   <table class="adm-table">
     <thead>
-      <tr><th>Imagine</th><th>Nume</th><th>Categorie</th><th>Pret</th><th>Vizibil</th><th>Actiuni</th></tr>
+      <tr><th>Imagine</th><th>Nume</th><th>Categorie</th><th>Pagina</th><th>Sectiune</th><th>Pret</th><th>Vizibil</th><th>Actiuni</th></tr>
     </thead>
     <tbody>
     <?php foreach ($products as $p): ?>
@@ -34,6 +42,8 @@
       </td>
       <td><?= htmlspecialchars($p['name'],ENT_QUOTES,'UTF-8') ?></td>
       <td><?= htmlspecialchars($p['category_name'],ENT_QUOTES,'UTF-8') ?></td>
+      <td><?= htmlspecialchars($p['page_slug'] ?: '—',ENT_QUOTES,'UTF-8') ?></td>
+      <td><?= htmlspecialchars($p['section_key'] ?: '—',ENT_QUOTES,'UTF-8') ?></td>
       <td><?= $p['price'] ? number_format($p['price'],2).' '.$p['price_unit'] : '&mdash;' ?></td>
       <td><?= $p['is_visible'] ? 'Da' : 'Nu' ?></td>
       <td>
@@ -48,7 +58,7 @@
     </tr>
     <?php endforeach; ?>
     <?php if (empty($products)): ?>
-    <tr><td colspan="6" style="text-align:center;color:#aaa;padding:2rem">Niciun produs gasit.</td></tr>
+    <tr><td colspan="8" style="text-align:center;color:#aaa;padding:2rem">Niciun produs gasit.</td></tr>
     <?php endif; ?>
     </tbody>
   </table>

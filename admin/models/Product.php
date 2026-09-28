@@ -1,6 +1,16 @@
 <?php
 class Product {
-    public static function all(int $categoryId = 0, string $search = ''): array {
+    /** Cele 13 pagini de categorie plus 'catalog' — singurele valori valide pentru page_slug. */
+    const KNOWN_PAGE_SLUGS = [
+        'acoperis', 'apa-canal', 'catalog', 'electrice', 'electrocasnice',
+        'gard-imprejmuiri', 'gips-carton', 'gradina', 'incalzire', 'izolatie',
+        'mobilier', 'sanitare', 'scule-unelte', 'zidarie-bca',
+    ];
+
+    /** Singurele valori valide pentru badge_kind, in afara de gol. */
+    const KNOWN_BADGE_KINDS = ['popular', 'premium', 'new', 'eco'];
+
+    public static function all(int $categoryId = 0, string $search = '', string $pageSlug = ''): array {
         $db = Database::get();
         $sql = 'SELECT p.*, c.name AS category_name
                 FROM products p
@@ -11,6 +21,10 @@ class Product {
             $sql .= ' AND p.category_id = ?';
             $params[] = $categoryId;
         }
+        if ($pageSlug !== '') {
+            $sql .= ' AND p.page_slug = ?';
+            $params[] = $pageSlug;
+        }
         if ($search !== '') {
             $sql .= ' AND (p.name LIKE ? OR p.short_description LIKE ?)';
             $params[] = "%$search%";
@@ -20,6 +34,20 @@ class Product {
         $stmt = $db->prepare($sql);
         $stmt->execute($params);
         return $stmt->fetchAll();
+    }
+
+    /** Perechile distincte page_slug/section_key existente, grupate pe pagina, pentru selectul dependent din formular. */
+    public static function sectionsByPage(): array {
+        $rows = Database::get()->query(
+            "SELECT DISTINCT page_slug, section_key FROM products
+             WHERE section_key IS NOT NULL AND section_key <> ''
+             ORDER BY page_slug, section_key"
+        )->fetchAll();
+        $out = [];
+        foreach ($rows as $r) {
+            $out[$r['page_slug']][] = $r['section_key'];
+        }
+        return $out;
     }
 
     public static function byId(int $id): ?array {
@@ -35,14 +63,19 @@ class Product {
         $db = Database::get();
         $stmt = $db->prepare(
             'INSERT INTO products
-             (category_id, name, short_description, image_path, image_alt, price, price_unit, is_visible, sort_order, created_by)
-             VALUES (?,?,?,?,?,?,?,?,?,?)'
+             (category_id, name, short_description, image_path, image_alt, price, price_unit,
+              is_visible, sort_order, created_by, page_slug, section_key, card_kind, card_modifier,
+              icon_key, icon_label, badge_label, badge_kind, wa_text)
+             VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)'
         );
         $stmt->execute([
             $data['category_id'], $data['name'],  $data['short_description'],
             $data['image_path'],  $data['image_alt'], $data['price'],
             $data['price_unit'],  $data['is_visible'], $data['sort_order'],
             $data['created_by'],
+            $data['page_slug'], $data['section_key'], $data['card_kind'], $data['card_modifier'],
+            $data['icon_key'], $data['icon_label'], $data['badge_label'], $data['badge_kind'],
+            $data['wa_text'],
         ]);
         return (int)$db->lastInsertId();
     }
@@ -51,12 +84,17 @@ class Product {
         Database::get()->prepare(
             'UPDATE products SET
              category_id=?, name=?, short_description=?, image_path=?,
-             image_alt=?, price=?, price_unit=?, is_visible=?, sort_order=?
+             image_alt=?, price=?, price_unit=?, is_visible=?, sort_order=?,
+             page_slug=?, section_key=?, card_kind=?, card_modifier=?,
+             icon_key=?, icon_label=?, badge_label=?, badge_kind=?, wa_text=?
              WHERE id=?'
         )->execute([
             $data['category_id'], $data['name'], $data['short_description'],
             $data['image_path'],  $data['image_alt'], $data['price'],
-            $data['price_unit'],  $data['is_visible'], $data['sort_order'], $id,
+            $data['price_unit'],  $data['is_visible'], $data['sort_order'],
+            $data['page_slug'], $data['section_key'], $data['card_kind'], $data['card_modifier'],
+            $data['icon_key'], $data['icon_label'], $data['badge_label'], $data['badge_kind'],
+            $data['wa_text'], $id,
         ]);
     }
 

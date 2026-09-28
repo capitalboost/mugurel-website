@@ -66,6 +66,25 @@ body { font-family: 'Open Sans', sans-serif; font-size: 14px; color: var(--text)
 .adm-form .form-row { display: flex; gap: 1rem; }
 .adm-form .form-row label { flex: 1; }
 
+/* Grila de iconite (selectie produs) */
+.icon-grid {
+  display: grid; grid-template-columns: repeat(auto-fill, minmax(70px, 1fr)); gap: .5rem;
+  max-height: 260px; overflow-y: auto; padding: .8rem; margin-top: .3rem;
+  border: 1px solid var(--border); border-radius: var(--radius); background: #fafcfc;
+}
+.icon-grid__item {
+  display: flex; flex-direction: column; align-items: center; gap: .2rem;
+  padding: .4rem; border: 1px solid transparent; border-radius: 4px; cursor: pointer;
+  font-weight: 400; margin-bottom: 0; text-align: center;
+}
+.icon-grid__item:hover { background: var(--verde-light); }
+.icon-grid__item input[type=radio] { width: auto; margin: 0 0 .2rem; }
+.icon-grid__item input[type=radio]:checked ~ .icon-grid__preview,
+.icon-grid__item:has(input:checked) { border-color: var(--accent); }
+.icon-grid__preview { width: 40px; height: 30px; display: flex; align-items: center; justify-content: center; color: var(--verde-mid); }
+.icon-grid__preview svg { width: 100%; height: 100%; }
+.icon-grid__label { font-size: .65rem; color: #777; }
+
 /* Dashboard stats */
 .adm-stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 1rem; margin-bottom: 2rem; }
 .adm-stat  { background: #fff; border: 1px solid var(--border); border-radius: var(--radius); padding: 1.2rem; text-align: center; }
