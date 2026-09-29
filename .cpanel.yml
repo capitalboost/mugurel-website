@@ -2,6 +2,9 @@
 deployment:
   tasks:
     - export DEPLOYPATH=/home/mugurel/public_html/
+    # Taskurile ruleaza in acelasi shell, iar unul de mai jos face "cd $DEPLOYPATH".
+    # Retinem radacina clonei git cat timp inca suntem in ea.
+    - export REPOPATH=$PWD
     - /bin/cp -R css $DEPLOYPATH
     - /bin/cp -R img $DEPLOYPATH
     - /bin/cp -R finantari-europene $DEPLOYPATH
@@ -27,7 +30,7 @@ deployment:
       for BIN in /opt/cpanel/ea-php81/root/usr/bin/php /opt/cpanel/ea-php82/root/usr/bin/php /usr/local/bin/php php; do
         if "$BIN" -r "exit(PHP_VERSION_ID >= 80000 ? 0 : 1);" >/dev/null 2>&1; then
           echo "=== folosesc $BIN ($("$BIN" -r "echo PHP_VERSION;")) ===" > "$LOG";
-          "$BIN" db/deploy_db.php /home/mugurel/public_html >> "$LOG" 2>&1;
+          "$BIN" "$REPOPATH/db/deploy_db.php" /home/mugurel/public_html >> "$LOG" 2>&1;
           break;
         fi;
       done;
