@@ -50,9 +50,19 @@ $checks = [
     'tip mixed (8.0)'                   => 'function t2(mixed $v): int { return 1; }',
     'array_is_list (8.1)'               => 'return array_is_list([1,2,3]);',
 ];
+// ParseError e o exceptie aruncata, nu un warning — operatorul @ nu o opreste.
+// Fara try/catch, prima verificare care esueaza ar omori tot diagnosticul,
+// exact pe serverul unde avem cea mai mare nevoie de restul informatiilor.
 foreach ($checks as $eticheta => $cod) {
-    $ok = @eval('if (false) { ' . $cod . ' } return true;');
-    echo str_pad($eticheta, 38) . ($ok ? "OK" : "ESUEAZA") . "\n";
+    try {
+        eval('if (false) { ' . $cod . ' }');
+        $rezultat = 'OK';
+    } catch (ParseError $e) {
+        $rezultat = 'ESUEAZA — ' . $e->getMessage();
+    } catch (Throwable $e) {
+        $rezultat = 'EROARE — ' . get_class($e) . ': ' . $e->getMessage();
+    }
+    echo str_pad($eticheta, 38) . $rezultat . "\n";
 }
 
 echo "\n=== HANDLER PENTRU .php ===\n";
