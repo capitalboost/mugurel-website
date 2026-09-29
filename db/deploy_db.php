@@ -167,11 +167,34 @@ function main(array $argv): int
     } else {
         $productsCount = countTable($pdo, 'products');
 
+        // Distinge datele NOASTRE de resturi dintr-un import vechi.
+        //
+        // Importul curent seteaza `page_slug` pe fiecare produs — e coloana care
+        // decide pe ce pagina apare. Randurile ramase dintr-o rulare veche (dinainte
+        // sa existe coloana) au `page_slug` gol dupa migrare, deci nu s-ar afisa
+        // nicaieri. Pe productie exista exact asa ceva: 231 de randuri din iunie.
+        //
+        // Deci importam cand tabela e goala SAU cand niciun rand nu are `page_slug`.
+        // Orice produs adaugat din noul admin are page_slug setat, deci e protejat.
+        $productsReale = null;
+        if ($productsCount !== null && $productsCount > 0) {
+            try {
+                $stmt = $pdo->query("SELECT COUNT(*) FROM products WHERE page_slug IS NOT NULL AND page_slug <> ''");
+                $productsReale = $stmt === false ? null : (int) $stmt->fetchColumn();
+            } catch (Throwable $e) {
+                // Coloana nu exista inca => date dinainte de migrare, deci vechi.
+                $productsReale = 0;
+            }
+        }
+
         if ($productsCount === null) {
             out('Import SARIT: tabela `products` nu exista sau nu poate fi citita (probabil migrarile au esuat mai sus).');
-        } elseif ($productsCount > 0) {
-            out("Import SARIT: tabela `products` are deja $productsCount randuri — nu ating datele existente.");
+        } elseif ($productsCount > 0 && $productsReale !== null && $productsReale > 0) {
+            out("Import SARIT: tabela `products` are $productsReale produse cu pagina setata — sunt date reale, nu le ating.");
         } else {
+            if ($productsCount > 0) {
+                out("Curat $productsCount randuri vechi din `products` (fara page_slug, dintr-un import anterior).");
+            }
             // productie_date.sql seteaza created_by=1 pe toate produsele (FK catre users.id).
             $adminExists = countTable($pdo, 'users');
             $hasUserOne = false;

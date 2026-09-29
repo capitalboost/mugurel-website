@@ -18,4 +18,5 @@ deployment:
     - /bin/cp *.svg $DEPLOYPATH
     - /bin/cp *.php $DEPLOYPATH
     - cd $DEPLOYPATH && for f in *.php; do [ -f "${f%.php}.html" ] && rm -f "${f%.php}.html"; done; true
+    - /bin/rm -f $DEPLOYPATH/__diag.php
     - php db/deploy_db.php /home/mugurel/public_html || true
