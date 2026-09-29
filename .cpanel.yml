@@ -19,4 +19,16 @@ deployment:
     - /bin/cp *.php $DEPLOYPATH
     - cd $DEPLOYPATH && for f in *.php; do [ -f "${f%.php}.html" ] && rm -f "${f%.php}.html"; done; true
     - /bin/rm -f $DEPLOYPATH/__diag.php
-    - php db/deploy_db.php /home/mugurel/public_html || true
+    # PHP din linia de comanda pe cPanel e adesea alta versiune decat handlerul web.
+    # Incercam intai binarul ea-php81 explicit, apoi alternativele, si scriem tot
+    # output-ul intr-un log ca sa nu mai esueze in tacere.
+    - >
+      LOG=$DEPLOYPATH/__deploy_m7x2verif.log;
+      for BIN in /opt/cpanel/ea-php81/root/usr/bin/php /opt/cpanel/ea-php82/root/usr/bin/php /usr/local/bin/php php; do
+        if "$BIN" -r "exit(PHP_VERSION_ID >= 80000 ? 0 : 1);" >/dev/null 2>&1; then
+          echo "=== folosesc $BIN ($("$BIN" -r "echo PHP_VERSION;")) ===" > "$LOG";
+          "$BIN" db/deploy_db.php /home/mugurel/public_html >> "$LOG" 2>&1;
+          break;
+        fi;
+      done;
+      true
