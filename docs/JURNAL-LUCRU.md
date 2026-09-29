@@ -7,7 +7,7 @@ ce a rămas deschis și ce trebuie știut ca să continui fără să redescoperi
 
 ## ⚠️ CITESTE INTAI DACA RELUI DE PE ALTA MASINA
 
-Lucrarea pe catalog e **terminata local si asteapta deploy**. Orice interventie pe ea cere mediu local.
+Lucrarea pe catalog e **live pe mugurel-bricolaj.ro** din 29 septembrie. Orice interventie pe ea cere mediu local.
 Inainte de orice, verifica pe masina curenta:
 
 ```bash
@@ -26,6 +26,180 @@ Numele exacte ale folderelor difera de la o instalare la alta — citeste-le din
 
 Apoi refa baza locala (vezi „Cum refaci mediul local" mai jos). **Baza de date NU e in git** —
 pe o masina noua e goala si trebuie reconstruita din scripturi.
+
+---
+
+## 29 septembrie 2026 — LIVE pe mugurel-bricolaj.ro
+
+Catalogul pe baza de date **ruleaza in productie**. 46 de commit-uri pe `feat/catalog-db`,
+ramura de pe care deployeaza cPanel momentan.
+
+### Ce e live acum
+
+| | Inainte | Acum |
+|---|---|---|
+| Catalog | 84 produse hardcodate | **534**, paginate cate 60 |
+| Pagini de categorie | HTML static | toate 13 din baza de date |
+| Produse in baza de productie | 231 (resturi din iunie) | **534** |
+| Blocuri de proprietati | 0 | **464** |
+| Subcategorii cu produse | 0 din 17 | **17 din 17** |
+| Panoul `/admin` | fara efect asupra site-ului | **functional cap-coada** |
+
+Verificat direct pe `mugurel-bricolaj.ro`, pagina cu pagina: **0 pagini non-200**,
+**231 materiale + 264 accesorii** (identic cu local), JSON-LD prezent pe toate 13,
+catalogul la 534, adminul 200.
+
+Mugurel poate acum sa adauge un produs din `/admin`, sa aleaga pagina si sectiunea, sa incarce
+o fotografie si sa scrie blocurile de specificatii si avantaje — si produsul apare pe site.
+
+---
+
+## Sistemul de siguranta — de citit inainte de urmatorul deploy
+
+Deploy-ul a reusit din a **treia** incercare. Primele doua au picat, fiecare din alta cauza.
+Ce a facut diferenta n-a fost ca am nimerit-o a treia oara, ci ca fiecare esec a fost
+**vizibil, izolat si reversibil**. Mecanismele de mai jos raman in cod si merita intelese.
+
+### 1. Degradare eleganta — pagina nu moare cand baza tace
+
+Toate functiile din `Website/includes/products_repo.php` returneaza `[]` la orice eroare de
+baza de date, niciodata exceptii. Paginile randeaza atunci tot continutul editorial — JSON-LD,
+titluri, texte, sectiuni, FAQ — si pun in locul grilelor un mesaj catre WhatsApp.
+
+La al doilea deploy esuat, exact asta s-a intamplat: site-ul a ramas **200 pe toate paginile**,
+cu tot continutul indexabil, doar fara produse. Fara plasa asta, ar fi fost 500 peste tot si
+paginile ar fi inceput sa cada din Google.
+
+Regula: **niciodata 500**. Un site cu grile goale se repara; unul disparut din index, mult mai greu.
+
+### 2. Verificare prin interogarea site-ului real, nu prin raport
+
+Dupa fiecare deploy, starea se verifica **interogand direct site-ul live**, nu citind ce spune
+cineva ca s-a intamplat:
+
+```bash
+for p in acoperis izolatie gips-carton zidarie-bca gard-imprejmuiri electrice incalzire \
+         sanitare apa-canal gradina mobilier electrocasnice scule-unelte; do
+  c=$(curl -s "https://mugurel-bricolaj.ro/$p.html")
+  code=$(curl -s -o /dev/null -w '%{http_code}' "https://mugurel-bricolaj.ro/$p.html")
+  m=$(echo "$c" | grep -o 'class="material-card"' | wc -l)
+  a=$(echo "$c" | grep -o 'class="accessory-card' | wc -l)
+  j=$(echo "$c" | grep -c 'application/ld+json')
+  printf "%-18s %5s mat=%-4s acc=%-4s jsonld=%s\n" "$p" "$code" "$m" "$a" "$j"
+done
+```
+
+Numerele asteptate: **231 materiale + 264 accesorii**, toate 200, JSON-LD pe fiecare pagina.
+Catalogul: `curl -s .../catalog.html | grep -o 'din [0-9]* produse'` → `din 534 produse`.
+
+**Numara aparitiile cu `grep -o | wc -l`, nu liniile cu `grep -c`** — mai multe carduri pot sta
+pe acelasi rand, iar `grep -c` da rezultate gresite. Din cauza asta am crezut initial ca sunt
+227 de produse in loc de 231.
+
+Asta a prins fiecare problema in cateva secunde, inainte sa apuce cineva sa se uite pe site.
+
+### 3. Log de deploy — nimic nu mai esueaza in tacere
+
+`.cpanel.yml` ruleaza `db/deploy_db.php` si scrie **tot** output-ul in
+`public_html/__deploy_m7x2verif.log`, citibil prin browser.
+
+A doua incercare a picat fiindca aveam `|| true` la capatul comenzii, fara sa scriu nicaieri ce
+s-a intamplat: deploy-ul a raportat succes, iar baza a ramas neatinsa. Log-ul a transformat a
+treia depanare din ghicit in citit:
+
+```
+=== folosesc /opt/cpanel/ea-php81/root/usr/bin/php (8.1.34) ===
+Could not open input file: db/deploy_db.php
+```
+
+Doua randuri, cauza exacta.
+
+**Citeste log-ul dupa fiecare deploy:** `https://mugurel-bricolaj.ro/__deploy_m7x2verif.log`
+
+### 4. Garda pe date — un redeploy nu sterge ce adauga Mugurel
+
+`productie_date.sql` contine `DROP TABLE`. Rulat la fiecare deploy, ar sterge tot ce se adauga
+din admin. Garda din `deploy_db.php` importa **doar** cand tabela `products` e goala **sau** cand
+niciun rand nu are `page_slug` setat.
+
+`page_slug` e coloana care decide pe ce pagina apare produsul. Randurile dinaintea migrarii o au
+goala; orice produs adaugat din noul admin o are completata — deci e protejat automat.
+
+Asta a contat: productia avea **231 de randuri vechi** dintr-un import din iunie. Cu garda
+initiala („importa doar daca e goala"), importul ar fi fost sarit si site-ul ar fi pornit cu date
+vechi fara `page_slug`, adica grile goale peste tot. Log-ul de la deploy-ul reusit arata garda
+lucrand:
+
+```
+Curat 231 randuri vechi din `products` (fara page_slug, dintr-un import anterior).
+OK — date importate din productie_date.sql
+```
+
+Testat pe trei scenarii inainte de deploy: date vechi → inlocuite; produs adaugat din admin →
+protejat; rulare repetata → idempotent.
+
+### 5. Revenire in doua click-uri
+
+cPanel → Basic Information → dropdown pe **`main`** → Update → Pull or Deploy → **Deploy HEAD Commit**.
+
+Site-ul revine la versiunea dinainte in ~30 de secunde. A functionat de doua ori. Fisierele `.html`
+vechi revin din repo, `.htaccess`-ul vechi nu mai are regula de rewrite, iar tabelele noi raman in
+baza fara sa deranjeze — codul vechi nu le atinge.
+
+**De asta deployezi un branch, nu `main`.** Revenirea e o selectie din dropdown, nu force-push si
+rescriere de istoric.
+
+### 6. Diagnostic pe un branch identic cu productia
+
+Cand a trebuit sa aflam versiunea reala de PHP de pe server, am creat branch-ul `diag` =
+`main` + **un singur fisier**, `__diag.php`. Deploy-ul de pe el nu schimba site-ul, doar adauga
+fisierul. Protejat cu token in URL (`?t=...`), 404 fara el.
+
+A raspuns in 10 secunde la intrebari la care altfel am fi dedus gresit: PHP **8.1.34 pe LiteSpeed**,
+toate cele 7 verificari de sintaxa OK, si starea exacta a tabelelor.
+
+Fisierul se sterge automat la urmatorul deploy real (`rm -f $DEPLOYPATH/__diag.php` in `.cpanel.yml`).
+
+---
+
+## Cele trei esecuri si ce le-a cauzat
+
+Toate trei au fost greseli de acelasi tip: **am presupus in loc sa verific**, iar de doua ori am
+scris presupunerea ca pe un fapt, direct in comentariile din cod.
+
+**1. Adaptare de mediu local intr-un fisier de productie.**
+Pusesem in `.htaccess` un bloc `<IfModule php_module>` cu `RemoveHandler .php`, ca PHP-ul sa
+ruleze pe Laragon. In comentariu scria: „pe cPanel `php_module` nu exista, deci nu se aplica".
+Nu verificasem niciodata. LiteSpeed **nu evalueaza `<IfModule>` ca Apache** — a executat
+continutul oricum, a sters handlerul `ea-php81`, iar fisierele au ajuns pe un PHP vechi care
+crapa pe orice sintaxa 7.4+.
+
+**Regula:** nicio adaptare de mediu local in fisiere care ajung pe server. Nevoile locale stau in
+vhost-ul Laragon (`C:\laragon\etc\apache2\sites-enabled\mugurel.conf`), cu `AllowOverride None`,
+care ignora complet `.htaccess`-ul de productie si replica doar regulile necesare in dezvoltare.
+
+**2. `php` din linia de comanda nu e acelasi cu handlerul web.**
+Pe cPanel, `php` poate fi orice versiune. `.cpanel.yml` cauta acum explicit un binar PHP 8:
+`/opt/cpanel/ea-php81/root/usr/bin/php`, apoi alternative, verificand versiunea inainte de a-l folosi.
+
+**3. Taskurile de deploy ruleaza in acelasi shell.**
+Un task anterior face `cd $DEPLOYPATH`, deci pasii urmatori pornesc din `public_html`, nu din
+clona git. `db/deploy_db.php` nu era gasit. Rezolvat cu `export REPOPATH=$PWD` **inainte** de
+orice `cd`, si cale absoluta la invocare.
+
+---
+
+## Ramase de facut
+
+- [ ] **Merge `feat/catalog-db` in `main`.** cPanel deployeaza acum de pe branch, ceea ce
+      functioneaza, dar pe termen lung `main` ar trebui sa fie ramura de productie.
+- [ ] **Cele 31 de fotografii** cu calea deja configurata in baza — lista completa e in intrarea
+      din 28 septembrie. Pui fisierul in `Website/img/` cu numele exact si poza apare singura,
+      peste panoul generat, fara nicio modificare de cod.
+- [ ] **Sterge `__deploy_m7x2verif.log`** din `public_html` cand nu mai e nevoie de el.
+- [ ] **Cele 3000+ de produse** din gestiune, cand exista digital. Repository-ul accepta deja
+      `limit`/`offset` si catalogul e paginat; lipseste doar importul.
+
 
 ---
 
