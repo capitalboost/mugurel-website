@@ -29,6 +29,20 @@ pe o masina noua e goala si trebuie reconstruita din scripturi.
 
 ---
 
+## 13 octombrie 2026 — Email pe domeniu: GATA (conditiile A4 + A5 din planul de lansare)
+
+- Casuta `comenzi@mugurel-bricolaj.ro` (1 GB) creata in cPanel (Hostgate, IP 185.246.122.88, PTR hg488.dnsgate.ro).
+- Pana azi domeniul **nu avea MX** — nu primea niciun mail. Adaugat in Cloudflare: A `mail` (DNS only, NU proxied),
+  MX `mail.mugurel-bricolaj.ro` (10), SPF `v=spf1 +mx +ip4:185.246.122.88 ~all`, DKIM `default._domainkey`,
+  DMARC `p=none; rua=mailto:comenzi@…`. AutoSSL acopera acum si `mail.`.
+- Teste: mail-tester 10/10; in Gmail spf/dkim/dmarc = pass.
+- SMTP pentru site: `mail.mugurel-bricolaj.ro`, 465 SSL, user `comenzi@…` (parola NU e in git; doar in `config.local.php`
+  pe server, la lansare). Host-ul `mugurel-bricolaj.ro` NU merge pentru SMTP (proxy Cloudflare).
+- Redirectionari active: `office@` si `comenzi@` → `dunlite@gmail.com`.
+- **De facut:** DMARC → `p=quarantine` dupa cateva saptamani fara probleme in rapoarte.
+
+---
+
 ## 13 octombrie 2026 — Cos si comenzi online: GATA LOCAL, lansarea asteapta aprobare
 
 Proiect nou pe branch-ul `feat/cos-comenzi` (doar local): pret fix pe toate produsele, indicator de stoc, cos, comanda

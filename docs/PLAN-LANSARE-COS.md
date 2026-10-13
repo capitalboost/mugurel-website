@@ -15,8 +15,8 @@ Detaliile si testele fiecarui pas: `IMPLEMENTATION_PROGRESS.md` (T1–T15).
 | A1 | **Preturile reale, confirmate**, in Excel (sablon: `Fisiere de lucru/export_preturi.py`; coloane `ID`, `Pret (lei, cu TVA)`, `Unitate`) | Mugurel | Azi local sunt **estimari** („Estimare euristica… NU oferta verificata"). Pe site ar deveni preturi la care clientul comanda. |
 | A2 | **Stocul real**: produsele care nu se pot livra marcate „Indisponibil" sau „La comanda" din admin | Mugurel | Implicit toate sunt „In stoc" (decizia din 13 oct). |
 | A3 | **Textele** de plata, transport si din emailuri citite si aprobate (`includes/order_form.php`: `ORDER_PLATA`, `ORDER_TRANSPORT_INFO`; `includes/order_mail.php`) | Mugurel / Lucian | Promit lucruri in numele magazinului (ex. card la ridicare, proforma pe email). |
-| A4 | **Cont de email pentru trimitere**: casuta `comenzi@mugurel-bricolaj.ro` in cPanel (sau alta), cu datele SMTP | Lucian | Fara SMTP real nu pleaca niciun email (comenzile se salveaza, dar nimeni nu e anuntat). |
-| A5 | **DNS pentru email** in Cloudflare: SPF, DKIM (din cPanel → Email Deliverability), DMARC | Lucian | Altfel emailurile catre clienti ajung in Spam sau sunt respinse. |
+| A4 | ~~Cont de email pentru trimitere~~ **FACUT 13 oct**: casuta `comenzi@mugurel-bricolaj.ro` (1 GB) in cPanel Hostgate; SMTP `mail.mugurel-bricolaj.ro:465` SSL (vezi sectiunea C) | Lucian | — |
+| A5 | ~~DNS pentru email~~ **FACUT 13 oct**: in Cloudflare A `mail` (DNS only), MX, SPF, DKIM, DMARC `p=none`. mail-tester 10/10; Gmail: SPF/DKIM/DMARC = pass | Lucian | De facut peste cateva saptamani: DMARC `p=quarantine`. |
 | A6 | **Pagini legale actualizate** pentru vanzarea la distanta: Termeni (comanda online, pret cu TVA, plata, livrare, **dreptul de retragere de 14 zile** — OUG 34/2014, cu exceptiile pentru marfa la comanda/taiata la dimensiune), legaturi ANPC (SAL) si platforma europeana SOL; Politica de confidentialitate (ce date se colecteaza la comanda, de ce, cat se pastreaza) | Lucian / un jurist | Obligatii legale pentru comertul online cu persoane fizice. *Aceasta lista nu inlocuieste un avocat.* |
 
 ## B. Recomandate (nu blocheaza, dar merita facute odata cu lansarea)
@@ -40,7 +40,7 @@ define('APP_ENV', 'production');              // fara asta, adresele @mugurel-br
 define('ORDER_NOTIFY_TO', 'lucian@capitalboost.ro'); // LA INCEPUT: doar pentru comanda de proba (pasul E4)
 define('MAIL_FROM', 'comenzi@mugurel-bricolaj.ro');
 define('MAIL_FROM_NAME', 'Mugurel Materiale Constructii');
-define('SMTP_HOST', '<mail.mugurel-bricolaj.ro>');
+define('SMTP_HOST', 'mail.mugurel-bricolaj.ro');    // NU mugurel-bricolaj.ro: trece prin proxy-ul Cloudflare
 define('SMTP_PORT', 465);
 define('SMTP_SECURE', 'ssl');                 // 465 = ssl; 587 = tls
 define('SMTP_USER', 'comenzi@mugurel-bricolaj.ro');
