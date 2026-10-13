@@ -12,4 +12,7 @@ cp "$SRC/package.json" "$SRC/playwright.config.js" "$RUNNER/"
 rm -rf "$RUNNER/tests" && cp -R "$SRC/tests" "$RUNNER/tests"
 [ -d "$RUNNER/node_modules/@playwright/test" ] || (cd "$RUNNER" && npm install --no-audit --no-fund && npx playwright install chromium)
 
+# Fixturile de cos (produse cu pret fix) — doar in baza locala, idempotente.
+/c/Users/lucia/AppData/Local/mugurel-dev/mariadb/bin/mysql.exe -u root -h 127.0.0.1 mugurel_cms < "$SRC/../fixtures/cos_test.sql"
+
 cd "$RUNNER" && npx playwright test "$@"

@@ -363,5 +363,30 @@ foreach (['material' => renderMaterialCards($laComanda), 'catalog' => renderProd
 }
 ok(!str_contains(renderMaterialCards($sample), 'class="stock'), 'stoc: card fara stock_status => fara eticheta');
 
+// ── canAddToCart() / cartButton(): doar pret fix si disponibil (T4) ──
+$fix = ['id' => 7, 'name' => 'Burlan "90" <mm>', 'price' => '75.00', 'price_unit' => 'buc', 'price_is_from' => 0, 'stock_status' => 'in_stoc'];
+ok(canAddToCart($fix) === true,                                                    'cos: pret fix + in stoc => da');
+ok(canAddToCart(['stock_status' => 'la_comanda'] + $fix) === true,                'cos: la comanda => da');
+ok(canAddToCart(['stock_status' => 'indisponibil'] + $fix) === false,             'cos: indisponibil => nu');
+ok(canAddToCart(['price_is_from' => 1] + $fix) === false,                         'cos: pret „de la" => nu');
+ok(canAddToCart(['price_is_from' => '1'] + $fix) === false,                       'cos: pret „de la" venit ca text din PDO => nu');
+ok(canAddToCart(['price' => null] + $fix) === false,                              'cos: fara pret => nu');
+ok(canAddToCart(['price' => '0.00'] + $fix) === false,                            'cos: pret 0 => nu');
+ok(canAddToCart(['price' => '75']) === true,                                       'cos: fara stoc/„de la" in date => implicit da');
+
+$btn = cartButton($fix);
+ok(str_contains($btn, 'data-cart-id="7"'),                                        'buton: data-cart-id');
+ok(str_contains($btn, 'data-cart-name="Burlan &quot;90&quot; &lt;mm&gt;"'),       'buton: numele e escapat in atribut');
+ok(str_contains($btn, 'type="button"'),                                            'buton: type="button" (nu trimite formulare)');
+ok(cartButton(['price_is_from' => 1] + $fix) === '',                              'buton: lipseste la „de la"');
+ok(cartButton(['id' => null] + $fix) === '',                                       'buton: lipseste fara id');
+
+$cardFix = $sample;
+$cardFix[0] = $fix + $cardFix[0];
+foreach (['material' => renderMaterialCards($cardFix), 'catalog' => renderProdCards($cardFix), 'accesoriu' => renderAccessoryCards($cardFix)] as $tip => $html) {
+    ok(substr_count($html, 'class="btn-cart"') === 1,                               "buton: prezent o data pe cardul $tip");
+}
+ok(!str_contains(renderMaterialCards($sample), 'btn-cart'),                       'buton: cardul fara pret nu are buton');
+
 echo "\nRezultat: $pass passed, $fail failed\n";
 exit($fail > 0 ? 1 : 0);

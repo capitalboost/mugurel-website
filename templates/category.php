@@ -44,6 +44,7 @@ require __DIR__ . '/header.php';
           <div class="material-footer">
             <a href="https://wa.me/40749130565?text=Buna%20ziua!%20Vreau%20oferta%20pentru%20<?= rawurlencode($p['name']) ?>" class="mat-cta" target="_blank" rel="noopener">Cere oferta</a>
           </div>
+          <?= cartButton($p) ?>
         </div>
       </div>
       <?php endforeach; ?>

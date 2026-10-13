@@ -69,7 +69,7 @@ Complexitate: **S** = mic (≤ ~2h), **M** = mediu, **L** = mare (impartit in su
   select in admin; eticheta pe cele 3 tipuri de card si in catalog.
 - **Teste:** randare pentru fiecare stare; adminul salveaza starea; „indisponibil" nu primeste buton de cos (verificat in T4).
 
-### T4 — Butonul „Adauga in cos" · M · Neinceput
+### T4 — Butonul „Adauga in cos" · M · **Finalizat**
 - **De facut:** buton pe toate cardurile (`product_grid.php`, `catalog.php`) cu `data-id`;
   `js/cos.js` (fisier nou, fara inline → CSP neschimbat); feedback vizual la adaugare.
 - **Teste:** buton prezent pe toate cardurile cu pret si stoc ≠ indisponibil (numarat pe cele 13
@@ -321,3 +321,46 @@ importa din Excel si bifa „de la" se poate seta din admin.
 
 **Probleme:** niciuna in cod. Sesiunea de lucru s-a intrerupt dupa teste; serviciile locale au fost repornite cu
 `dev/start_local.sh`, iar regresia completa a fost rulata din nou inainte de commit.
+
+---
+
+### T4 — Butonul „Adauga in cos" — Finalizat (2026-10-13)
+
+**Obiectiv:** produsele care se pot comanda online au buton „Adauga in cos"; restul raman pe WhatsApp.
+
+**Regula (o singura functie, `canAddToCart()`):** pret > 0 **si** nu e „de la" **si** stocul nu e „indisponibil".
+Aceeasi regula va fi reverificata pe server in T6/T10 — butonul e doar interfata.
+
+**Fisiere:**
+- `includes/product_grid.php` — `canAddToCart()`, `cartButton()`; butonul pe cardurile de material, catalog, accesoriu.
+- `templates/category.php` — butonul si pe paginile de subcategorie (`router.php`).
+- `js/cos.js` (nou) — click delegat pe `[data-cart-id]`: confirmare pe buton („Adaugat in cos ✓", 1,8 s),
+  mesaj `role="status"` (citit si de cititoarele de ecran), eveniment `cos:adauga {id, name}` pentru T5.
+- Toate cele **22 de pagini** care incarca `main.js` incarca acum si `cos.js` cu `?v=`: pe paginile PHP din `filemtime`,
+  pe cele 7 pagini `.html` cu `?v=20261013` (de schimbat manual cand se modifica `cos.js` — notat pentru T16).
+- `css/style.css` — `.btn-cart` (verde inchis de brand, distinct de verdele WhatsApp), `.cart-toast`.
+- `dev/fixtures/cos_test.sql` (nou) — **doar local**: 9 produse cu pret fix (unul „la comanda", unul „indisponibil",
+  unul cu zecimale 12,49 lei/ml). `dev/e2e/run.sh` il aplica automat inainte de teste.
+- Teste: `test_product_grid.php` (+17), `dev/e2e/tests/cos-buton.spec.js` (nou).
+
+**Teste executate si rezultate:**
+
+| Test | Rezultat |
+|---|---|
+| `canAddToCart()` — 8 cazuri (fix, la comanda, indisponibil, „de la" ca int si ca text din PDO, fara pret, 0, date lipsa) | trecut |
+| `cartButton()` — id, nume escapat in atribut (`"`, `<`), `type="button"`, absent fara id / la „de la" | trecut |
+| Butonul apare o singura data pe fiecare tip de card | trecut |
+| Pagini locale cu fixturi: acoperis 3 butoane, electrice 3 (indisponibilul fara buton), catalog, subcategorii `bucatarie`, `iluminat` | trecut |
+| Playwright × 3 latimi: butoane doar unde trebuie; click → text, clasa, mesaj, evenimentul cu `{id, name}` corect; revenire la textul initial | trecut |
+| Playwright: Enter de la tastatura (tableta, desktop) | trecut |
+| Playwright: pagina de subcategorie servita de `router.php` | trecut |
+| Catalog: click pe „Adauga in cos" **nu** deschide WhatsApp (handlerele din `main.js`), 0 erori JS | trecut |
+| Regresie `dev/run_tests.sh` | **263** asertiuni, `php -l` 8.1, 231+264, catalog 534 — trecut |
+| Regresie browser completa | **32** trecute, 7 sarite (admin doar desktop, tastatura nu pe mobil) |
+
+**Probleme gasite si rezolvate:**
+1. Pe Windows, `glob` a intors `templates\footer.php` → sablonul a primit calea gresita pentru `filemtime` (`?v=` gol).
+   Corectat si verificat: subcategoriile primesc `cos.js?v=<timestamp>`.
+2. Pe mobil, mesajul de confirmare aparea peste bannerul de cookie-uri. Mutat sus, sub header (vezi captura).
+
+**De stiut:** pe datele actuale (toate „de la") **niciun buton nu apare pe live**, conform deciziei „doar pret fix in cos".

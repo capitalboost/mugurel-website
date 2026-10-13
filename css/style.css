@@ -535,6 +535,12 @@ img { max-width: 100%; }
 .stock--la_comanda { color: #9a6200; }
 .stock--indisponibil { color: #a32020; }
 .material-card .stock, .prod-card .stock { margin: 8px 0 4px; }
+/* Butonul de cos (T4) — doar pe produsele cu pret fix */
+.btn-cart { display: flex; align-items: center; justify-content: center; gap: 6px; width: 100%; margin-top: 8px; padding: 9px 12px; background: var(--verde); color: #fff; border: none; border-radius: var(--radius); font-family: inherit; font-size: 12px; font-weight: 700; cursor: pointer; transition: background 150ms; }
+.btn-cart:hover { background: var(--verde-mid); }
+.btn-cart:focus-visible { outline: 3px solid var(--wa); outline-offset: 2px; }
+.btn-cart.is-added { background: #1e7a3c; }
+.cart-toast { position: fixed; left: 50%; top: calc(80px + env(safe-area-inset-top, 0px)); transform: translateX(-50%); z-index: 9999; max-width: calc(100% - 32px); padding: 10px 16px; border-radius: var(--radius); background: var(--verde); color: #fff; font-size: 13px; font-weight: 600; box-shadow: 0 4px 16px rgba(0,0,0,.2); }
 .btn-wa-acc { display: inline-flex; align-items: center; gap: 6px; background: var(--verde); color: #fff; font-size: 11px; font-weight: 700; padding: 5px 10px; border-radius: 3px; text-align: center; transition: background 150ms; margin-top: 4px; }
 .btn-wa-acc:hover { background: var(--verde-mid); }
 .btn-wa-acc svg { display: none; }

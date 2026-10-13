@@ -389,6 +389,8 @@
 </button>
 
 <script src="js/main.js"></script>
+
+<script src="<?= '/js/cos.js?v=' . @filemtime(__DIR__ . '/js/cos.js') ?>" defer></script>
 <script>
 document.querySelectorAll('.subcat-tab').forEach(function(tab) {
   tab.addEventListener('click', function() {

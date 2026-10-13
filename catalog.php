@@ -343,6 +343,8 @@ function catIconSvg(string $slug): string {
 </button>
 
 <script src="js/main.js"></script>
+
+<script src="<?= '/js/cos.js?v=' . @filemtime(__DIR__ . '/js/cos.js') ?>" defer></script>
 </body>
 </html>
 

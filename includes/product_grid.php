@@ -44,6 +44,23 @@ function stockLabel(array $p): string {
 }
 
 /**
+ * Poate produsul intra in cos? Doar cu pret fix (nu „de la", nu „la cerere") si daca nu e
+ * indisponibil. Aceeasi regula se verifica si pe server, la cos si la comanda.
+ */
+function canAddToCart(array $p): bool {
+    return (float)($p['price'] ?? 0) > 0
+        && empty($p['price_is_from'])
+        && ($p['stock_status'] ?? 'in_stoc') !== 'indisponibil';
+}
+
+/** Butonul „Adauga in cos" — sau nimic, daca produsul nu se poate comanda online. */
+function cartButton(array $p): string {
+    if (!canAddToCart($p) || empty($p['id'])) { return ''; }
+    return '<button type="button" class="btn-cart" data-cart-id="' . (int)$p['id'] . '"'
+         . ' data-cart-name="' . e($p['name']) . '">Adauga in cos</button>';
+}
+
+/**
  * Link-ul WhatsApp precompletat pentru un produs.
  * $custom e mesajul scris de mana in sursa (coloana wa_text), cand exista si difera
  * de sablon — altfel (null sau gol) se foloseste sablonul generic.
@@ -139,7 +156,9 @@ function renderMaterialCards(array $products): string {
               . '<span class="material-price">' . priceLabel($p) . '</span>'
               . '<a href="' . e(waLink($p['name'], $p['wa_text'] ?? null)) . '" class="btn-wa-material" target="_blank" rel="noopener">'
               . WA_ICON . 'Afla disponibilitate</a>'
-              . '</div></div></div>';
+              . '</div>'
+              . cartButton($p)
+              . '</div></div>';
     }
     return $out;
 }
@@ -176,7 +195,9 @@ function renderProdCards(array $products): string {
               . '<div class="prod-price">' . priceLabel($p) . '</div>'
               . '<button class="btn-wa-prod" data-wa-product="' . e($p['name']) . '"' . $waText . '>'
               . WA_ICON . 'Afla disponibilitate</button>'
-              . '</div></div></div>';
+              . '</div>'
+              . cartButton($p)
+              . '</div></div>';
     }
     return $out;
 }
@@ -215,6 +236,7 @@ function renderAccessoryCards(array $products): string {
               . '<span class="accessory-price">' . priceLabel($p) . '</span>'
               . '<a href="' . e(waLink($p['name'], $p['wa_text'] ?? null)) . '" class="btn-wa-acc" target="_blank" rel="noopener">'
               . 'Afla disponibilitate</a>'
+              . cartButton($p)
               . '</div></div>';
     }
     return $out;
