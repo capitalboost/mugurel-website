@@ -114,7 +114,7 @@ Complexitate: **S** = mic (≤ ~2h), **M** = mediu, **L** = mare (impartit in su
 - **Teste:** comanda corecta salvata cu snapshot; dublu-click / refresh / retrimitere → **o singura** comanda;
   esec la jumatate → nimic salvat (rollback).
 
-### T12 — Notificare email catre `lucian@capitalboost.ro` · M · Neinceput
+### T12 — Notificare email catre `lucian@capitalboost.ro` · M · **Finalizat**
 - **De facut:** PHPMailer in `includes/lib/`; `ORDER_NOTIFY_TO` din config; email cu toate datele comenzii;
   garda care refuza `@mugurel-bricolaj.ro` local; esecul emailului **nu** pierde comanda (e deja salvata).
 - **Teste:** emailul apare in Mailpit cu destinatar `lucian@capitalboost.ro` si continut complet;
@@ -702,3 +702,46 @@ token lipsa/falsificat.
 
 **De stiut:** pagina de confirmare se construieste in T14; pana atunci redirectul duce la 404 (local).
 Lista comenzilor in `/admin` nu face parte din proiect — comenzile ajung pe email (T12) si raman in baza.
+
+---
+
+### T12 — Notificare email catre `lucian@capitalboost.ro` — Finalizat (2026-10-13)
+
+**Obiectiv:** fiecare comanda noua trimite un email cu tot ce trebuie ca sa fie sunat clientul.
+
+**Fisiere:**
+- `includes/lib/PHPMailer/` — PHPMailer **6.9.1** (doar `PHPMailer.php`, `SMTP.php`, `Exception.php` + licenta LGPL),
+  nemodificat; sursa si SHA-256 in `SURSA.txt`. Fara Composer.
+- `admin/config.php` — `APP_ENV` (implicit **local**), `ORDER_NOTIFY_TO` (implicit `lucian@capitalboost.ro`), `MAIL_FROM`,
+  `SMTP_*` (implicit Mailpit `127.0.0.1:1025`). Productia le va seta explicit in `config.local.php` (T16).
+- `includes/mailer.php` (nou) — `mailSend()` prin SMTP, fara exceptii (esec → log + `false`), timeout 10 s.
+  **Garda:** in afara productiei orice adresa `@mugurel-bricolaj.ro` (si subdomenii, orice majuscule) e blocata
+  inainte de conectare — nici macar Mailpit nu o primeste.
+- `includes/order_mail.php` (nou) — emailul intern: subiect cu numar, total si client/firma; date client (si firma la PJ),
+  plata, livrare sau „Ridicare din magazin", mentiuni, tabel produse cu subtotaluri si total, telefon clicabil,
+  „Raspunde" merge la client; varianta text pentru clientii de email fara HTML. Tot continutul e escapat.
+- `comanda.php` — dupa salvare trimite notificarea **o singura data** (nu la retrimitere); esecul emailului nu
+  anuleaza comanda (`email_admin_at` ramane gol — se vede ce n-a plecat).
+- Teste: `admin/tests/test_order_mail.php` (nou, 43).
+
+**Teste executate si rezultate:**
+
+| Test | Rezultat |
+|---|---|
+| Garda: adresa de test permisa; `comenzi@mugurel-bricolaj.ro`, majuscule, subdomeniu → blocate local; domeniu asemanator → permis; in productie → permis | trecut |
+| Trimitere blocata → `false` si **0 mesaje** in Mailpit | trecut |
+| Continut: subiect; XSS in nume/firma/produs/mentiuni escapat; 11 informatii obligatorii prezente; varianta text; PF + ridicare fara date de firma | trecut |
+| Integrare Mailpit: 1 mesaj, catre `lucian@capitalboost.ro`, numarul in subiect, Reply-To = clientul, expeditor, HTML si text complete, `email_admin_at` salvat | trecut |
+| **SMTP oprit:** `false` fara exceptie, sub 10 s, `email_admin_at` gol, comanda ramane salvata | trecut |
+| **HTTP cap-coada:** doua trimiteri ale aceluiasi formular → 303, 303 si **un singur email**; niciun email catre `@mugurel-bricolaj.ro` | trecut |
+| Captura emailului (comanda PJ cu transfer) | clar, complet, totaluri corecte |
+| Regresie `dev/run_tests.sh` | **504** asertiuni — trecut |
+| Regresie browser completa | **152** trecute, 13 sarite |
+
+**Test NEexecutat:** livrarea **reala** catre casuta `lucian@capitalboost.ro` (prin internet). Cere datele unui server SMTP
+real (utilizator/parola), pe care nu le am. Local, toate mesajele sunt prinse de Mailpit, conform regulii.
+Se poate rula la cerere: se pun datele SMTP in `config.local.php` si se trimite o comanda de test.
+
+**Probleme gasite si rezolvate:** in testul HTTP, cookie-ul de sesiune nu se scria in fisier (in PHP 8 `curl_close()` nu
+mai inchide nimic; fisierul se scrie la distrugerea obiectului) → serverul raspundea corect 400 (sesiune lipsa).
+Testul a fost corectat; site-ul nu avea nicio problema.

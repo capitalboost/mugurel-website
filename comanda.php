@@ -13,6 +13,7 @@ require_once __DIR__ . '/includes/order_form.php';
 require_once __DIR__ . '/includes/order_security.php';
 require_once __DIR__ . '/includes/cart.php';
 require_once __DIR__ . '/includes/orders.php';
+require_once __DIR__ . '/includes/order_mail.php';
 
 orderSessionStart();
 header('Cache-Control: no-store'); // pagina contine tokenul sesiunii
@@ -67,8 +68,14 @@ if (($_SERVER['REQUEST_METHOD'] ?? 'GET') === 'POST') {
             http_response_code(422);
         } else {
             try {
-                $order = orderCreate($pdo ?? Database::get(), $values, $cart, $formToken,
+                $db = $pdo ?? Database::get();
+                $order = orderCreate($db, $values, $cart, $formToken,
                     orderClientIp($_SERVER), (string) ($_SERVER['HTTP_USER_AGENT'] ?? ''));
+                // Emailurile pleaca o singura data, doar pentru o comanda noua (nu la retrimitere).
+                // Un email esuat nu anuleaza comanda: e deja salvata, iar esecul e in log.
+                if (!$order['duplicate'] && ($saved = orderByToken($db, $order['token'])) !== null) {
+                    orderNotifyAdmin($db, $saved);
+                }
                 // Redirect dupa POST: un refresh pe pagina de confirmare nu mai retrimite formularul.
                 header('Location: /comanda-trimisa.html?t=' . $order['token'], true, 303);
                 exit;
