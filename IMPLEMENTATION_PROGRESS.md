@@ -92,7 +92,7 @@ Complexitate: **S** = mic (≤ ~2h), **M** = mediu, **L** = mare (impartit in su
   validare in browser (HTML5) — validarea serioasa e pe server in T10.
 - **Teste:** campuri obligatorii, formate (telefon RO, email), afisarea erorilor, pastrarea datelor la eroare.
 
-### T8 — Formular persoana juridica · M · Neinceput
+### T8 — Formular persoana juridica · M · **Finalizat**
 - **De facut:** comutator PF/PJ; denumire firma, CUI (cu verificarea cifrei de control), Nr. Reg. Com.,
   sediu social, persoana de contact.
 - **Teste:** CUI valid/invalid (cu si fara „RO"), comutarea nu pierde datele comune.
@@ -492,3 +492,41 @@ header, pentru ca bannerul de cookie-uri si butonul WhatsApp il acopereau in cap
 
 **Ramane pentru taskurile urmatoare:** persoana juridica (T8), metoda de plata + transport (T9), CSRF / anti-bot /
 limitare / acord GDPR (T10), inregistrarea comenzii (T11).
+
+---
+
+### T8 — Formular persoana juridica — Finalizat (2026-10-13)
+
+**Obiectiv:** comanda poate fi pe firma, cu datele necesare facturarii, validate corect.
+
+**Fisiere:**
+- `includes/order_form.php` — `tip` (pf/pj, implicit pf; orice alta valoare sau array → pf); pentru PJ:
+  - `orderCui()` — CUI cu sau fara „RO", cu spatii/puncte; **cifra de control** verificata cu algoritmul oficial
+    (cheia 753217532); prefixul „RO" se pastreaza daca a fost scris (platitor de TVA);
+  - `orderRegCom()` — formatul clasic `J16/123/2020` (si F, C), normalizat (`j 5/0042/2019` → `J05/42/2019`),
+    plus formatul unic din 2024 (`J2024000123168`);
+  - denumire firma, sediu social; la PF campurile de firma sunt **ignorate complet** (nu ajung in comanda).
+- `comanda.php` — alegerea „Comanzi ca: Persoana fizica / juridica", blocul „Date firma", eticheta
+  „Persoana de contact" la PJ; dupa o eroare de server formularul revine pe tipul ales.
+- `js/comanda-pagina.js` — comutare fara pierderea datelor comune; verificarea rapida include campurile de firma
+  doar la PJ; la revenirea pe PF erorile de firma dispar.
+- `css/style.css` — optiunile de tip client (cea aleasa evidentiata), `.form-hint`.
+- Teste: `admin/tests/test_order_form.php` (+32), `dev/e2e/tests/comanda-pj.spec.js` (nou).
+
+**Teste executate si rezultate:**
+
+| Test | Rezultat |
+|---|---|
+| CUI: 5 valide (inclusiv RO14399840 public, cu spatii, litere mici), 7 invalide (cifra de control gresita, prea lung, litere) | trecut |
+| Registrul Comertului: 4 formate valide + normalizare, 6 invalide | trecut |
+| PJ valid / PJ gol (4 erori) / mesaj persoana de contact / CUI gresit / PF ignora firma / tip necunoscut sau array | trecut |
+| `test_order_form.php` total | **82/82** |
+| Playwright × 3 latimi: implicit PF; comutare PF↔PJ fara pierderi; PJ gol → 4 erori + focus; CUI gresit → respins de server, ramane pe PJ cu datele; PJ valid → acceptat, CUI cu RO, RC normalizat | **15 trecute** |
+| Captura mobil PJ | blocul de firma clar, optiunea aleasa evidentiata |
+| Regresie `dev/run_tests.sh` | **369** asertiuni, `php -l` 8.1, 231+264, catalog 534 — trecut |
+| Regresie browser completa | **122** trecute, 13 sarite |
+
+**Probleme:** niciuna in cod. (Un script ajutator de editare n-a gasit textul de inlocuit; testele au fost adaugate direct.)
+
+**De stiut:** fara JavaScript blocul de firma ramane ascuns — acceptabil, pentru ca fara JavaScript nu exista nici cos.
+Verificarea CUI la ANAF (firma activa, platitoare de TVA) **nu** e inclusa: ar cere un serviciu extern; o putem adauga separat.

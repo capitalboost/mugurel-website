@@ -715,3 +715,10 @@ img { max-width: 100%; }
   .form-row { grid-template-columns: 1fr; }
   .form-block { padding: 14px; }
 }
+
+/* Tip client (T8) */
+.form-tip-options { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 8px; }
+.form-tip-option { flex: 1 1 180px; display: flex; align-items: center; gap: 10px; padding: 12px 14px; border: 1px solid #c9d3d4; border-radius: var(--radius); cursor: pointer; font-weight: 600; color: #333; }
+.form-tip-option:has(input:checked) { border-color: var(--verde); background: var(--verde-light); color: var(--verde); }
+.form-tip-option input { width: 18px; height: 18px; accent-color: var(--verde); }
+.form-hint { font-size: 12.5px; color: var(--text-muted); margin-top: 4px; }

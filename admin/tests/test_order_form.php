@@ -57,5 +57,37 @@ $long = orderFormValidate(['mentiuni' => str_repeat('x', 5000)] + $good);
 ok($long['errors'] === [] && mb_strlen($long['data']['mentiuni']) === 1000, 'mentiuni: taiate la 1000 de caractere');
 ok(orderFormValidate(['nume' => ['Ion']] + $good)['errors']['nume'] ?? false, 'campuri trimise ca array => eroare, nu crash');
 
+// ── persoana juridica (T8) ──
+foreach (['14399840', 'RO14399840', 'ro 14399840', 'RO 14 399 840', '18547290'] as $c) {
+    ok(orderCui($c) !== null, "CUI valid: $c");
+}
+ok(orderCui('RO14399840') === '14399840',                    'CUI: intoarce doar cifrele');
+foreach (['14399841', '1', '12345678901', 'RO', 'ABC123', '', '14399840X'] as $c) {
+    ok(orderCui($c) === null, "CUI invalid: '$c'");
+}
+ok(orderRegCom('J16/123/2020') === 'J16/123/2020',            'RC clasic');
+ok(orderRegCom('j 5/0042/2019') === 'J05/42/2019',            'RC clasic normalizat (majuscule, 05, fara zerouri)');
+ok(orderRegCom('F40/1234/2015') === 'F40/1234/2015',          'RC: PFA (F)');
+ok(orderRegCom('J2024000123168') === 'J2024000123168',        'RC: formatul unic din 2024');
+foreach (['', 'J16-123-2020', 'X16/123/2020', 'J16/123/1850', 'J16/123', '123456'] as $r) {
+    ok(orderRegCom($r) === null, "RC invalid: '$r'");
+}
+
+$pj = ['tip' => 'pj', 'firma' => 'Constructii Dabuleni SRL', 'cui' => 'RO14399840', 'reg_com' => 'J16/123/2020',
+       'sediu' => 'Str. Principala 1, Dabuleni, Dolj'] + $good;
+$r = orderFormValidate($pj);
+ok($r['errors'] === [],                                      'PJ valid: fara erori');
+ok($r['data']['cui'] === 'RO14399840',                      'PJ: prefixul RO pastrat (platitor de TVA)');
+ok(orderFormValidate(['cui' => '14399840'] + $pj)['data']['cui'] === '14399840', 'PJ: fara RO ramane fara RO');
+$r = orderFormValidate(['tip' => 'pj'] + $good);
+ok(array_keys($r['errors']) === ['firma', 'cui', 'reg_com', 'sediu'], 'PJ gol: cele 4 campuri de firma obligatorii');
+ok(orderFormValidate(['nume' => ''] + $pj)['errors']['nume'] === 'Scrie numele persoanei de contact.', 'PJ: mesajul pentru persoana de contact');
+ok(orderFormValidate(['cui' => 'RO14399841'] + $pj)['errors']['cui'] === 'Codul fiscal nu este valid — verifica cifrele (ex. RO14399840).', 'PJ: CUI cu cifra de control gresita');
+
+$pf = orderFormValidate(['tip' => 'pf', 'firma' => 'Ignorata SRL', 'cui' => 'gresit'] + $good);
+ok($pf['errors'] === [] && $pf['data']['firma'] === '' && $pf['data']['cui'] === '', 'PF: campurile de firma sunt ignorate complet');
+ok(orderFormValidate(['tip' => 'altceva'] + $good)['data']['tip'] === 'pf', 'tip necunoscut => persoana fizica');
+ok(orderFormValidate(['tip' => ['pj']] + $good)['data']['tip'] === 'pf',   'tip trimis ca array => persoana fizica');
+
 echo "\nRezultat: $pass passed, $fail failed\n";
 exit($fail > 0 ? 1 : 0);

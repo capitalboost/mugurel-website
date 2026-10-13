@@ -10,7 +10,7 @@
 require_once __DIR__ . '/admin/config.php';
 require_once __DIR__ . '/includes/order_form.php';
 
-$values = array_fill_keys(array_keys(ORDER_MAX), '');
+$values = array_fill_keys(array_keys(ORDER_MAX), '') + ['tip' => 'pf'];
 $errors = [];
 $notice = null;
 
@@ -76,13 +76,57 @@ require __DIR__ . '/templates/header.php';
   <div class="comanda-layout">
     <form class="comanda-form" method="post" action="/comanda.html" novalidate data-comanda-form>
       <input type="hidden" name="cos" value="" data-cos-field>
+      <?php $isPj = ($values['tip'] ?? 'pf') === 'pj'; ?>
+
+      <fieldset class="form-block form-tip">
+        <legend>Comanzi ca</legend>
+        <div class="form-tip-options">
+          <?php foreach (ORDER_TIPURI as $tipVal => $tipLbl): ?>
+          <label class="form-tip-option">
+            <input type="radio" name="tip" value="<?= $tipVal ?>"<?= ($values['tip'] ?? 'pf') === $tipVal ? ' checked' : '' ?> data-tip>
+            <span><?= $tipLbl ?></span>
+          </label>
+          <?php endforeach; ?>
+        </div>
+      </fieldset>
+
+      <fieldset class="form-block" data-pj-block<?= $isPj ? '' : ' hidden' ?>>
+        <legend>Date firma</legend>
+        <p class="form-hint">Pentru factura pe firma.</p>
+        <?php [$a, $msg] = fieldError($errors, 'firma'); ?>
+        <div class="form-field">
+          <label for="f-firma">Denumire firma <span aria-hidden="true">*</span></label>
+          <input id="f-firma" name="firma" type="text" autocomplete="organization" maxlength="<?= ORDER_MAX['firma'] ?>" value="<?= $v('firma') ?>"<?= $a ?>>
+          <?= $msg ?>
+        </div>
+        <div class="form-row">
+          <?php [$a, $msg] = fieldError($errors, 'cui'); ?>
+          <div class="form-field">
+            <label for="f-cui">Cod fiscal (CUI) <span aria-hidden="true">*</span></label>
+            <input id="f-cui" name="cui" type="text" autocomplete="off" maxlength="<?= ORDER_MAX['cui'] ?>" placeholder="ex. RO14399840" value="<?= $v('cui') ?>"<?= $a ?>>
+            <?= $msg ?>
+          </div>
+          <?php [$a, $msg] = fieldError($errors, 'reg_com'); ?>
+          <div class="form-field">
+            <label for="f-reg_com">Nr. Registrul Comertului <span aria-hidden="true">*</span></label>
+            <input id="f-reg_com" name="reg_com" type="text" autocomplete="off" maxlength="<?= ORDER_MAX['reg_com'] ?>" placeholder="ex. J16/123/2020" value="<?= $v('reg_com') ?>"<?= $a ?>>
+            <?= $msg ?>
+          </div>
+        </div>
+        <?php [$a, $msg] = fieldError($errors, 'sediu'); ?>
+        <div class="form-field">
+          <label for="f-sediu">Sediul social (adresa completa) <span aria-hidden="true">*</span></label>
+          <input id="f-sediu" name="sediu" type="text" autocomplete="off" maxlength="<?= ORDER_MAX['sediu'] ?>" value="<?= $v('sediu') ?>"<?= $a ?>>
+          <?= $msg ?>
+        </div>
+      </fieldset>
 
       <fieldset class="form-block">
         <legend>Date de contact</legend>
 
         <?php [$a, $msg] = fieldError($errors, 'nume'); ?>
         <div class="form-field">
-          <label for="f-nume">Nume si prenume <span aria-hidden="true">*</span></label>
+          <label for="f-nume" data-nume-label data-pf="Nume si prenume" data-pj="Persoana de contact (nume si prenume)"><?= $isPj ? 'Persoana de contact (nume si prenume)' : 'Nume si prenume' ?> <span aria-hidden="true">*</span></label>
           <input id="f-nume" name="nume" type="text" autocomplete="name" required maxlength="<?= ORDER_MAX['nume'] ?>" value="<?= $v('nume') ?>"<?= $a ?>>
           <?= $msg ?>
         </div>

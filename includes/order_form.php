@@ -19,7 +19,12 @@ const ORDER_JUDETE = [
 const ORDER_MAX = [
     'nume' => 100, 'telefon' => 20, 'email' => 254, 'judet' => 40,
     'localitate' => 80, 'adresa' => 200, 'mentiuni' => 1000,
+    // persoana juridica (T8)
+    'firma' => 150, 'cui' => 16, 'reg_com' => 24, 'sediu' => 200,
 ];
+
+/** Tipurile de client acceptate. */
+const ORDER_TIPURI = ['pf' => 'Persoana fizica', 'pj' => 'Persoana juridica'];
 
 /** Text dintr-un camp: string, fara caractere de control, spatii comprimate, taiat la limita. */
 function orderText(mixed $v, int $max, bool $multiline = false): string
@@ -50,12 +55,50 @@ function orderPhone(string $raw): ?string
 }
 
 /**
- * Valideaza datele unei comenzi de persoana fizica.
+ * CUI romanesc (cu sau fara „RO") cu cifra de control corecta => doar cifrele, altfel null.
+ * Algoritmul oficial: cheia 753217532 aplicata primelor cifre (completate la stanga cu 0 pana la 9),
+ * suma × 10 mod 11 (10 => 0) trebuie sa fie egala cu ultima cifra.
+ */
+function orderCui(string $raw): ?string
+{
+    $c = preg_replace('/^RO/i', '', preg_replace('/[\s.\-]/', '', $raw));
+    if (!preg_match('/^\d{2,10}$/', (string) $c)) {
+        return null;
+    }
+    $body = str_pad(substr($c, 0, -1), 9, '0', STR_PAD_LEFT);
+    $key = '753217532';
+    $sum = 0;
+    for ($i = 0; $i < 9; $i++) {
+        $sum += (int) $body[$i] * (int) $key[$i];
+    }
+    $control = ($sum * 10) % 11;
+    return ($control === 10 ? 0 : $control) === (int) substr($c, -1) ? $c : null;
+}
+
+/**
+ * Numarul de inregistrare la Registrul Comertului => forma canonica, sau null.
+ * Accepta formatul clasic (J16/123/2020, F…, C…) si formatul unic din 2024 (J2024000123168).
+ */
+function orderRegCom(string $raw): ?string
+{
+    $r = strtoupper(preg_replace('/\s+/', '', $raw));
+    if (preg_match('#^([JFC])(\d{1,2})/(\d{1,7})/((?:19|20)\d{2})$#', $r, $m)) {
+        return $m[1] . str_pad($m[2], 2, '0', STR_PAD_LEFT) . '/' . ltrim($m[3], '0') . '/' . $m[4];
+    }
+    if (preg_match('#^[JFC](?:19|20)\d{2}\d{6,10}$#', $r)) {
+        return $r;
+    }
+    return null;
+}
+
+/**
+ * Valideaza datele unei comenzi (persoana fizica sau juridica).
  * @return array{data: array<string,string>, errors: array<string,string>}
  */
 function orderFormValidate(array $in): array
 {
     $d = [
+        'tip'        => is_string($in['tip'] ?? null) && isset(ORDER_TIPURI[$in['tip']]) ? $in['tip'] : 'pf',
         'nume'       => orderText($in['nume'] ?? null, ORDER_MAX['nume']),
         'telefon'    => orderText($in['telefon'] ?? null, ORDER_MAX['telefon']),
         'email'      => mb_strtolower(orderText($in['email'] ?? null, ORDER_MAX['email'])),
@@ -63,11 +106,21 @@ function orderFormValidate(array $in): array
         'localitate' => orderText($in['localitate'] ?? null, ORDER_MAX['localitate']),
         'adresa'     => orderText($in['adresa'] ?? null, ORDER_MAX['adresa']),
         'mentiuni'   => orderText($in['mentiuni'] ?? null, ORDER_MAX['mentiuni'], true),
+        'firma'      => '',
+        'cui'        => '',
+        'reg_com'    => '',
+        'sediu'      => '',
     ];
+    // Campurile de firma conteaza doar la persoana juridica; la PF sunt ignorate complet.
+    if ($d['tip'] === 'pj') {
+        foreach (['firma', 'cui', 'reg_com', 'sediu'] as $k) {
+            $d[$k] = orderText($in[$k] ?? null, ORDER_MAX[$k]);
+        }
+    }
     $e = [];
 
     if (mb_strlen($d['nume']) < 3) {
-        $e['nume'] = 'Scrie numele si prenumele.';
+        $e['nume'] = $d['tip'] === 'pj' ? 'Scrie numele persoanei de contact.' : 'Scrie numele si prenumele.';
     } elseif (!preg_match("/^[\p{L}][\p{L} .'\-]*$/u", $d['nume'])) {
         $e['nume'] = 'Numele poate contine doar litere, spatii, cratima si apostrof.';
     }
@@ -94,6 +147,30 @@ function orderFormValidate(array $in): array
     }
     if (mb_strlen($d['adresa']) < 5) {
         $e['adresa'] = 'Scrie adresa de livrare (strada, numar, bloc, apartament).';
+    }
+
+    if ($d['tip'] === 'pj') {
+        if (mb_strlen($d['firma']) < 2) {
+            $e['firma'] = 'Scrie denumirea firmei.';
+        }
+        if ($d['cui'] === '') {
+            $e['cui'] = 'Scrie codul fiscal (CUI) al firmei.';
+        } elseif (($cui = orderCui($d['cui'])) === null) {
+            $e['cui'] = 'Codul fiscal nu este valid — verifica cifrele (ex. RO14399840).';
+        } else {
+            // Pastram prefixul RO daca a fost scris: arata ca firma e platitoare de TVA.
+            $d['cui'] = (stripos(ltrim($d['cui']), 'RO') === 0 ? 'RO' : '') . $cui;
+        }
+        if ($d['reg_com'] === '') {
+            $e['reg_com'] = 'Scrie numarul de la Registrul Comertului.';
+        } elseif (($rc = orderRegCom($d['reg_com'])) === null) {
+            $e['reg_com'] = 'Numarul de la Registrul Comertului nu pare corect (ex. J16/123/2020).';
+        } else {
+            $d['reg_com'] = $rc;
+        }
+        if (mb_strlen($d['sediu']) < 5) {
+            $e['sediu'] = 'Scrie adresa sediului social.';
+        }
     }
 
     return ['data' => $d, 'errors' => $e];

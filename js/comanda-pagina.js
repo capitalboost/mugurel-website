@@ -89,6 +89,34 @@
     localitate: function (v) { return v.length >= 2 ? '' : 'Scrie localitatea.'; },
     adresa: function (v) { return v.length >= 5 ? '' : 'Scrie adresa de livrare (strada, numar, bloc, apartament).'; },
   };
+  // Doar pentru persoana juridica. CUI si Registrul Comertului se verifica complet pe server.
+  var CHECKS_PJ = {
+    firma: function (v) { return v.length >= 2 ? '' : 'Scrie denumirea firmei.'; },
+    cui: function (v) { return v ? '' : 'Scrie codul fiscal (CUI) al firmei.'; },
+    reg_com: function (v) { return v ? '' : 'Scrie numarul de la Registrul Comertului.'; },
+    sediu: function (v) { return v.length >= 5 ? '' : 'Scrie adresa sediului social.'; },
+  };
+
+  // ── persoana fizica / juridica ──────────────────────────────────────────
+  var pjBlock = form.querySelector('[data-pj-block]');
+  var numeLabel = form.querySelector('[data-nume-label]');
+
+  function isPj() {
+    var r = form.querySelector('[data-tip]:checked');
+    return !!r && r.value === 'pj';
+  }
+
+  function applyTip() {
+    var pj = isPj();
+    pjBlock.hidden = !pj;
+    numeLabel.firstChild.textContent = numeLabel.getAttribute(pj ? 'data-pj' : 'data-pf') + ' ';
+    if (!pj) { // erorile campurilor de firma nu mai sunt relevante
+      Object.keys(CHECKS_PJ).forEach(function (n) { if (form.elements[n]) { setError(form.elements[n], ''); } });
+    }
+  }
+  form.addEventListener('change', function (ev) {
+    if (ev.target.hasAttribute('data-tip')) { applyTip(); }
+  });
 
   function setError(field, msg) {
     var id = 'err-' + field.name;
@@ -111,7 +139,7 @@
   }
 
   function checkField(field) {
-    var check = CHECKS[field.name];
+    var check = CHECKS[field.name] || (isPj() && CHECKS_PJ[field.name]);
     if (!check) { return true; }
     var msg = check(field.value.trim());
     setError(field, msg);
@@ -120,7 +148,8 @@
 
   form.addEventListener('submit', function (ev) {
     var first = null;
-    Object.keys(CHECKS).forEach(function (name) {
+    var names = isPj() ? Object.keys(CHECKS_PJ).concat(Object.keys(CHECKS)) : Object.keys(CHECKS);
+    names.forEach(function (name) {
       var field = form.elements[name];
       if (field && !checkField(field) && !first) { first = field; }
     });
@@ -141,5 +170,6 @@
   var serverErrors = document.querySelector('[data-form-errors]');
   if (serverErrors) { serverErrors.focus(); }
 
+  applyTip();
   loadSummary();
 })();
