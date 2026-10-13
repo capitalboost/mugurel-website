@@ -121,7 +121,7 @@ Complexitate: **S** = mic (≤ ~2h), **M** = mediu, **L** = mare (impartit in su
   SMTP oprit → comanda ramane salvata si eroarea e logata.
 - **Optional:** livrare reala catre `lucian@capitalboost.ro` — doar daca primesc date SMTP de test.
 
-### T13 — Email de confirmare catre client (sandbox) · S/M · Neinceput
+### T13 — Email de confirmare catre client (sandbox) · S/M · **Finalizat**
 - **De facut:** sablon de confirmare (rezumat, total, pasii urmatori, contact).
 - **Teste:** mesajul catre adresa clientului apare **doar in Mailpit**; nimic nu iese din PC.
 
@@ -745,3 +745,37 @@ Se poate rula la cerere: se pun datele SMTP in `config.local.php` si se trimite 
 **Probleme gasite si rezolvate:** in testul HTTP, cookie-ul de sesiune nu se scria in fisier (in PHP 8 `curl_close()` nu
 mai inchide nimic; fisierul se scrie la distrugerea obiectului) → serverul raspundea corect 400 (sesiune lipsa).
 Testul a fost corectat; site-ul nu avea nicio problema.
+
+---
+
+### T13 — Email de confirmare catre client (sandbox) — Finalizat (2026-10-13)
+
+**Obiectiv:** clientul primeste imediat confirmarea comenzii; in test, mesajul nu iese din calculator.
+
+**Fisiere:**
+- `includes/order_mail.php` — `orderClientEmail()`: „Multumim pentru comanda!", numarul, **ce urmeaza** (te sunam
+  L–V 8–18 pentru disponibilitate, cost si termen de livrare / momentul ridicarii), plata aleasa cu explicatia ei,
+  adresa de livrare sau a magazinului, produsele si totalul, mesajul de transport (nu si la ridicare), legatura spre
+  pagina comenzii (cu token), telefon + WhatsApp, datele firmei (DUNLITE COM SRL, CIF, J, adresa). Fara date interne.
+  `orderNotifyClient()` — „Raspunde" merge la magazin; noteaza `email_client_at`; esecul nu afecteaza comanda.
+- `comanda.php` — confirmarea pleaca dupa notificarea interna, tot o singura data per comanda.
+- Teste: `admin/tests/test_order_mail.php` (+12, total 55).
+
+**Sandbox:** local, SMTP-ul e Mailpit — **toate** mesajele (si cele catre adresele clientilor) sunt prinse acolo
+si se vad la http://localhost:8025. Adresele `@mugurel-bricolaj.ro` sunt oricum blocate de garda din T12.
+
+**Teste executate si rezultate:**
+
+| Test | Rezultat |
+|---|---|
+| HTTP cap-coada: doua trimiteri → **exact doua emailuri** (intern + client), nu patru; niciunul catre `@mugurel-bricolaj.ro` | trecut |
+| Client: subiect, Reply-To spre magazin, produse + total + plata, legatura cu token, fara IP/browser, varianta text cu firma si telefon | trecut |
+| Comanda noteaza ambele emailuri trimise | trecut |
+| Ridicare: adresa magazinului, fara mesaj de transport; transfer: proforma + transport; numele escapat | trecut |
+| SMTP oprit la client: `false`, comanda ramane, `email_client_at` gol | trecut |
+| Captura emailului clientului (PJ, transfer, 2 produse) | clar, complet |
+| Regresie `dev/run_tests.sh` | **516** asertiuni — trecut |
+| Regresie browser completa | **152** trecute, 13 sarite |
+
+**De stiut:** legatura din email foloseste `SITE_URL` (`https://mugurel-bricolaj.ro`), deci emailurile de test duc spre
+site-ul real, unde pagina inca nu exista. Pe productie va fi corect. Textele emailului — de confirmat cu Mugurel (T16).

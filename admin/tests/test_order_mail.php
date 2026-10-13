@@ -108,9 +108,37 @@ try {
     }
     ok($codes === [303, 303],                                             'http: doua trimiteri => 303, 303 (primit: ' . json_encode($codes) . ')');
     $msgs = mailpitMessages();
-    ok(count($msgs) === 1 && str_contains($msgs[0]['Subject'] ?? '', '48,00 lei'), 'http: un singur email de notificare (48,00 lei), nu doua');
     $all = array_merge(...array_map(fn ($x) => array_column($x['To'] ?? [], 'Address'), $msgs ?: [['To' => []]]));
+    sort($all);
+    ok(count($msgs) === 2 && $all === ['lucian@capitalboost.ro', 'mailtest@exemplu.ro'], 'http: exact doua emailuri — notificarea interna + confirmarea clientului, nu patru');
     ok(!array_filter($all, fn ($a) => str_ends_with(strtolower($a), 'mugurel-bricolaj.ro')), 'http: niciun email catre @mugurel-bricolaj.ro');
+    $admin = array_values(array_filter($msgs, fn ($x) => ($x['To'][0]['Address'] ?? '') === 'lucian@capitalboost.ro'));
+    ok(str_contains($admin[0]['Subject'] ?? '', '48,00 lei'),             'http: notificarea interna are totalul 48,00 lei');
+
+    // ── T13: confirmarea pentru client ──
+    $client = array_values(array_filter($msgs, fn ($x) => ($x['To'][0]['Address'] ?? '') === 'mailtest@exemplu.ro'));
+    $cm = mailpit('GET', '/message/' . ($client[0]['ID'] ?? ''));
+    ok(str_starts_with($cm['Subject'] ?? '', 'Am primit comanda ta MUG-'),  'client: subiect „Am primit comanda ta MUG-…"');
+    ok(array_column($cm['ReplyTo'] ?? [], 'Address') === [ORDER_NOTIFY_TO], 'client: „Raspunde" merge la magazin (in test: ' . ORDER_NOTIFY_TO . ')');
+    ok(str_contains($cm['HTML'] ?? '', '48,00 lei') && str_contains($cm['HTML'] ?? '', 'Ramburs la livrare'), 'client: produse, total si metoda de plata');
+    ok(preg_match('#/comanda-trimisa\.html\?t=[0-9a-f]{48}#', $cm['HTML'] ?? '') === 1, 'client: legatura spre pagina comenzii, cu token');
+    ok(!str_contains($cm['HTML'] ?? '', '127.0.0.1') && !str_contains($cm['HTML'] ?? '', '::1') && !str_contains($cm['HTML'] ?? '', 'curl'), 'client: fara date interne (IP, browser)');
+    ok(str_contains($cm['Text'] ?? '', 'DUNLITE COM SRL') && str_contains($cm['Text'] ?? '', '0749 130 565'), 'client: varianta text cu datele firmei si telefonul');
+    $ids = $pdo->query("SELECT email_admin_at IS NOT NULL a, email_client_at IS NOT NULL c FROM orders WHERE email = 'mailtest@exemplu.ro' AND nume = 'Mail HTTP'")->fetchAll(PDO::FETCH_ASSOC);
+    ok(count($ids) === 1 && (int) $ids[0]['a'] === 1 && (int) $ids[0]['c'] === 1, 'client: comanda noteaza ambele emailuri trimise');
+
+    // continutul pentru ridicare din magazin si escaparea
+    $rid = orderClientEmail(['plata' => 'ridicare', 'public_token' => str_repeat('a', 48), 'nume' => 'Ana <b>X</b>'] + $fake);
+    ok(str_contains($rid['html'], 'Strada Caracal 52') && !str_contains($rid['html'], 'Transportul nu este inclus'), 'client ridicare: adresa magazinului, fara mesaj de transport');
+    ok(str_contains($rid['html'], 'Ana &lt;b&gt;X&lt;/b&gt;') && !str_contains($rid['html'], '<b>X</b>'), 'client: numele escapat');
+    $tr = orderClientEmail(['plata' => 'transfer', 'public_token' => str_repeat('a', 48)] + $fake);
+    ok(str_contains($tr['html'], 'factura proforma') && str_contains($tr['html'], 'Transportul nu este inclus'), 'client transfer: proforma + mesaj de transport');
+
+    // SMTP oprit la client: comanda ramane, email_client_at gol
+    $o3 = orderCreate($pdo, ['telefon' => '+40749000003'] + $data, $cart, orderNewFormToken());
+    $s3 = orderByToken($pdo, $o3['token']);
+    ok(orderNotifyClient($pdo, $s3, ['port' => 1, 'timeout' => 3]) === false && orderByToken($pdo, $o3['token'])['email_client_at'] === null,
+       'client, SMTP oprit: false, comanda ramane, email_client_at gol');
 } finally {
     $pdo->exec("DELETE FROM orders WHERE email = 'mailtest@exemplu.ro'");
 }

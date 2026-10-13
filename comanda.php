@@ -75,6 +75,7 @@ if (($_SERVER['REQUEST_METHOD'] ?? 'GET') === 'POST') {
                 // Un email esuat nu anuleaza comanda: e deja salvata, iar esecul e in log.
                 if (!$order['duplicate'] && ($saved = orderByToken($db, $order['token'])) !== null) {
                     orderNotifyAdmin($db, $saved);
+                    orderNotifyClient($db, $saved);
                 }
                 // Redirect dupa POST: un refresh pe pagina de confirmare nu mai retrimite formularul.
                 header('Location: /comanda-trimisa.html?t=' . $order['token'], true, 303);
