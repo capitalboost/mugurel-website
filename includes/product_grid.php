@@ -29,6 +29,20 @@ function priceLabel(array $p): string {
          . (!empty($p['price_unit']) ? ' / ' . e($p['price_unit']) : '');
 }
 
+/** Starile de stoc (coloana products.stock_status) si textul afisat pe site. */
+const STOCK_LABELS = [
+    'in_stoc'      => 'In stoc',
+    'la_comanda'   => 'La comanda',
+    'indisponibil' => 'Indisponibil',
+];
+
+/** Eticheta de stoc a unui card. Stare lipsa sau necunoscuta => nimic (nu promitem ce nu stim). */
+function stockLabel(array $p): string {
+    $s = $p['stock_status'] ?? null;
+    if (!isset(STOCK_LABELS[$s])) { return ''; }
+    return '<span class="stock stock--' . $s . '">' . STOCK_LABELS[$s] . '</span>';
+}
+
 /**
  * Link-ul WhatsApp precompletat pentru un produs.
  * $custom e mesajul scris de mana in sursa (coloana wa_text), cand exista si difera
@@ -120,6 +134,7 @@ function renderMaterialCards(array $products): string {
               . '<div class="material-body">'
               . '<h3 class="material-name">' . e($p['name']) . '</h3>'
               . renderProps($p)
+              . stockLabel($p)
               . '<div class="material-footer">'
               . '<span class="material-price">' . priceLabel($p) . '</span>'
               . '<a href="' . e(waLink($p['name'], $p['wa_text'] ?? null)) . '" class="btn-wa-material" target="_blank" rel="noopener">'
@@ -156,6 +171,7 @@ function renderProdCards(array $products): string {
               . '<div class="' . badgeClass($p) . '">' . e($p['cat_label']) . '</div>'
               . '<h3 class="prod-name">' . e($p['name']) . '</h3>'
               . '<div class="prod-desc">' . e($p['short_description']) . '</div>'
+              . stockLabel($p)
               . '<div class="prod-footer">'
               . '<div class="prod-price">' . priceLabel($p) . '</div>'
               . '<button class="btn-wa-prod" data-wa-product="' . e($p['name']) . '"' . $waText . '>'
@@ -195,6 +211,7 @@ function renderAccessoryCards(array $products): string {
         $out .= '<div class="accessory-body">'
               . '<h4>' . e($p['name']) . '</h4>'
               . '<p>' . e($p['short_description']) . '</p>'
+              . stockLabel($p)
               . '<span class="accessory-price">' . priceLabel($p) . '</span>'
               . '<a href="' . e(waLink($p['name'], $p['wa_text'] ?? null)) . '" class="btn-wa-acc" target="_blank" rel="noopener">'
               . 'Afla disponibilitate</a>'

@@ -131,6 +131,14 @@
       </label>
     </div>
 
+    <label>Stoc
+      <select name="stock_status">
+        <?php foreach (['in_stoc' => 'In stoc', 'la_comanda' => 'La comanda (termen confirmat telefonic)', 'indisponibil' => 'Indisponibil (nu se poate pune in cos)'] as $val => $lbl): ?>
+        <option value="<?= $val ?>" <?= (($product['stock_status'] ?? 'in_stoc') === $val) ? 'selected' : '' ?>><?= $lbl ?></option>
+        <?php endforeach; ?>
+      </select>
+    </label>
+
     <label style="flex-direction:row;align-items:center;gap:.5rem">
       <input type="checkbox" name="price_is_from" value="1"
              <?= ($isEdit && !empty($product['price_is_from'])) ? 'checked' : '' ?>>

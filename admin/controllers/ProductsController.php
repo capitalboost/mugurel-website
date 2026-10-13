@@ -69,6 +69,7 @@ switch ($action) {
             'price'             => Sanitize::price($_POST['price'] ?? ''),
             'price_unit'        => Sanitize::text($_POST['price_unit'] ?? '', 40),
             'price_is_from'     => isset($_POST['price_is_from']) ? 1 : 0,
+            'stock_status'      => $_POST['stock_status'] ?? 'in_stoc',
             'is_visible'        => isset($_POST['is_visible']) ? 1 : 0,
             'sort_order'        => Sanitize::posInt($_POST['sort_order'] ?? 0),
             'created_by'        => Auth::id(),
@@ -92,6 +93,9 @@ switch ($action) {
         }
         if (!in_array($data['page_slug'], Product::KNOWN_PAGE_SLUGS, true)) {
             $errors[] = 'Pagina aleasa nu este valida.';
+        }
+        if (!in_array($data['stock_status'], ['in_stoc', 'la_comanda', 'indisponibil'], true)) {
+            $errors[] = 'Starea de stoc nu e valida.';
         }
         if (!in_array($data['card_kind'], ['material', 'accessory'], true)) {
             $errors[] = 'Tipul de card nu este valid.';

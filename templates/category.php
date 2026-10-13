@@ -37,6 +37,7 @@ require __DIR__ . '/header.php';
           <?php if ($p['short_description']): ?>
           <p><?= htmlspecialchars($p['short_description'], ENT_QUOTES, 'UTF-8') ?></p>
           <?php endif; ?>
+          <?= stockLabel($p) ?>
           <?php if ($p['price']): ?>
           <div class="material-price"><?= priceLabel($p) ?></div>
           <?php endif; ?>

@@ -349,5 +349,19 @@ ok(str_contains($acc, '<span class="accessory-price">de la 55,00 lei / m²</span
 ok(strpos($acc, 'accessory-price') < strpos($acc, 'btn-wa-acc'),                                           'accesoriu: pretul sta inaintea butonului');
 ok(str_contains(renderAccessoryCards($sample), '<span class="accessory-price">Pret la cerere</span>'),     'accesoriu: fara pret => Pret la cerere');
 
+// ── stockLabel(): eticheta de stoc pe toate cardurile (T3) ──
+ok(stockLabel(['stock_status' => 'in_stoc']) === '<span class="stock stock--in_stoc">In stoc</span>',            'stoc: in_stoc');
+ok(stockLabel(['stock_status' => 'la_comanda']) === '<span class="stock stock--la_comanda">La comanda</span>',  'stoc: la_comanda');
+ok(stockLabel(['stock_status' => 'indisponibil']) === '<span class="stock stock--indisponibil">Indisponibil</span>', 'stoc: indisponibil');
+ok(stockLabel([]) === '',                                       'stoc: lipsa => nimic');
+ok(stockLabel(['stock_status' => '<script>']) === '',          'stoc: valoare necunoscuta => nimic (nu ajunge in HTML)');
+
+$laComanda = $sample;
+$laComanda[0]['stock_status'] = 'la_comanda';
+foreach (['material' => renderMaterialCards($laComanda), 'catalog' => renderProdCards($laComanda), 'accesoriu' => renderAccessoryCards($laComanda)] as $tip => $html) {
+    ok(substr_count($html, 'class="stock stock--la_comanda"') === 1, "stoc: cardul $tip afiseaza eticheta o singura data");
+}
+ok(!str_contains(renderMaterialCards($sample), 'class="stock'), 'stoc: card fara stock_status => fara eticheta');
+
 echo "\nRezultat: $pass passed, $fail failed\n";
 exit($fail > 0 ? 1 : 0);

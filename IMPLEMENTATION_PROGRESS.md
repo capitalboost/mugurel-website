@@ -64,7 +64,7 @@ Complexitate: **S** = mic (≤ ~2h), **M** = mediu, **L** = mare (impartit in su
   idempotenta); `test_product_grid.php` extins pentru cele 3 variante de afisare; adminul salveaza bifa.
 - **Acceptanta:** pe pagini locale apare „de la 55,00 lei / m²"; produsele fara pret raman „Pret la cerere".
 
-### T3 — Indicator stoc · S/M · Neinceput
+### T3 — Indicator stoc · S/M · **Finalizat**
 - **De facut:** `migration_008_stock.sql` cu `stock_status ENUM('in_stoc','la_comanda','indisponibil')`;
   select in admin; eticheta pe cele 3 tipuri de card si in catalog.
 - **Teste:** randare pentru fiecare stare; adminul salveaza starea; „indisponibil" nu primeste buton de cos (verificat in T4).
@@ -287,3 +287,37 @@ importa din Excel si bifa „de la" se poate seta din admin.
 **De retinut pentru T16 (lansare):**
 - Textele meta din `catalog.html` (og/twitter description) spun „Pret la cerere pe WhatsApp" — de actualizat cand apar preturile reale.
 - Estimarile NU merg pe live. Importul pe productie se face cu fisierul confirmat de Mugurel.
+
+---
+
+### T3 — Indicator stoc — Finalizat (2026-10-13)
+
+**Obiectiv:** fiecare produs arata starea stocului; Mugurel o seteaza din admin.
+
+**Fisiere:**
+- `db/migration_008_stock.sql` (nou) — `products.stock_status ENUM('in_stoc','la_comanda','indisponibil') DEFAULT 'in_stoc'`
+  (decizia: toate produsele pornesc „In stoc"). DDL scris cu ghilimele simple, ca sa mearga si cu `ANSI_QUOTES`.
+- `db/deploy_db.php` — migrarea 008 in lista.
+- `includes/product_grid.php` — `STOCK_LABELS` + `stockLabel()`; eticheta pe cardurile de material, catalog si accesoriu.
+  O stare lipsa sau necunoscuta nu afiseaza nimic.
+- `templates/category.php` (subcategorii), `includes/products_repo.php`, `router.php` — citesc si afiseaza starea.
+- `css/style.css` — `.stock` cu punct colorat: verde / portocaliu inchis / rosu (contrast ≥ 4,5:1 pe alb).
+- Admin: `edit.php` (select „Stoc"), `ProductsController.php` (lista fixa de valori acceptate, altfel eroare), `Product.php`.
+- Teste: `test_product_grid.php` (+9), `dev/e2e/tests/admin-stoc.spec.js` (nou).
+
+**Teste executate si rezultate:**
+
+| Test | Rezultat |
+|---|---|
+| `stockLabel()`: cele 3 stari, stare lipsa, valoare necunoscuta (`<script>`) | trecut — valoarea necunoscuta nu ajunge in HTML |
+| Eticheta apare o singura data pe fiecare tip de card | trecut (material, catalog, accesoriu) |
+| Pagini locale | **495/495** carduri cu „In stoc" pe cele 13 pagini; catalog 60/60 pe pagina 1; subcategorie 5/5 |
+| Playwright admin: in_stoc → la_comanda → indisponibil, verificat pe `acoperis.html`, apoi restaurat | trecut |
+| Playwright admin: valoare falsificata in formular (`hack`) | respinsa cu „Starea de stoc nu e valida.", site neschimbat |
+| `dev/test_fresh_deploy.sh products.price_is_from products.stock_status` | coloanele exista dupa fiecare rulare |
+| Regresie `dev/run_tests.sh` | **246** asertiuni, `php -l` 8.1, 231+264, catalog 534 — trecut |
+| Regresie browser | 21 trecute, 6 sarite (adminul doar pe desktop) |
+| Captura mobil 375 px | eticheta deasupra pretului, lizibila |
+
+**Probleme:** niciuna in cod. Sesiunea de lucru s-a intrerupt dupa teste; serviciile locale au fost repornite cu
+`dev/start_local.sh`, iar regresia completa a fost rulata din nou inainte de commit.
