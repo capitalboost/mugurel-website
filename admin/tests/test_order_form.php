@@ -26,7 +26,7 @@ ok(mb_strlen(orderText(str_repeat('ă', 150), 100)) === 100,                  't
 
 // ── validare completa ──
 $good = ['nume' => 'Ion Popescu', 'telefon' => '0749 130 565', 'email' => 'Ion.Popescu@Exemplu.ro',
-         'judet' => 'Dolj', 'localitate' => 'Dabuleni', 'adresa' => 'Str. Caracal nr. 52', 'mentiuni' => '', 'plata' => 'ramburs'];
+         'judet' => 'Dolj', 'localitate' => 'Dabuleni', 'adresa' => 'Str. Caracal nr. 52', 'mentiuni' => '', 'plata' => 'ramburs', 'acord' => '1'];
 $r = orderFormValidate($good);
 ok($r['errors'] === [],                                     'valid: fara erori');
 ok($r['data']['telefon'] === '+40749130565',               'valid: telefon normalizat');
@@ -35,7 +35,9 @@ ok($r['data']['email'] === 'ion.popescu@exemplu.ro',       'valid: email cu lite
 ok(orderFormValidate(['nume' => "Ștefan O'Neil-Dumitrașcu"] + $good)['errors'] === [], 'nume: diacritice, apostrof, cratima');
 
 $bad = orderFormValidate([]);
-ok(array_keys($bad['errors']) === ['nume', 'telefon', 'email', 'plata', 'judet', 'localitate', 'adresa'], 'gol: toate campurile obligatorii semnalate');
+ok(array_keys($bad['errors']) === ['nume', 'telefon', 'email', 'plata', 'judet', 'localitate', 'adresa', 'acord'], 'gol: toate campurile obligatorii semnalate');
+ok(isset(orderFormValidate(['acord' => 'da'] + $good)['errors']['acord']), 'acord: doar valoarea 1 e acceptata');
+ok(isset(orderFormValidate(['acord' => ['1']] + $good)['errors']['acord']), 'acord: trimis ca array => respins');
 ok(!isset($bad['errors']['mentiuni']),                       'gol: mentiunile sunt optionale');
 
 $cases = [

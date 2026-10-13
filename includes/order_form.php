@@ -123,6 +123,7 @@ function orderFormValidate(array $in): array
         'adresa'     => orderText($in['adresa'] ?? null, ORDER_MAX['adresa']),
         'mentiuni'   => orderText($in['mentiuni'] ?? null, ORDER_MAX['mentiuni'], true),
         'plata'      => is_string($in['plata'] ?? null) && isset(ORDER_PLATA[$in['plata']]) ? $in['plata'] : '',
+        'acord'      => ($in['acord'] ?? null) === '1' ? '1' : '',
         'firma'      => '',
         'cui'        => '',
         'reg_com'    => '',
@@ -173,6 +174,10 @@ function orderFormValidate(array $in): array
         if (mb_strlen($d['adresa']) < 5) {
             $e['adresa'] = 'Scrie adresa de livrare (strada, numar, bloc, apartament).';
         }
+    }
+
+    if ($d['acord'] !== '1') {
+        $e['acord'] = 'Ca sa trimiti comanda, trebuie sa accepti Termenii si Politica de confidentialitate.';
     }
 
     if ($d['tip'] === 'pj') {

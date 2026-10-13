@@ -101,7 +101,7 @@ Complexitate: **S** = mic (≤ ~2h), **M** = mediu, **L** = mare (impartit in su
 - **De facut:** metodele de plata alese (vezi „Decizii"), texte despre transport pe cos si pe formular.
 - **Teste:** metoda e obligatorie; textele apar pe mobil si desktop.
 
-### T10 — Validari si securitate (server) · M · Neinceput
+### T10 — Validari si securitate (server) · M · **Finalizat**
 - **De facut:** validare completa pe server (aceleasi reguli ca in browser, plus lungimi maxime),
   CSRF, honeypot anti-bot, rate-limit pe IP (cu `CF-Connecting-IP` acceptat **doar** din range-urile
   Cloudflare), protectie la header injection pentru email, bifa GDPR + link politica de confidentialitate.
@@ -601,3 +601,57 @@ comenzii"; adresa si programul de pe contact) si stau intr-un singur loc, `inclu
 
 **Probleme gasite si rezolvate:** mesajul de eroare pentru butoanele radio ar fi fost inserat in prima optiune — mutat
 sub lista; mesajul „Transportul nu este inclus" nu avea sens la ridicare — ascuns in acel caz.
+
+---
+
+### T10 — Validari si securitate — Finalizat (2026-10-13)
+
+**Obiectiv:** formularul de comanda rezista la trimiteri falsificate, roboti si abuz; clientul isi da acordul GDPR.
+
+**Ordinea verificarilor la POST** (`comanda.php`): limita pe IP → token CSRF → capcana anti-robot → campuri →
+**reverificarea cosului pe server**. La orice problema formularul revine cu datele introduse.
+
+**Fisiere:**
+- `includes/order_security.php` (nou):
+  - sesiune proprie `mug_comanda` (separata de admin), cookie `HttpOnly`, `SameSite=Lax`, `Secure` pe HTTPS;
+  - token CSRF de 64 hex, comparat cu `hash_equals`;
+  - capcana: camp invizibil `website` + formular trimis in < 3 s de la afisare → respins cu mesaj generic;
+  - **IP-ul real din spatele Cloudflare**: `CF-Connecting-IP` acceptat doar daca cererea vine din intervalele
+    Cloudflare (IPv4 + IPv6) — altfel antetul poate fi falsificat (aceeasi problema exista azi la login-ul din admin);
+  - limita: 10 trimiteri / 10 minute / IP (tabela `order_attempts`, curatata automat); la eroare de baza nu blocam clientul.
+- `db/migration_009_order_attempts.sql` (nou, in `deploy_db.php`).
+- `admin/config.php` — `ORDER_RATE_MAX`, `ORDER_RATE_WINDOW_SEC`, `ORDER_MIN_FILL_SEC`, suprascriibile local.
+  **Local** (`config.local.php`, negituit): limita 1000 si pragul 0 s, pentru testele automate. Pe server raman 10 si 3 s.
+- `includes/order_form.php` — acord GDPR obligatoriu (doar valoarea `1`).
+- `comanda.php` — token, camp-capcana, bifa de acord cu legaturi spre Termeni si Politica (nebifata din oficiu),
+  cosul reverificat (gol / corupt / > 20 KB / produs indisponibil → mesaj rosu cu legatura spre cos), `Cache-Control: no-store`,
+  coduri HTTP corecte: 400 (sesiune), 422 (date / robot / cos), 429 (limita).
+- `js/comanda-pagina.js` — verificarea acordului; mesajul sta sub text, nu in eticheta. `css/style.css` — capcana ascunsa, blocul de acord.
+- Teste: `admin/tests/test_order_security.php` (nou, 44 — unitare + cereri HTTP reale), `test_order_form.php` (+2),
+  `dev/e2e/tests/comanda-securitate.spec.js` (nou); testele de comanda bifeaza acum acordul.
+
+**Protectia la injectare in emailuri** (cerinta din plan): toate campurile trec prin `orderText()` (caracterele de control,
+inclusiv rand nou, eliminate) si emailul prin `FILTER_VALIDATE_EMAIL` — testat in T7 cu `ion@exemplu.ro\nBcc:`.
+Trimiterea propriu-zisa (T12) va folosi PHPMailer, care valideaza si el antetele.
+
+**Teste executate si rezultate:**
+
+| Test | Rezultat |
+|---|---|
+| `ipInCidr` (margini /20, IPv6, amestec v4/v6, text) | trecut |
+| IP real: fara CF; antet CF falsificat de un client direct → ignorat; de la Cloudflare v4 si v6 → acceptat; antet invalid | trecut |
+| CSRF: format, stabil in sesiune, corect / gol / un caracter diferit / array / lipsa | trecut |
+| Capcana (prag explicit 3 s): imediat, 1 s → robot; 4 s, 30 s → om; camp completat / array → robot; doar spatii → om; timp alterat → robot | trecut |
+| Limita: 3 trec, a 4-a blocata; alt IP neafectat; dupa fereastra se poate din nou; curatare automata | trecut |
+| **HTTP real**: fara token → 400 (datele raman); token din alta sesiune → 400; capcana → 422 generic; fara acord → 422; cos cu produs indisponibil / corupt / prea mare → 422; totul valid → trece; peste limita → **429** | trecut |
+| `test_order_security.php` total | **44/44** |
+| Playwright × 3 latimi: acord (legaturi, nebifat, eroare la locul ei); capcana invizibila si fara focus; sesiune expirata → mesaj, date pastrate, a doua trimitere trece; cos modificat in pagina → respins de server | trecut |
+| `dev/test_fresh_deploy.sh … order_attempts.ip` | tabela exista dupa fiecare rulare |
+| Regresie `dev/run_tests.sh` | **429** asertiuni — trecut |
+| Regresie browser completa | **152** trecute, 13 sarite |
+
+**Probleme gasite si rezolvate:** primele teste ale capcanei depindeau de pragul local (0 s) si nu puteau pica —
+functia primeste acum pragul ca parametru, iar testul verifica explicit pragul de productie de 3 s.
+
+**De stiut pentru lansare (T16):** lista de IP-uri Cloudflare se reverifica; aceeasi functie `orderClientIp()` poate repara
+si limitarea login-ului din admin (jurnal, punctul 3).

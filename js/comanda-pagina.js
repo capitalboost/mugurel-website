@@ -86,6 +86,7 @@
     telefon: function (v) { return v.replace(/\D/g, '').length >= 9 ? '' : (v ? 'Numarul de telefon nu pare corect (ex. 0749 130 565).' : 'Scrie un numar de telefon — te sunam ca sa confirmam comanda.'); },
     email: function (v) { return /^[^\s@]+@[^\s@]+\.[a-z]{2,}$/i.test(v) ? '' : (v ? 'Adresa de email nu pare corecta.' : 'Scrie adresa de email — iti trimitem confirmarea comenzii.'); },
     plata: function () { return form.querySelector('[data-plata]:checked') ? '' : 'Alege cum vrei sa platesti.'; },
+    acord: function () { return form.elements.acord.checked ? '' : 'Ca sa trimiti comanda, trebuie sa accepti Termenii si Politica de confidentialitate.'; },
     judet: function (v) { return v ? '' : 'Alege judetul.'; },
     localitate: function (v) { return v.length >= 2 ? '' : 'Scrie localitatea.'; },
     adresa: function (v) { return v.length >= 5 ? '' : 'Scrie adresa de livrare (strada, numar, bloc, apartament).'; },
@@ -139,7 +140,8 @@
     var p = document.getElementById(id);
     // La un grup de butoane radio, eroarea apartine grupului (fieldset), nu primului buton.
     var target = field.type === 'radio' ? field.closest('fieldset') : field;
-    var anchor = field.type === 'radio' ? target.querySelector('.form-plata-options') : field;
+    var anchor = field.type === 'radio' ? target.querySelector('.form-plata-options')
+      : field.type === 'checkbox' ? field.closest('label') : field;
     if (!msg) {
       target.removeAttribute('aria-invalid');
       target.removeAttribute('aria-describedby');

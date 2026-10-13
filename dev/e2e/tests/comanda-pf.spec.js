@@ -25,6 +25,7 @@ async function fillValid(page) {
   for (const [sel, val] of Object.entries(VALID)) { await page.fill(sel, val); }
   await page.selectOption('#f-judet', 'Dolj');
   await page.check('input[name="plata"][value="ramburs"]');
+  await page.check('input[name="acord"]');
 }
 
 test('cos gol: fara formular, cu legatura spre catalog', async ({ page }) => {
@@ -47,7 +48,7 @@ test('trimis gol: erori langa fiecare camp, focus pe primul, ramane pe pagina', 
   await openOrder(page, [{ id: 3470, qty: 1 }]);
   await expect(page.locator('[data-cos-total]')).toBeVisible();
   await page.click('[data-comanda-submit]');
-  await expect(page.locator('.form-error')).toHaveCount(7); // 6 campuri + metoda de plata
+  await expect(page.locator('.form-error')).toHaveCount(8); // 6 campuri + metoda de plata + acordul GDPR
   await expect(page.locator('#err-nume')).toHaveText('Scrie numele si prenumele.');
   await expect(page.locator('#f-nume')).toBeFocused();
   await expect(page.locator('#f-nume')).toHaveAttribute('aria-describedby', 'err-nume');
@@ -112,7 +113,7 @@ test.describe('fara JavaScript', () => {
     await page.fill('#f-nume', 'Ion Popescu');
     await page.fill('#f-email', 'gresit');
     await page.click('[data-comanda-submit]');
-    await expect(page.locator('[data-form-errors]')).toContainText('Verifica campurile marcate mai jos (6)');
+    await expect(page.locator('[data-form-errors]')).toContainText('Verifica campurile marcate mai jos (7)');
     await expect(page.locator('#err-email')).toHaveText('Adresa de email nu pare corecta.');
     await expect(page.locator('#f-nume')).toHaveValue('Ion Popescu');
     await expect(page.locator('#f-email')).toHaveValue('gresit');

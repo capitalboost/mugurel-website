@@ -17,6 +17,7 @@ async function fillContact(page) {
   await page.fill('#f-nume', 'Ion Popescu');
   await page.fill('#f-telefon', '0749130565');
   await page.fill('#f-email', 'ion@exemplu.ro');
+  await page.check('input[name="acord"]');
 }
 async function submitAndGetStatus(page) {
   const [res] = await Promise.all([

@@ -22,6 +22,7 @@ async function fillCommon(page) {
   await page.fill('#f-localitate', 'Dabuleni');
   await page.fill('#f-adresa', 'Santier, Str. Noua 7');
   await page.check('input[name="plata"][value="transfer"]');
+  await page.check('input[name="acord"]');
 }
 async function fillCompany(page, cui = 'RO14399840') {
   await page.fill('#f-firma', 'Constructii Dabuleni SRL');

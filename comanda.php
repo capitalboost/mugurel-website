@@ -4,28 +4,72 @@
  *
  * GET: formularul + sumarul cosului (sumarul il construieste js/comanda-pagina.js din raspunsul
  *      /cos-produse.php, iar tot el pune continutul cosului in campul ascuns „cos").
- * POST: validarea campurilor pe server (includes/order_form.php); la erori, formularul se
- *       reafiseaza cu valorile introduse si mesajul langa fiecare camp.
+ * POST, in ordine (T10): limita pe IP -> token CSRF -> capcana anti-robot -> validarea campurilor
+ *       (includes/order_form.php) -> reverificarea cosului pe server (includes/cart.php).
+ *       La orice problema formularul se reafiseaza cu valorile introduse.
  */
 require_once __DIR__ . '/admin/config.php';
 require_once __DIR__ . '/includes/order_form.php';
+require_once __DIR__ . '/includes/order_security.php';
+require_once __DIR__ . '/includes/cart.php';
 
-$values = array_fill_keys(array_keys(ORDER_MAX), '') + ['tip' => 'pf'];
+orderSessionStart();
+header('Cache-Control: no-store'); // pagina contine tokenul sesiunii
+
+const ORDER_PHONE_HINT = 'Te rugam sa incerci din nou sau sa comanzi telefonic la 0749 130 565.';
+
+$values = array_fill_keys(array_keys(ORDER_MAX), '') + ['tip' => 'pf', 'plata' => '', 'acord' => ''];
 $errors = [];
-$notice = null;
+$notice = null;      // mesaj general (galben)
+$cartError = null;   // problema cu cosul (rosu, cu legatura spre cos)
 
 if (($_SERVER['REQUEST_METHOD'] ?? 'GET') === 'POST') {
     $result = orderFormValidate($_POST);
     $values = $result['data'];
-    $errors = $result['errors'];
-    if ($errors) {
+
+    try {
+        $pdo = Database::get();
+    } catch (Throwable $e) {
+        $pdo = null;
+    }
+
+    if ($pdo !== null && orderRateLimited($pdo, orderClientIp($_SERVER))) {
+        http_response_code(429);
+        $notice = 'Ai trimis formularul de prea multe ori in ultimele minute. ' . ORDER_PHONE_HINT;
+    } elseif (!orderCsrfValid($_POST['csrf'] ?? null)) {
+        http_response_code(400);
+        $notice = 'Sesiunea a expirat (pagina a stat deschisa prea mult). Datele tale sunt mai jos — apasa din nou „Trimite comanda".';
+    } elseif (orderLooksLikeBot($_POST)) {
         http_response_code(422);
+        $notice = 'Comanda nu a putut fi trimisa. ' . ORDER_PHONE_HINT;
     } else {
-        // Inregistrarea comenzii se adauga in T11; pana atunci nu pretindem ca s-a trimis ceva.
-        http_response_code(503);
-        $notice = 'Trimiterea comenzilor online nu este inca activa. Te rugam sa comanzi telefonic la 0749 130 565.';
+        $errors = $result['errors'];
+
+        // Cosul: doar {id, qty} din browser; pretul si disponibilitatea se recitesc din baza.
+        $cosRaw = $_POST['cos'] ?? '';
+        $items = is_string($cosRaw) && strlen($cosRaw) <= 20000 ? cartNormalizeItems(json_decode($cosRaw, true)) : [];
+        $cart = null;
+        if ($items === []) {
+            $cartError = 'Cosul tau este gol sau nu a putut fi citit.';
+        } elseif (($products = cartProducts(array_column($items, 'id'))) === null) {
+            $cartError = 'Nu putem verifica acum produsele din cos. ' . ORDER_PHONE_HINT;
+        } else {
+            $cart = priceCart($items, $products);
+            if ($cart['problem_count'] > 0 || $cart['orderable_count'] === 0) {
+                $cartError = 'Unele produse din cos nu se mai pot comanda (pret sau stoc schimbat).';
+            }
+        }
+
+        if ($errors || $cartError) {
+            http_response_code(422);
+        } else {
+            // Inregistrarea comenzii se adauga in T11; pana atunci nu pretindem ca s-a trimis ceva.
+            http_response_code(503);
+            $notice = 'Trimiterea comenzilor online nu este inca activa. ' . ORDER_PHONE_HINT;
+        }
     }
 }
+orderMarkFormShown();
 
 $pageTitle       = 'Finalizeaza comanda — Mugurel';
 $metaDescription = 'Datele de livrare pentru comanda la Mugurel Materiale Constructii.';
@@ -67,6 +111,9 @@ require __DIR__ . '/templates/header.php';
   <?php if ($notice): ?>
   <p class="cos-msg cos-msg--warn" role="alert" data-form-notice><?= htmlspecialchars($notice, ENT_QUOTES, 'UTF-8') ?></p>
   <?php endif; ?>
+  <?php if ($cartError): ?>
+  <p class="cos-msg cos-msg--error" role="alert" data-cart-error><?= htmlspecialchars($cartError, ENT_QUOTES, 'UTF-8') ?> <a href="/cos.html">Verifica cosul</a>.</p>
+  <?php endif; ?>
   <?php if ($errors): ?>
   <div class="cos-msg cos-msg--error" role="alert" data-form-errors tabindex="-1">
     Verifica campurile marcate mai jos (<?= count($errors) ?>).
@@ -76,6 +123,11 @@ require __DIR__ . '/templates/header.php';
   <div class="comanda-layout">
     <form class="comanda-form" method="post" action="/comanda.html" novalidate data-comanda-form>
       <input type="hidden" name="cos" value="" data-cos-field>
+      <input type="hidden" name="csrf" value="<?= htmlspecialchars(orderCsrfToken(), ENT_QUOTES, 'UTF-8') ?>">
+      <div class="form-hp" aria-hidden="true">
+        <label for="f-<?= ORDER_HONEYPOT ?>">Nu completa acest camp</label>
+        <input id="f-<?= ORDER_HONEYPOT ?>" name="<?= ORDER_HONEYPOT ?>" type="text" tabindex="-1" autocomplete="off" value="">
+      </div>
       <?php $isPj = ($values['tip'] ?? 'pf') === 'pj'; ?>
 
       <fieldset class="form-block form-tip">
@@ -197,6 +249,17 @@ require __DIR__ . '/templates/header.php';
           <textarea id="f-mentiuni" name="mentiuni" rows="3" maxlength="<?= ORDER_MAX['mentiuni'] ?>"><?= $v('mentiuni') ?></textarea>
         </div>
       </fieldset>
+
+      <?php [$a, $msg] = fieldError($errors, 'acord'); ?>
+      <div class="form-acord">
+        <label class="form-acord-label">
+          <input type="checkbox" name="acord" value="1"<?= ($values['acord'] ?? '') === '1' ? ' checked' : '' ?><?= $a ?>>
+          <span>Am citit si accept <a href="/termeni-conditii.html" target="_blank" rel="noopener">Termenii si conditiile</a>
+          si <a href="/politica-confidentialitate.html" target="_blank" rel="noopener">Politica de confidentialitate</a>.
+          Datele mele sunt folosite doar pentru aceasta comanda. <span aria-hidden="true">*</span></span>
+        </label>
+        <?= $msg ?>
+      </div>
 
       <p class="form-required-note"><span aria-hidden="true">*</span> camp obligatoriu</p>
       <button type="submit" class="btn-cart comanda-submit" data-comanda-submit>Trimite comanda</button>
