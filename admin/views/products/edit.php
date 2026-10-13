@@ -132,6 +132,12 @@
     </div>
 
     <label style="flex-direction:row;align-items:center;gap:.5rem">
+      <input type="checkbox" name="price_is_from" value="1"
+             <?= ($isEdit && !empty($product['price_is_from'])) ? 'checked' : '' ?>>
+      Pret minim — pe site apare „de la X lei" si produsul nu se poate pune in cos
+    </label>
+
+    <label style="flex-direction:row;align-items:center;gap:.5rem">
       <input type="checkbox" name="is_visible" value="1"
              <?= (!$isEdit || $product['is_visible']) ? 'checked' : '' ?>>
       Vizibil pe site

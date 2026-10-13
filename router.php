@@ -14,7 +14,7 @@ $category = $stmt->fetch();
 
 if ($category) {
     $stmt = $db->prepare(
-        'SELECT id, name, short_description, image_path, image_alt, price, price_unit
+        'SELECT id, name, short_description, image_path, image_alt, price, price_unit, price_is_from
          FROM products WHERE category_id = ? AND is_visible = 1 ORDER BY sort_order, name'
     );
     $stmt->execute([$category['id']]);

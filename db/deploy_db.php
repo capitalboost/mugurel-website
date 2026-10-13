@@ -140,23 +140,29 @@ function main(array $argv): int
         'migration_004_images_badges.sql',
         'migration_005_accessories.sql',
         'migration_006_wa_text.sql',
+        'migration_007_price_from.sql',
     ];
 
-    $applied = [];
-    foreach ($migrations as $file) {
-        $path = $dbDir . '/' . $file;
-        if (!is_file($path)) {
-            out("ATENTIE: migrarea $file lipseste din db/, o sar.");
-            continue;
+    $runMigrations = function () use ($pdo, $dbDir, $migrations): array {
+        $applied = [];
+        foreach ($migrations as $file) {
+            $path = $dbDir . '/' . $file;
+            if (!is_file($path)) {
+                out("ATENTIE: migrarea $file lipseste din db/, o sar.");
+                continue;
+            }
+            try {
+                runSqlFile($pdo, $path);
+                $applied[] = $file;
+                out("OK — migrare aplicata: $file");
+            } catch (Throwable $e) {
+                out("EROARE la migrarea $file: " . $e->getMessage());
+            }
         }
-        try {
-            runSqlFile($pdo, $path);
-            $applied[] = $file;
-            out("OK — migrare aplicata: $file");
-        } catch (Throwable $e) {
-            out("EROARE la migrarea $file: " . $e->getMessage());
-        }
-    }
+        return $applied;
+    };
+
+    $applied = $runMigrations();
 
     // 2. Import date de productie — o singura data, cu guard pe tabela goala.
     $dataFile = $dbDir . '/productie_date.sql';
@@ -218,6 +224,11 @@ function main(array $argv): int
                     runSqlFile($pdo, $dataFile);
                     $importStatus = 'importat';
                     out('OK — date importate din productie_date.sql');
+                    // productie_date.sql face DROP + CREATE pe `products` cu structura de la
+                    // momentul exportului, deci coloanele adaugate de migrarile mai noi dispar.
+                    // Migrarile sunt idempotente: le reaplicam ca sa le readucem.
+                    out('Reaplic migrarile peste structura importata:');
+                    $runMigrations();
                 } catch (Throwable $e) {
                     out('EROARE la importul de date: ' . $e->getMessage());
                 }

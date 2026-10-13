@@ -18,11 +18,15 @@ function e(?string $s): string {
     return htmlspecialchars((string)$s, ENT_QUOTES, 'UTF-8');
 }
 
-/** Pretul afisat. Conventia site-ului: aproape totul e "la cerere". */
+/**
+ * Pretul afisat, cu TVA. Fara pret => "Pret la cerere"; cu price_is_from => "de la X lei"
+ * (pret minim, produsul nu intra in cos).
+ */
 function priceLabel(array $p): string {
-    if ($p['price'] === null || (float)$p['price'] <= 0) { return 'Pret la cerere'; }
-    return number_format((float)$p['price'], 2, ',', '.') . ' lei'
-         . ($p['price_unit'] ? ' / ' . e($p['price_unit']) : '');
+    if (($p['price'] ?? null) === null || (float)$p['price'] <= 0) { return 'Pret la cerere'; }
+    return (!empty($p['price_is_from']) ? 'de la ' : '')
+         . number_format((float)$p['price'], 2, ',', '.') . ' lei'
+         . (!empty($p['price_unit']) ? ' / ' . e($p['price_unit']) : '');
 }
 
 /**
@@ -162,7 +166,7 @@ function renderProdCards(array $products): string {
 }
 
 /**
- * Varianta accesoriilor. Card simplu: titlu, descriere, buton WhatsApp.
+ * Varianta accesoriilor. Card simplu: titlu, descriere, pret, buton WhatsApp.
  *
  * Wrap-ul de imagine (.accessory-img-wrap) se randeaza doar daca produsul are
  * fotografie SAU iconita — marea majoritate (223 din 264) n-au niciuna. Cand
@@ -191,6 +195,7 @@ function renderAccessoryCards(array $products): string {
         $out .= '<div class="accessory-body">'
               . '<h4>' . e($p['name']) . '</h4>'
               . '<p>' . e($p['short_description']) . '</p>'
+              . '<span class="accessory-price">' . priceLabel($p) . '</span>'
               . '<a href="' . e(waLink($p['name'], $p['wa_text'] ?? null)) . '" class="btn-wa-acc" target="_blank" rel="noopener">'
               . 'Afla disponibilitate</a>'
               . '</div></div>';

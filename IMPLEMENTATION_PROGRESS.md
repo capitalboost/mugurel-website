@@ -55,7 +55,7 @@ Complexitate: **S** = mic (≤ ~2h), **M** = mediu, **L** = mare (impartit in su
   un email de proba apare in Mailpit.
 - **Necesita aprobare:** instalarea de software pe PC (winget/npx).
 
-### T2 — Preturi si „de la" (prerechizit pentru cos) · M · Neinceput
+### T2 — Preturi si „de la" (prerechizit pentru cos) · M · **Finalizat**
 - **Obiectiv:** produsele au pret afisat corect, inclusiv „de la X lei".
 - **De facut:** `db/migration_007_price_from.sql` (`price_is_from TINYINT`); script CLI
   `db/import_preturi.php` care citeste Excel-ul (exportat CSV) dupa `ID` → **doar in baza locala**;
@@ -234,3 +234,56 @@ Userul admin local are o parola noua de test (nu cea din `db/seed_admin.php`).
 **Probleme existente si pe live (nu introduse de noi), lasate vizibile in test ca „cunoscute":**
 - fotografii de produs lipsa (404) — jurnal, punctul 7;
 - **nou:** harta Google de pe `contact.html` e blocata de CSP (lipseste `frame-src`) — trecut in jurnal ca punctul 11.
+
+---
+
+### T2 — Preturi si „de la" — Finalizat (2026-10-13)
+
+**Obiectiv:** produsele afiseaza pretul cu TVA, inclusiv varianta „de la X lei"; preturile se pot
+importa din Excel si bifa „de la" se poate seta din admin.
+
+**Fisiere:**
+- `db/migration_007_price_from.sql` (nou) — `products.price_is_from TINYINT(1) DEFAULT 0`, idempotenta.
+- `db/deploy_db.php` — include migrarea 007 si **reaplica migrarile dupa un import reusit** (vezi „Probleme").
+- `db/import_preturi.php` (nou) — citeste direct `.xlsx` (foaia „Preturi", coloane recunoscute dupa antet),
+  valideaza tot inainte sa scrie, totul intr-o tranzactie; implicit doar verificare, scrie doar cu `--apply`.
+- `includes/product_grid.php` — `priceLabel()` cu „de la"; **pretul apare acum si pe cardurile de accesorii**.
+- `includes/products_repo.php`, `router.php` — citesc `price_is_from`.
+- `templates/category.php` (paginile de subcategorie servite de `router.php`) — acelasi format de pret ca restul site-ului
+  (inainte: „55.00 RON/m²", acum „55,00 lei / m²").
+- `css/style.css` — `.accessory-price` (acelasi stil ca `.material-price`).
+- `admin/views/products/edit.php`, `admin/controllers/ProductsController.php`, `admin/models/Product.php` — bifa „Pret minim".
+- Teste: `admin/tests/test_product_grid.php` (+14), `admin/tests/test_import_preturi.php` (nou, 25),
+  `dev/e2e/tests/admin-pret.spec.js` (nou), `dev/test_fresh_deploy.sh` (nou).
+
+**Date locale:** importate estimarile din `Preturi produse - estimari piata.xlsx` → 534/534 cu pret, toate „de la".
+**Doar in baza locala.** Productia nu e atinsa.
+
+**Teste executate si rezultate:**
+
+| Test | Rezultat |
+|---|---|
+| `test_product_grid.php` — 9 variante `priceLabel()` (null, 0, fix, „de la", fara unitate, escapare, separatori RO) + afisare pe cele 3 tipuri de card | 130/130 |
+| `test_import_preturi.php` — citire xlsx (shared + inline strings), 7 tipuri de randuri invalide, verificare fara scriere, idempotenta, rollback la ID inexistent, restaurarea bazei | 25/25 |
+| Import real, verificare: estimari → 534 de schimbat; sablonul gol → 0 de schimbat | trecut |
+| Import real `--apply` de doua ori | 534 actualizate, apoi 0 (idempotent) |
+| `dev/test_fresh_deploy.sh` — deploy pe baza goala, de 2 ori | coloana exista dupa **fiecare** rulare; 534 produse |
+| **Control negativ:** acelasi test cu reaplicarea migrarilor dezactivata | **pica** la rularea 1 (cum trebuie) |
+| Pagini: carduri cu „de la" | 231/231 materiale, 264/264 accesorii, catalog si subcategorii OK |
+| Playwright admin: debifez → pe site „55,00 lei / m²"; bifez → „de la 55,00 lei / m²"; restaurat | trecut |
+| Produsul 1 dupa salvarea din admin — celelalte campuri (wa_text, badge, imagine, sectiune) | neschimbate |
+| Regresie completa `dev/run_tests.sh` | **237** asertiuni, `php -l` 8.1, 231+264, catalog 534 — trecut |
+| Regresie browser `dev/e2e/run.sh` | 19 trecute, 2 sarite (adminul doar pe desktop) |
+| Captura vizuala accesorii, mobil 375 px + desktop | pretul aliniat, acelasi stil ca la materiale |
+
+**Probleme gasite si rezolvate:**
+1. **Bug latent la deploy pe baza goala:** `deploy_db.php` rula migrarile *inainte* de import, iar `productie_date.sql`
+   face `DROP TABLE products` → orice coloana adaugata de o migrare noua disparea la primul deploy pe un server nou.
+   Pe productia actuala nu se manifesta (importul e sarit), dar ar fi lovit la T3 si T11. Reparat si acoperit de test.
+2. Cititorul de `.xlsx`: atributele XML nu se citeau dupa `children($ns)` → corectat cu `attributes()`.
+3. Produsul 78 are `price_unit = ''` in loc de `NULL` → importul raporta o modificare falsa; acum `''` = `NULL`.
+4. Testul de admin: sintaxa `test.skip` cu callback nu primeste `testInfo` in Playwright 1.49 → mutat in `beforeEach`.
+
+**De retinut pentru T16 (lansare):**
+- Textele meta din `catalog.html` (og/twitter description) spun „Pret la cerere pe WhatsApp" — de actualizat cand apar preturile reale.
+- Estimarile NU merg pe live. Importul pe productie se face cu fisierul confirmat de Mugurel.

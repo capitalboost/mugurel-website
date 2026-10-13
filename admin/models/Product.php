@@ -63,15 +63,15 @@ class Product {
         $db = Database::get();
         $stmt = $db->prepare(
             'INSERT INTO products
-             (category_id, name, short_description, image_path, image_alt, price, price_unit,
+             (category_id, name, short_description, image_path, image_alt, price, price_unit, price_is_from,
               is_visible, sort_order, created_by, page_slug, section_key, card_kind, card_modifier,
               icon_key, icon_label, badge_label, badge_kind, wa_text)
-             VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)'
+             VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)'
         );
         $stmt->execute([
             $data['category_id'], $data['name'],  $data['short_description'],
             $data['image_path'],  $data['image_alt'], $data['price'],
-            $data['price_unit'],  $data['is_visible'], $data['sort_order'],
+            $data['price_unit'],  $data['price_is_from'], $data['is_visible'], $data['sort_order'],
             $data['created_by'],
             $data['page_slug'], $data['section_key'], $data['card_kind'], $data['card_modifier'],
             $data['icon_key'], $data['icon_label'], $data['badge_label'], $data['badge_kind'],
@@ -84,14 +84,14 @@ class Product {
         Database::get()->prepare(
             'UPDATE products SET
              category_id=?, name=?, short_description=?, image_path=?,
-             image_alt=?, price=?, price_unit=?, is_visible=?, sort_order=?,
+             image_alt=?, price=?, price_unit=?, price_is_from=?, is_visible=?, sort_order=?,
              page_slug=?, section_key=?, card_kind=?, card_modifier=?,
              icon_key=?, icon_label=?, badge_label=?, badge_kind=?, wa_text=?
              WHERE id=?'
         )->execute([
             $data['category_id'], $data['name'], $data['short_description'],
             $data['image_path'],  $data['image_alt'], $data['price'],
-            $data['price_unit'],  $data['is_visible'], $data['sort_order'],
+            $data['price_unit'],  $data['price_is_from'], $data['is_visible'], $data['sort_order'],
             $data['page_slug'], $data['section_key'], $data['card_kind'], $data['card_modifier'],
             $data['icon_key'], $data['icon_label'], $data['badge_label'], $data['badge_kind'],
             $data['wa_text'], $id,

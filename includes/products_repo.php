@@ -19,7 +19,7 @@ function productsBaseSql(): string {
         SELECT p.id, p.name, p.short_description, p.wa_text, p.icon_key, p.icon_label,
                p.image_path, p.image_alt, p.badge_label, p.badge_kind,
                p.card_kind, p.card_modifier, p.section_key,
-               p.price, p.price_unit,
+               p.price, p.price_unit, p.price_is_from,
                TRIM(CONCAT(
                    COALESCE(l1.slug, c.slug),
                    COALESCE((SELECT CONCAT(' ', GROUP_CONCAT(COALESCE(xl1.slug, x.slug) SEPARATOR ' '))

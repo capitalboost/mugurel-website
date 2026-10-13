@@ -1,5 +1,6 @@
 <?php
 // Variabile: $categoryName, $categorySlug, $products, $pageTitle, $metaDescription, $canonicalUrl
+require_once __DIR__ . '/../includes/product_grid.php'; // priceLabel(), acelasi format ca in restul site-ului
 require __DIR__ . '/header.php';
 ?>
 
@@ -37,9 +38,7 @@ require __DIR__ . '/header.php';
           <p><?= htmlspecialchars($p['short_description'], ENT_QUOTES, 'UTF-8') ?></p>
           <?php endif; ?>
           <?php if ($p['price']): ?>
-          <div class="material-price">
-            <?= number_format((float)$p['price'], 2) ?> RON/<?= htmlspecialchars($p['price_unit'] ?? '', ENT_QUOTES, 'UTF-8') ?>
-          </div>
+          <div class="material-price"><?= priceLabel($p) ?></div>
           <?php endif; ?>
           <div class="material-footer">
             <a href="https://wa.me/40749130565?text=Buna%20ziua!%20Vreau%20oferta%20pentru%20<?= rawurlencode($p['name']) ?>" class="mat-cta" target="_blank" rel="noopener">Cere oferta</a>

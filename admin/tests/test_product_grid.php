@@ -328,5 +328,26 @@ ok(!str_contains($hProdFaraPoza, '<img'),                      'prod: fara fotog
 ok(str_contains($hProdFaraPoza, 'class="v-gen"'),
     'prod: panoul generat prezent cand nu exista fotografie');
 
+// ── priceLabel(): pret fix, pret minim („de la"), fara pret (T2) ──
+$base = ['price' => null, 'price_unit' => null, 'price_is_from' => 0];
+ok(priceLabel($base) === 'Pret la cerere',                                  'pret: null => Pret la cerere');
+ok(priceLabel(['price' => '0.00'] + $base) === 'Pret la cerere',           'pret: 0 => Pret la cerere');
+ok(priceLabel(['price' => '55.00', 'price_unit' => 'm²'] + $base) === '55,00 lei / m²', 'pret fix: 55,00 lei / m²');
+ok(priceLabel(['price' => '1234.5', 'price_unit' => 'buc'] + $base) === '1.234,50 lei / buc', 'pret: separator de mii si zecimale RO');
+ok(priceLabel(['price' => '55', 'price_unit' => 'm²', 'price_is_from' => 1] + $base) === 'de la 55,00 lei / m²', 'pret minim: de la 55,00 lei / m²');
+ok(priceLabel(['price' => '12', 'price_unit' => ''] + $base) === '12,00 lei',  'pret fara unitate: fara " / "');
+ok(priceLabel(['price' => '12', 'price_unit' => null, 'price_is_from' => '1'] + $base) === 'de la 12,00 lei', 'pret minim fara unitate');
+ok(priceLabel(['price' => '12', 'price_unit' => '<b>x</b>'] + $base) === '12,00 lei / &lt;b&gt;x&lt;/b&gt;', 'pret: unitatea e escapata');
+ok(priceLabel(['price' => '12']) === '12,00 lei',                          'pret: functioneaza fara cheile price_unit/price_is_from');
+
+$cuPret = $sample;
+$cuPret[0]['price'] = '55.00'; $cuPret[0]['price_unit'] = 'm²'; $cuPret[0]['price_is_from'] = 1;
+ok(str_contains(renderMaterialCards($cuPret), '<span class="material-price">de la 55,00 lei / m²</span>'), 'material: afiseaza „de la"');
+ok(str_contains(renderProdCards($cuPret), '<div class="prod-price">de la 55,00 lei / m²</div>'),        'catalog: afiseaza „de la"');
+$acc = renderAccessoryCards($cuPret);
+ok(str_contains($acc, '<span class="accessory-price">de la 55,00 lei / m²</span>'),                       'accesoriu: afiseaza pretul (nou in T2)');
+ok(strpos($acc, 'accessory-price') < strpos($acc, 'btn-wa-acc'),                                           'accesoriu: pretul sta inaintea butonului');
+ok(str_contains(renderAccessoryCards($sample), '<span class="accessory-price">Pret la cerere</span>'),     'accesoriu: fara pret => Pret la cerere');
+
 echo "\nRezultat: $pass passed, $fail failed\n";
 exit($fail > 0 ? 1 : 0);

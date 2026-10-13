@@ -68,6 +68,7 @@ switch ($action) {
             'image_alt'         => Sanitize::text($_POST['image_alt'] ?? '', 200),
             'price'             => Sanitize::price($_POST['price'] ?? ''),
             'price_unit'        => Sanitize::text($_POST['price_unit'] ?? '', 40),
+            'price_is_from'     => isset($_POST['price_is_from']) ? 1 : 0,
             'is_visible'        => isset($_POST['is_visible']) ? 1 : 0,
             'sort_order'        => Sanitize::posInt($_POST['sort_order'] ?? 0),
             'created_by'        => Auth::id(),
