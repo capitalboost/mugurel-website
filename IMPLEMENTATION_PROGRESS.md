@@ -898,3 +898,28 @@ pagini legale pentru vanzarea la distanta; (B) 7 recomandari; (C) exact ce se ad
 | Deploy pe baza goala | trecut (migrarile 007–010) |
 | Probleme gasite si reparate pe parcurs | 1 bug latent la deploy (coloane pierdute la import pe server nou), JSON stricat la produse inexistente, mesaj fals „produs inexistent" la eroare de baza, campul de cantitate refuza virgula, mesaje peste bannerul de cookie-uri, tokenul de confirmare ar fi ajuns in Google Analytics, pagina veche la „Inapoi" |
 | Netestat (cu motiv) | livrare reala de email prin internet (lipsesc datele SMTP); Safari/Firefox si dispozitive reale; comportamentul pe LiteSpeed + Cloudflare |
+
+---
+
+### Corectura dupa verificare — prima pagina (2026-10-13)
+
+**Gasit de:** Lucian, pe `localhost:8080`: „Produse reprezentative" de pe prima pagina aratau „Pret la cerere" si doar WhatsApp.
+**Cauza:** `index.html` e HTML static; cele 6 carduri erau scrise de mana si nu fusesera legate de baza (nici la proiectul
+catalogului din septembrie, nici in T1–T16). Singura pagina cu problema (verificat pe toate paginile `.html`).
+
+**Reparatie:** fiecare card are `data-product-id` spre produsul din baza (alegere aprobata de Lucian); numele cardului = numele
+din baza (ca in cos). `js/produse-acasa.js` (nou) completeaza la incarcare pretul, stocul si butonul de cos prin
+`/cos-produse.php`. Textul ramane in HTML (bun pentru Google); daca serverul nu raspunde, cardul ramane cu WhatsApp.
+
+| Card | Produs din baza |
+|---|---|
+| Tigla metalica cu protectie poliester | 3 — Tigla Metalica Profilata |
+| Polistiren EPS Grafitat 10cm | 30 — identic |
+| Placa Gips-Carton Standard 12.5mm | 33 — Placa Gips-Carton Standard (RB / Tip A) |
+| Bloc BCA Standard 25cm | 47 — Bloc BCA Standard (D400–D500) |
+| Panou gard vopsit electrostatic RAL | 65 — Panou Gard Vopsit Electrostatic (RAL) |
+| Vata minerala bazaltica 10cm | 25 — Vata Minerala Bazaltica (din piatra) |
+
+**Teste:** `dev/e2e/tests/acasa.spec.js` (nou) × 3 latimi — 6 carduri cu pret din baza, stoc si buton; adaugare → contor →
+produsul corect in cos; server 503 → cardurile raman cu WhatsApp, fara erori. Regresie: toate testele PHP trec; browser
+**189** trecute, 18 sarite. `docs/PLAN-LANSARE-COS.md` (D3) include si versiunea noului script.

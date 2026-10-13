@@ -58,7 +58,7 @@ Durata estimata: 45–60 de minute. Ideal intr-o zi lucratoare dimineata (daca a
 |---|---|---|
 | D1 | **Backup baza de productie**: cPanel → phpMyAdmin → Export (toata baza) → salvat local cu data | fisierul .sql exista si nu e gol |
 | D2 | Noteaza commit-ul curent de pe server (cPanel → Git Version Control → „HEAD Commit") | — pentru revenire |
-| D3 | Pe PC: `.html` statice incarca `cos.js?v=20261013` — **schimba versiunea** cu data lansarii in cele 7 fisiere `.html` (cauta `cos.js?v=`) si fa commit | `grep -c "cos.js?v=<data>" *.html finantari-europene/index.html` = 7 |
+| D3 | Pe PC: `.html` statice incarca `cos.js?v=20261013` (7 fisiere) si `index.html` si `produse-acasa.js?v=20261013` — **schimba versiunea** cu data lansarii (cauta `?v=20261013`) si fa commit | `grep -c "?v=20261013" *.html finantari-europene/index.html` = 0 |
 | D4 | (Optional, B1) linia `rm -rf $DEPLOYPATH/admin/tests` in `.cpanel.yml`, commit | — |
 | D5 | `git push origin feat/cos-comenzi` | branch-ul apare pe GitHub |
 | D6 | Pe server: editeaza `config.local.php` ca la sectiunea C (cu `ORDER_NOTIFY_TO` = `lucian@capitalboost.ro`) | — |
