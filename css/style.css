@@ -741,3 +741,14 @@ img { max-width: 100%; }
 .form-acord-label input { width: 18px; height: 18px; margin-top: 2px; flex: none; accent-color: var(--verde); }
 .form-acord-label a { color: var(--verde-mid); text-decoration: underline; }
 .form-acord .form-error { margin-top: 6px; }
+
+/* Pagina de confirmare (T14) */
+.confirmare-wrap { max-width: 760px; display: flex; flex-direction: column; gap: 16px; }
+.confirmare-box { background: #fff; border: 1px solid var(--border); border-radius: var(--radius); padding: 18px; display: flex; flex-direction: column; gap: 8px; }
+.confirmare-nr { font-size: 16px; }
+.confirmare-nr strong { color: var(--verde); font-size: 18px; letter-spacing: .02em; }
+.confirmare-h2 { font-size: 16px; color: var(--verde); margin-top: 6px; }
+.confirmare-pasi { margin: 0; padding-left: 20px; display: flex; flex-direction: column; gap: 6px; font-size: 14px; line-height: 1.5; }
+.confirmare-contact { font-size: 14px; }
+.confirmare-contact a { color: var(--verde-mid); font-weight: 600; }
+

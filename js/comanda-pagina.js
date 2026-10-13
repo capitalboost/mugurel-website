@@ -180,6 +180,8 @@
       if (first) { first.focus(); }
       return;
     }
+    // Semn pentru pagina de confirmare: goleste cosul o singura data (js/comanda-trimisa.js).
+    try { window.sessionStorage.setItem('mugurel_comanda_trimisa', '1'); } catch (e) { /* fara sessionStorage cosul ramane; nu e grav */ }
     submit.disabled = true; // un singur click; protectia reala la dubluri e pe server (T11)
     submit.textContent = 'Se trimite…';
   });
@@ -187,6 +189,12 @@
   // Dupa o eroare, mesajul dispare cand campul e corectat.
   form.addEventListener('change', function (ev) {
     if (ev.target.getAttribute('aria-invalid') === 'true') { checkField(ev.target); }
+  });
+
+  // „Inapoi" dupa trimitere: browserul poate reda pagina veche din memorie (formular completat, buton
+  // „Se trimite…", cos plin). Reincarcam, ca pagina sa arate starea reala (cosul e deja golit).
+  window.addEventListener('pageshow', function (ev) {
+    if (ev.persisted) { window.location.reload(); }
   });
 
   var serverErrors = document.querySelector('[data-form-errors]');

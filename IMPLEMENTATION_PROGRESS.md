@@ -125,7 +125,7 @@ Complexitate: **S** = mic (≤ ~2h), **M** = mediu, **L** = mare (impartit in su
 - **De facut:** sablon de confirmare (rezumat, total, pasii urmatori, contact).
 - **Teste:** mesajul catre adresa clientului apare **doar in Mailpit**; nimic nu iese din PC.
 
-### T14 — Pagina de confirmare · S · Neinceput
+### T14 — Pagina de confirmare · S · **Finalizat**
 - **De facut:** `comanda-trimisa.php` accesibila doar cu token aleator (nu cu id incremental → nu se pot
   ghici comenzile altora); goleste cosul.
 - **Teste:** token valid → rezumat; token gresit → 404; cosul e gol dupa confirmare.
@@ -779,3 +779,46 @@ si se vad la http://localhost:8025. Adresele `@mugurel-bricolaj.ro` sunt oricum 
 
 **De stiut:** legatura din email foloseste `SITE_URL` (`https://mugurel-bricolaj.ro`), deci emailurile de test duc spre
 site-ul real, unde pagina inca nu exista. Pe productie va fi corect. Textele emailului — de confirmat cu Mugurel (T16).
+
+---
+
+### T14 — Pagina de confirmare — Finalizat (2026-10-13)
+
+**Obiectiv:** dupa trimitere clientul vede clar ca a reusit si ce urmeaza; cosul se goleste.
+
+**Fisiere:**
+- `comanda-trimisa.php` (nou) — `/comanda-trimisa.html?t=<token>`: numarul comenzii, emailul unde a plecat confirmarea,
+  „Ce urmeaza" (te sunam la numarul dat; plata aleasa cu explicatia; livrare sau ridicare), produsele si totalul,
+  contact (telefon, WhatsApp cu numarul comenzii precompletat). Token gresit/lipsa/malformat → **404** cu mesaj util.
+  **Confidentialitate:** adresa contine tokenul secret, deci pagina e `noindex`, `Cache-Control: no-store`,
+  `Referrer-Policy: no-referrer` si **nu incarca Google Analytics / Clarity** (ar fi inregistrat adresa cu token).
+- `templates/header.php` — optiunea `$skipAnalytics` (implicit analiza ramane pe toate celelalte pagini).
+- `js/comanda-trimisa.js` (nou) — goleste cosul **o singura data**, doar dupa o trimitere din acest tab
+  (semn in `sessionStorage`, pus de `js/comanda-pagina.js`); legatura redeschisa mai tarziu din email nu goleste un cos nou.
+- `js/comanda-pagina.js` — la „Inapoi" dupa trimitere, pagina restaurata din memoria browserului se reincarca
+  (altfel ar fi aratat formularul vechi cu „Se trimite…" si cosul plin).
+- `css/style.css` — stilurile paginii. Teste: `dev/e2e/tests/comanda-confirmare.spec.js` (nou).
+
+**Teste executate si rezultate:**
+
+| Test | Rezultat |
+|---|---|
+| `curl`: token valid → 200 cu comanda; zerouri / `abc` / lipsa / `t[]=` / injectie SQL → 404; fara analiza in toate; `no-store` si `no-referrer` | trecut |
+| Playwright × 3 latimi — **flux complet din interfata**: buton pe 2 pagini → cos → „Continua comanda" → formular → confirmare: numar, total 109 lei, 2 produse, email, telefon, adresa; cosul golit | trecut |
+| Reincarcarea confirmarii: cerere GET, acelasi numar (nu retrimite) | trecut |
+| „Inapoi" dupa confirmare: cosul gol, formularul nu mai poate fi trimis | trecut |
+| Legatura redeschisa in alt tab cu un cos nou → cosul nou ramane | trecut |
+| Ridicare: adresa magazinului, fara mesaj de transport | trecut |
+| Token gresit: 404, `noindex`, fara scripturi GA / Clarity | trecut |
+| Capturi: confirmare (desktop) si pagina 404 (mobil) | clare |
+| Regresie `dev/run_tests.sh` | **516** asertiuni — trecut |
+| Regresie browser completa | **170** trecute, 13 sarite |
+
+**Probleme gasite si rezolvate:**
+1. „Inapoi" dupa comanda arata pagina veche din memoria browserului → reincarcare automata (`pageshow`).
+2. Testul pleca de pe confirmare inainte sa ruleze scriptul ei → testul asteapta incarcarea paginii (un client real nu pleaca in < 100 ms).
+3. Un script de captura de ecran se bloca pe mobil; am masurat elementul (pozitie identica in 6 masuratori, nicio animatie
+   in afara pulsului butonului WhatsApp) — problema era a scriptului (banner + header peste element), nu a site-ului.
+
+**De stiut (T16):** pe server, `.htaccess` seteaza `Referrer-Policy: strict-origin-when-cross-origin` cu `Header always set`,
+care poate suprascrie `no-referrer` din PHP. Si asa, catre alte site-uri se trimite doar domeniul, fara token — fara scurgere.

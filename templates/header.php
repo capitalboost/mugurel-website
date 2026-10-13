@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="ro">
 <head>
+<?php if (empty($skipAnalytics)): /* paginile cu date secrete in adresa (ex. confirmarea comenzii) nu incarca analiza */ ?>
   <!-- Google tag (gtag.js) -->
   <script async src="https://www.googletagmanager.com/gtag/js?id=G-R6M7YYLB48"></script>
   <script>
@@ -17,6 +18,7 @@
           y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);
       })(window, document, "clarity", "script", "y5btegvf2j");
   </script>
+<?php endif; ?>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title><?= htmlspecialchars($pageTitle ?? 'Mugurel — Materiale Constructii Dabuleni', ENT_QUOTES, 'UTF-8') ?></title>
