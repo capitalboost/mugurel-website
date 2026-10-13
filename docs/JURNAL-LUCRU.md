@@ -29,6 +29,26 @@ pe o masina noua e goala si trebuie reconstruita din scripturi.
 
 ---
 
+## 13 octombrie 2026 — Preturi: lista trimisa spre completare (DESCHIS)
+
+Mugurel completeaza preturile pentru toate cele **534 de produse**. Lista:
+`Fisiere de lucru/Preturi produse - de completat.xlsx` (generata din `db/productie_date.sql` cu
+`Fisiere de lucru/export_preturi.py`; numarul coincide cu live-ul). Coloana `ID` = `products.id`,
+dupa ea se face importul. Baza are deja `price` si `price_unit`, goale.
+
+**Decizii luate:**
+- Preturile sunt **cu TVA inclus**.
+- Pe site **doar afisam pretul**; comanda ramane pe WhatsApp/telefon (fara cos, fara plata online).
+- Produsele fara pret exact primesc **„de la X lei"** (coloana „De la?" = DA in Excel).
+  Atentie: baza **nu are** inca un camp pentru „de la" — trebuie o migrare mica.
+- Pe viitor preturile se schimba **in ambele feluri**: import/export Excel din `/admin` pentru
+  modificari mari + editare punctuala din formularul de produs.
+
+**Urmeaza:** cand vine Excel-ul completat — import + afisare pe carduri. Initializarea proiectului
+GSD (`/gsd-new-project`) e pusa pe pauza: utilizatorul trimite un prompt mare cu tot scope-ul.
+
+---
+
 ## 13 octombrie 2026 — Harta codului si corecturi de facut (DESCHIS)
 
 Nicio modificare pe site. S-a facut harta codului in `.planning/codebase/` (7 documente,
