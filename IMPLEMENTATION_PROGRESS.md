@@ -4,7 +4,7 @@ Proiect: stoc, cos, comanda (PF/PJ), inregistrare comenzi, emailuri, pagina de c
 Regula: **un task → testat → verificat → corectat → abia apoi urmatorul.**
 Nimic pe live, nimic pe baza de productie, niciun email catre `comenzi@mugurel-bricolaj.ro`.
 
-**Status plan:** APROBAT (2026-10-13) — in lucru
+**Status plan:** T1–T16 FINALIZATE (2026-10-13). Lansarea in productie **asteapta aprobarea explicita** — vezi `docs/PLAN-LANSARE-COS.md`.
 **Branch de lucru:** `feat/cos-comenzi`, pornit din `feat/catalog-db` (ramura de pe care ruleaza productia).
 
 ---
@@ -135,7 +135,7 @@ Complexitate: **S** = mic (≤ ~2h), **M** = mediu, **L** = mare (impartit in su
   regresie: 13 pagini 200, 231 + 264 carduri, catalog 534, JSON-LD, admin; toate testele PHP.
 - **Acceptanta:** totul verde, capturi atasate in acest fisier.
 
-### T16 — Plan de lansare in productie (fara deploy) · S · Neinceput
+### T16 — Plan de lansare in productie (fara deploy) · S · **Finalizat** (planul; lansarea asteapta aprobare)
 - Document: ordinea migrarilor, modificari `.cpanel.yml`, date SMTP de productie, comutarea
   `ORDER_NOTIFY_TO` pe `comenzi@mugurel-bricolaj.ro`, **confirmarea preturilor reale**, purge Cloudflare,
   revenire (rollback), verificari dupa lansare, pagini legale (termeni, retur, ANPC/SOL).
@@ -864,3 +864,37 @@ notificare interna catre `lucian@capitalboost.ro`, cu totalul corect.
 
 **Ce NU s-a testat (si de ce):** browsere reale Safari / Firefox (testele ruleaza pe Chromium); livrarea reala de email prin
 internet (lipsesc datele SMTP); comportamentul in spatele Cloudflare si pe LiteSpeed (doar pe server). Toate sunt in planul T16.
+
+---
+
+### T16 — Plan de lansare in productie — Finalizat (2026-10-13), NEEXECUTAT
+
+**Document:** `docs/PLAN-LANSARE-COS.md`. Nimic nu s-a facut pe server.
+
+**Contine:** (A) 6 conditii blocante — preturi reale confirmate, stoc real, texte aprobate, cont SMTP, SPF/DKIM/DMARC,
+pagini legale pentru vanzarea la distanta; (B) 7 recomandari; (C) exact ce se adauga in `config.local.php` pe server;
+(D) lansarea pas cu pas cu verificare la fiecare pas; (E) importul preturilor pe server si doua comenzi de proba
+(**intai cu notificarile la `lucian@capitalboost.ro`**, abia apoi comutat pe `comenzi@`); (F) verificari dupa lansare
+(comenzi `curl` gata de rulat) si urmarirea emailurilor neplecate; (G) revenire; (H) dupa lansare.
+
+**Verificat inainte de a scrie planul (local):**
+- ce copiaza `.cpanel.yml`: toate fisierele noi sunt in `*.php` de la radacina, `includes/`, `js/`, `css/` — **nu e nevoie de
+  directoare noi in deploy**; `dev/`, `docs/`, `IMPLEMENTATION_PROGRESS.md` nu ajung pe server;
+- **gasit:** `admin/tests/` (inclusiv testele noi, care scriu in baza) ajunge pe server — protejat de `admin/.htaccess` (403,
+  verificat local), dar planul recomanda excluderea lui (B1);
+- cele 7 pagini `.html` au `cos.js?v=20261013` — planul cere schimbarea versiunii la lansare (D3);
+- `includes/lib/PHPMailer/PHPMailer.php` accesat direct intoarce o pagina goala (doar definitii de clase).
+
+---
+
+## Rezumat final
+
+| | |
+|---|---|
+| Taskuri | **16/16 finalizate** (T16 = planul; lansarea asteapta aprobare) |
+| Commit-uri | pe `feat/cos-comenzi`, doar local (nimic trimis pe GitHub, nimic pe server) |
+| Teste PHP | **516** asertiuni in 11 fisiere — toate trec |
+| Teste in browser | **183** trecute (375 / 768 / 1280 px), 18 sarite intentionat — toate trec |
+| Deploy pe baza goala | trecut (migrarile 007–010) |
+| Probleme gasite si reparate pe parcurs | 1 bug latent la deploy (coloane pierdute la import pe server nou), JSON stricat la produse inexistente, mesaj fals „produs inexistent" la eroare de baza, campul de cantitate refuza virgula, mesaje peste bannerul de cookie-uri, tokenul de confirmare ar fi ajuns in Google Analytics, pagina veche la „Inapoi" |
+| Netestat (cu motiv) | livrare reala de email prin internet (lipsesc datele SMTP); Safari/Firefox si dispozitive reale; comportamentul pe LiteSpeed + Cloudflare |

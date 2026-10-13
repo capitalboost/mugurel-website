@@ -29,6 +29,20 @@ pe o masina noua e goala si trebuie reconstruita din scripturi.
 
 ---
 
+## 13 octombrie 2026 — Cos si comenzi online: GATA LOCAL, lansarea asteapta aprobare
+
+Proiect nou pe branch-ul `feat/cos-comenzi` (doar local): pret fix pe toate produsele, indicator de stoc, cos, comanda
+PF/PJ (ramburs / transfer / ridicare), comenzi salvate fara dubluri, email intern + confirmare client, pagina de confirmare.
+16 taskuri, fiecare testat: 516 asertiuni PHP, 183 teste in browser la 3 latimi.
+
+- **Progres si teste, task cu task:** `IMPLEMENTATION_PROGRESS.md` (radacina `Website/`).
+- **Plan de lansare (neexecutat):** `docs/PLAN-LANSARE-COS.md` — 6 conditii blocante, intre care **preturile reale**
+  (cele locale sunt estimari) si **contul SMTP**.
+- **Mediu local nou:** PHP 8.1.34 + MariaDB 10.11 + Mailpit + Playwright, pornit cu `bash dev/start_local.sh`.
+  Admin local: `admin` / `local-test-2026`. Emailuri: http://localhost:8025.
+
+---
+
 ## 13 octombrie 2026 — Preturi: lista trimisa spre completare (DESCHIS)
 
 Mugurel completeaza preturile pentru toate cele **534 de produse**. Lista:
