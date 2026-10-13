@@ -75,7 +75,7 @@ Complexitate: **S** = mic (≤ ~2h), **M** = mediu, **L** = mare (impartit in su
 - **Teste:** buton prezent pe toate cardurile cu pret si stoc ≠ indisponibil (numarat pe cele 13
   pagini + catalog); absent la indisponibil; click → evenimentul ajunge in JS (Playwright).
 
-### T5 — Pastrarea produselor in cos · S/M · Neinceput
+### T5 — Pastrarea produselor in cos · S/M · **Finalizat**
 - **De facut:** `localStorage` (doar `{id, qty}`), contor in header pe paginile PHP **si** `.html`;
   cantitatea creste daca produsul e deja in cos; toleranta la localStorage blocat/corupt.
 - **Teste (Playwright):** adaug pe o pagina, contorul se vede pe alta pagina si dupa reload;
@@ -364,3 +364,44 @@ Aceeasi regula va fi reverificata pe server in T6/T10 — butonul e doar interfa
 2. Pe mobil, mesajul de confirmare aparea peste bannerul de cookie-uri. Mutat sus, sub header (vezi captura).
 
 **De stiut:** pe datele actuale (toate „de la") **niciun buton nu apare pe live**, conform deciziei „doar pret fix in cos".
+
+---
+
+### T5 — Pastrarea produselor in cos — Finalizat (2026-10-13)
+
+**Obiectiv:** produsele adaugate raman in cos intre pagini si dupa reincarcare; numarul se vede in header peste tot.
+
+**Fisiere:**
+- `js/cos.js` — stocare in `localStorage` (cheia `mugurel_cos`, format `{v:1, items:[{id, qty}]}`):
+  - **doar id + cantitate** — numele, pretul si stocul se recitesc din baza pe server (T6);
+  - citirea curata orice date neasteptate: JSON corupt, dubluri, id invalid, cantitate ≤ 0; maximum 100 de randuri;
+  - cantitati cu pana la 2 zecimale (pentru m², ml), plafonate la 99 999; virgula acceptata;
+  - daca browserul nu permite salvarea (mod privat, stocare blocata): mesaj rosu clar cu alternativa (WhatsApp / telefon),
+    **fara** confirmare falsa pe buton;
+  - legatura „Cos" inserata in `.hdr-right` pe toate paginile (cosul exista doar cu JavaScript, deci si legatura);
+    contorul = numarul de produse distincte (120 m² de tabla = 1 produs); `aria-label` cu numarul pentru cititoarele de ecran;
+  - sincronizare intre tab-uri (evenimentul `storage`);
+  - `window.MugurelCos` (read, add, setQty, remove, clear, count) pentru pagina cosului din T6.
+- `css/style.css` — `.hdr-cart` (acelasi stil ca butonul de telefon), pe mobil doar iconita + numar; `.cart-toast--error`.
+- Teste: `dev/e2e/tests/cos-stocare.spec.js` (nou, 8 scenarii × 3 latimi).
+
+**Teste executate si rezultate:**
+
+| Test | Rezultat |
+|---|---|
+| Cos gol: legatura spre `/cos.html`, fara numar, `aria-label` „0 produse" | trecut × 3 latimi |
+| Adaug pe `acoperis` → `electrice` → `index.html` (static) → subcategorie `router.php` → reload: numarul se pastreaza | trecut |
+| Acelasi produs de doua ori → un rand, cantitate 2 | trecut |
+| In `localStorage` nu ajung pret sau nume | trecut |
+| JSON corupt / dubluri / id-uri si cantitati invalide / „2,5" → curatate, 0 erori JS, adaugarea rescrie cosul curat | trecut |
+| `localStorage` blocat (SecurityError simulat) → mesaj de eroare, butonul nu spune „Adaugat" | trecut |
+| Doua tab-uri: adaug in A → numarul se actualizeaza in B | trecut |
+| Header fara scroll orizontal; pe mobil doar iconita + numar, pe tableta/desktop si textul „Cos" | trecut |
+| Capturi header la 375 / 768 / 1280 px | aliniat, se potriveste cu butoanele existente |
+| Regresie `dev/run_tests.sh` | 263 asertiuni, `php -l`, 231+264, catalog 534 — trecut |
+| Regresie browser completa | **56** trecute, 7 sarite |
+
+**Probleme:** niciuna in cod. Testele au trecut din prima rulare; capturile de ecran au fost refacute pe elementul
+header, pentru ca bannerul de cookie-uri si butonul WhatsApp il acopereau in captura completa.
+
+**De stiut:** legatura duce la `/cos.html`, pagina care se construieste in T6 (pana atunci 404 local).

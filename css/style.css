@@ -62,6 +62,17 @@ img { max-width: 100%; }
 .hdr-wa { display: flex; align-items: center; gap: 7px; padding: 9px 16px; border-radius: var(--radius); font-size: 13px; font-weight: 700; color: #fff; background: var(--wa); border: none; cursor: pointer; text-decoration: none; white-space: nowrap; transition: background 150ms; }
 .hdr-wa:hover { background: var(--wa-h); }
 .hdr-wa svg { width: 17px; height: 17px; }
+/* Legatura „Cos" (inserata de js/cos.js) */
+.hdr-cart { position: relative; display: flex; align-items: center; gap: 7px; padding: 8px 12px; border-radius: var(--radius); font-size: 13px; font-weight: 700; color: var(--verde); border: 1px solid var(--border); background: #fff; text-decoration: none; white-space: nowrap; transition: border-color 150ms, background 150ms; }
+.hdr-cart:hover { border-color: var(--verde); background: var(--verde-light); }
+.hdr-cart:focus-visible { outline: 3px solid var(--wa); outline-offset: 2px; }
+.hdr-cart svg { width: 18px; height: 18px; }
+.hdr-cart-count { min-width: 20px; height: 20px; padding: 0 6px; border-radius: 10px; background: var(--verde); color: #fff; font-size: 11px; line-height: 20px; text-align: center; }
+@media (max-width: 600px) {
+  .hdr-cart { padding: 8px 10px; }
+  .hdr-cart-label { display: none; }
+  .hdr-cart-count { position: absolute; top: -7px; right: -7px; }
+}
 .hamburger { display: none; background: none; border: 1px solid var(--border); padding: 8px 10px; border-radius: var(--radius); cursor: pointer; }
 .hamburger svg { width: 20px; height: 20px; color: var(--verde); display: block; }
 
@@ -541,6 +552,7 @@ img { max-width: 100%; }
 .btn-cart:focus-visible { outline: 3px solid var(--wa); outline-offset: 2px; }
 .btn-cart.is-added { background: #1e7a3c; }
 .cart-toast { position: fixed; left: 50%; top: calc(80px + env(safe-area-inset-top, 0px)); transform: translateX(-50%); z-index: 9999; max-width: calc(100% - 32px); padding: 10px 16px; border-radius: var(--radius); background: var(--verde); color: #fff; font-size: 13px; font-weight: 600; box-shadow: 0 4px 16px rgba(0,0,0,.2); }
+.cart-toast--error { background: #a32020; }
 .btn-wa-acc { display: inline-flex; align-items: center; gap: 6px; background: var(--verde); color: #fff; font-size: 11px; font-weight: 700; padding: 5px 10px; border-radius: 3px; text-align: center; transition: background 150ms; margin-top: 4px; }
 .btn-wa-acc:hover { background: var(--verde-mid); }
 .btn-wa-acc svg { display: none; }
