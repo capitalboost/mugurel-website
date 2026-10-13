@@ -87,7 +87,7 @@ Complexitate: **S** = mic (≤ ~2h), **M** = mediu, **L** = mare (impartit in su
 - **T6b** `cos.php`: lista, +/−, stergere, subtotal pe rand, total; mesaj „total estimativ" cand exista
   produse „de la"; cos gol. Teste Playwright + verificare ca pretul modificat in localStorage e ignorat.
 
-### T7 — Formular persoana fizica · M · Neinceput
+### T7 — Formular persoana fizica · M · **Finalizat**
 - **De facut:** `comanda.php`: nume, telefon, email, judet, localitate, adresa, mentiuni;
   validare in browser (HTML5) — validarea serioasa e pe server in T10.
 - **Teste:** campuri obligatorii, formate (telefon RO, email), afisarea erorilor, pastrarea datelor la eroare.
@@ -450,3 +450,45 @@ header, pentru ca bannerul de cookie-uri si butonul WhatsApp il acopereau in cap
 3. **Campul de cantitate refuza „2,5"** (`type="number"` respinge virgula in Chrome cu setari in engleza).
    Trecut pe `type="text"` + `inputmode="decimal"`/`numeric` (tastatura numerica pe telefon), afisare cu virgula.
 4. O aserțiune din `test_cart.php` avea o problema de precedenta `&&`/`||` — rescrisa explicit.
+
+---
+
+### T7 — Formular persoana fizica — Finalizat (2026-10-13)
+
+**Obiectiv:** `/comanda.html` cu datele de contact si de livrare, validate, cu erorile afisate langa campuri.
+
+**Fisiere:**
+- `includes/order_form.php` (nou) — singurul loc cu regulile:
+  - nume 3–100 caractere, litere (cu diacritice), spatiu, cratima, apostrof;
+  - telefon romanesc mobil sau fix, in orice scriere uzuala (`0749 130 565`, `+40 749…`, `0040…`, cu puncte/cratime) →
+    salvat ca `+40749130565`;
+  - email valid, cu domeniu complet, transformat in litere mici;
+  - judet dintr-o lista fixa de 42; localitate ≥ 2; adresa ≥ 5; mentiuni optionale, max 1000, cu randuri pastrate;
+  - textul e curatat (caractere de control, spatii multiple), taiat la limita pe caractere (nu octeti);
+    campuri trimise ca array nu produc erori PHP.
+- `comanda.php` (nou) — `noindex`; POST: validare pe server, la erori **422** + formularul reafisat cu valorile introduse,
+  mesaj langa fiecare camp (`aria-invalid`, `aria-describedby`) si rezumat focusat. Formular valid → **503** cu mesaj
+  onest („trimiterea nu este inca activa") pana la T11 — nu pretindem ca s-a trimis ceva.
+  `autocomplete` corect pe fiecare camp (completare automata pe telefon).
+- `js/comanda-pagina.js` (nou) — sumarul comenzii de la server; cosul in campul ascuns `cos` (doar id + cantitate);
+  verificare rapida in browser cu aceleasi mesaje ca serverul; un singur click pe „Trimite"; trimitere blocata cand
+  cosul are produse problema sau serverul nu raspunde; cos gol → fara formular.
+- `css/style.css` — formular, sumar; pe mobil sumarul deasupra formularului.
+- Teste: `admin/tests/test_order_form.php` (nou, 50), `dev/e2e/tests/comanda-pf.spec.js` (nou).
+
+**Teste executate si rezultate:**
+
+| Test | Rezultat |
+|---|---|
+| `test_order_form.php`: 10 telefoane valide + 8 invalide, normalizare, curatare text, diacritice, 19 valori invalide pe camp (inclusiv `<script>`, email cu `\nBcc:`), campuri ca array | **50/50** |
+| `curl`: GET 200; POST gol → 422 cu 6 erori; POST valid → 503 cu mesaj; `"><script>` in nume → escapat in `value` | trecut |
+| Playwright × 3 latimi: cos gol; sumar de la server (201,23 lei) + campul ascuns; trimis gol → 6 erori, focus pe primul; eroarea dispare dupa corectare; valid → server pastreaza datele (telefon normalizat); cos cu produs indisponibil → buton blocat; fara scroll orizontal, sumar deasupra pe mobil | **21 trecute** |
+| Playwright **fara JavaScript**: serverul valideaza singur, 5 erori, valorile pastrate | trecut |
+| Capturi mobil + desktop cu erori | erorile sub campuri, lizibile |
+| Regresie `dev/run_tests.sh` | **337** asertiuni, `php -l` 8.1, 231+264, catalog 534 — trecut |
+| Regresie browser completa | **107** trecute, 13 sarite |
+
+**Probleme:** niciuna; testele au trecut din prima rulare.
+
+**Ramane pentru taskurile urmatoare:** persoana juridica (T8), metoda de plata + transport (T9), CSRF / anti-bot /
+limitare / acord GDPR (T10), inregistrarea comenzii (T11).
