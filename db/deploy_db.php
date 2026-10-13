@@ -143,6 +143,7 @@ function main(array $argv): int
         'migration_007_price_from.sql',
         'migration_008_stock.sql',
         'migration_009_order_attempts.sql',
+        'migration_010_orders.sql',
     ];
 
     $runMigrations = function () use ($pdo, $dbDir, $migrations): array {

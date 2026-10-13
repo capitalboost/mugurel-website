@@ -11,6 +11,9 @@ PHP="${PHP:-/c/Users/lucia/AppData/Local/Microsoft/WinGet/Packages/PHP.PHP.NTS.8
 BASE="${BASE:-http://localhost:8080}"
 fail=0; passed=0
 
+# Fixturile locale (stari de stoc, pret cu zecimale, curatarea comenzilor de test) — idempotente.
+/c/Users/lucia/AppData/Local/mugurel-dev/mariadb/bin/mysql.exe -u root -h 127.0.0.1 mugurel_cms < dev/fixtures/cos_test.sql
+
 for t in admin/tests/test_*.php; do
     out=$("$PHP" "$t" 2>&1); code=$?
     line=$(echo "$out" | grep -E 'Rezultat: [0-9]+ passed, [0-9]+ failed' | tail -1)

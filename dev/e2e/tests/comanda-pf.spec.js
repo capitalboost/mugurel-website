@@ -66,7 +66,7 @@ test('eroarea dispare dupa corectare', async ({ page }) => {
   await expect(page.locator('#err-email')).toHaveCount(0);
 });
 
-test('formular valid: ajunge la server, care pastreaza datele (trimiterea reala vine in T11)', async ({ page }) => {
+test('formular valid: comanda e salvata si clientul ajunge la confirmare (redirect dupa POST)', async ({ page }) => {
   await openOrder(page, [{ id: 3470, qty: 1 }]);
   await expect(page.locator('[data-cos-total]')).toBeVisible();
   await fillValid(page);
@@ -75,12 +75,8 @@ test('formular valid: ajunge la server, care pastreaza datele (trimiterea reala 
     page.waitForResponse((r) => r.url().endsWith('/comanda.html') && r.request().method() === 'POST'),
     page.click('[data-comanda-submit]'),
   ]);
-  expect(res.status()).toBe(503);
-  await expect(page.locator('[data-form-notice]')).toContainText('nu este inca activa');
-  await expect(page.locator('#f-nume')).toHaveValue('Ion Popescu');
-  await expect(page.locator('#f-telefon')).toHaveValue('+40749130565'); // normalizat de server
-  await expect(page.locator('#f-judet')).toHaveValue('Dolj');
-  await expect(page.locator('#f-mentiuni')).toHaveValue('Sunati inainte de livrare.');
+  expect(res.status()).toBe(303);
+  await expect(page).toHaveURL(/comanda-trimisa\.html\?t=[0-9a-f]{48}$/);
 });
 
 test('produse care nu se mai pot comanda => butonul de trimitere e blocat', async ({ page }) => {

@@ -76,7 +76,7 @@ test('CUI cu cifra de control gresita: respins de server, formularul ramane pe P
   await expect(page.locator('[data-nume-label]')).toContainText('Persoana de contact');
 });
 
-test('PJ valid: serverul accepta datele si le normalizeaza', async ({ page }) => {
+test('PJ valid: comanda pe firma e salvata', async ({ page }) => {
   await fillCommon(page);
   await pjRadio(page).check();
   await fillCompany(page);
@@ -84,8 +84,6 @@ test('PJ valid: serverul accepta datele si le normalizeaza', async ({ page }) =>
     page.waitForResponse((r) => r.url().endsWith('/comanda.html') && r.request().method() === 'POST'),
     page.click('[data-comanda-submit]'),
   ]);
-  expect(res.status()).toBe(503); // inregistrarea reala vine in T11
-  await expect(page.locator('.form-error')).toHaveCount(0);
-  await expect(page.locator('#f-cui')).toHaveValue('RO14399840');
-  await expect(page.locator('#f-reg_com')).toHaveValue('J16/123/2020');
+  expect(res.status()).toBe(303); // salvata; normalizarea CUI / RC e verificata in test_order_form.php
+  await expect(page).toHaveURL(/comanda-trimisa\.html\?t=[0-9a-f]{48}$/);
 });

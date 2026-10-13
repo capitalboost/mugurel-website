@@ -57,7 +57,7 @@ test('sesiune expirata: mesaj clar, datele raman, a doua trimitere trece', async
   await expect(page.locator('#f-nume')).toHaveValue('Ion Popescu');
   await expect(page.locator('input[name="plata"][value="ramburs"]')).toBeChecked();
   await expect(page.locator('[data-cos-total]')).toBeVisible();
-  expect(await submit(page)).toBe(503); // pagina noua are token valid; inregistrarea reala vine in T11
+  expect(await submit(page)).toBe(303); // pagina noua are token valid => comanda salvata
 });
 
 test('cos modificat ocolind interfata: serverul il reverifica si refuza', async ({ page }) => {

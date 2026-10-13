@@ -12,6 +12,7 @@ require_once __DIR__ . '/admin/config.php';
 require_once __DIR__ . '/includes/order_form.php';
 require_once __DIR__ . '/includes/order_security.php';
 require_once __DIR__ . '/includes/cart.php';
+require_once __DIR__ . '/includes/orders.php';
 
 orderSessionStart();
 header('Cache-Control: no-store'); // pagina contine tokenul sesiunii
@@ -22,6 +23,8 @@ $values = array_fill_keys(array_keys(ORDER_MAX), '') + ['tip' => 'pf', 'plata' =
 $errors = [];
 $notice = null;      // mesaj general (galben)
 $cartError = null;   // problema cu cosul (rosu, cu legatura spre cos)
+// Tokenul formularului (anti-dublura): pastrat la reafisarea dupa o eroare, nou la fiecare afisare curata.
+$formToken = orderFormTokenValid($_POST['idem'] ?? null) ? $_POST['idem'] : orderNewFormToken();
 
 if (($_SERVER['REQUEST_METHOD'] ?? 'GET') === 'POST') {
     $result = orderFormValidate($_POST);
@@ -39,7 +42,7 @@ if (($_SERVER['REQUEST_METHOD'] ?? 'GET') === 'POST') {
     } elseif (!orderCsrfValid($_POST['csrf'] ?? null)) {
         http_response_code(400);
         $notice = 'Sesiunea a expirat (pagina a stat deschisa prea mult). Datele tale sunt mai jos — apasa din nou „Trimite comanda".';
-    } elseif (orderLooksLikeBot($_POST)) {
+    } elseif (orderLooksLikeBot($_POST) || !orderFormTokenValid($_POST['idem'] ?? null)) {
         http_response_code(422);
         $notice = 'Comanda nu a putut fi trimisa. ' . ORDER_PHONE_HINT;
     } else {
@@ -63,9 +66,17 @@ if (($_SERVER['REQUEST_METHOD'] ?? 'GET') === 'POST') {
         if ($errors || $cartError) {
             http_response_code(422);
         } else {
-            // Inregistrarea comenzii se adauga in T11; pana atunci nu pretindem ca s-a trimis ceva.
-            http_response_code(503);
-            $notice = 'Trimiterea comenzilor online nu este inca activa. ' . ORDER_PHONE_HINT;
+            try {
+                $order = orderCreate($pdo ?? Database::get(), $values, $cart, $formToken,
+                    orderClientIp($_SERVER), (string) ($_SERVER['HTTP_USER_AGENT'] ?? ''));
+                // Redirect dupa POST: un refresh pe pagina de confirmare nu mai retrimite formularul.
+                header('Location: /comanda-trimisa.html?t=' . $order['token'], true, 303);
+                exit;
+            } catch (Throwable $e) {
+                error_log('orderCreate: ' . $e->getMessage());
+                http_response_code(503);
+                $notice = 'Comanda nu a putut fi salvata din cauza unei erori tehnice. Datele tale sunt mai jos. ' . ORDER_PHONE_HINT;
+            }
         }
     }
 }
@@ -123,6 +134,7 @@ require __DIR__ . '/templates/header.php';
   <div class="comanda-layout">
     <form class="comanda-form" method="post" action="/comanda.html" novalidate data-comanda-form>
       <input type="hidden" name="cos" value="" data-cos-field>
+      <input type="hidden" name="idem" value="<?= htmlspecialchars($formToken, ENT_QUOTES, 'UTF-8') ?>">
       <input type="hidden" name="csrf" value="<?= htmlspecialchars(orderCsrfToken(), ENT_QUOTES, 'UTF-8') ?>">
       <div class="form-hp" aria-hidden="true">
         <label for="f-<?= ORDER_HONEYPOT ?>">Nu completa acest camp</label>

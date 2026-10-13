@@ -108,7 +108,7 @@ Complexitate: **S** = mic (≤ ~2h), **M** = mediu, **L** = mare (impartit in su
 - **Teste:** cereri POST manuale: fara CSRF → respins; honeypot completat → respins; prea multe
   cereri → blocat; CUI/telefon/email invalide → erori; caractere speciale/HTML → escapate.
 
-### T11 — Inregistrarea comenzilor si anti-duplicat · M · Neinceput
+### T11 — Inregistrarea comenzilor si anti-duplicat · M · **Finalizat**
 - **De facut:** `migration_009_orders.sql` (`orders`, `order_items`); numar comanda `MUG-2026-000001`;
   tranzactie; token unic per formular (UNIQUE in baza) + redirect dupa POST.
 - **Teste:** comanda corecta salvata cu snapshot; dublu-click / refresh / retrimitere → **o singura** comanda;
@@ -655,3 +655,50 @@ functia primeste acum pragul ca parametru, iar testul verifica explicit pragul d
 
 **De stiut pentru lansare (T16):** lista de IP-uri Cloudflare se reverifica; aceeasi functie `orderClientIp()` poate repara
 si limitarea login-ului din admin (jurnal, punctul 3).
+
+---
+
+### T11 — Inregistrarea comenzilor si anti-duplicat — Finalizat (2026-10-13)
+
+**Obiectiv:** o comanda valida se salveaza complet (sau deloc) si nu poate fi salvata de doua ori.
+
+**Fisiere:**
+- `db/migration_010_orders.sql` (nou, in `deploy_db.php`) — `orders` (date client, plata, livrare, firma, total in bani,
+  stare `noua/confirmata/livrata/anulata`, IP, momentul emailurilor) si `order_items` (**copie** a produsului: nume,
+  unitate, cantitate, pret, subtotal, stoc — o scumpire ulterioara nu schimba comenzile primite).
+- `includes/orders.php` (nou):
+  - `orderCreate()` — totul intr-o tranzactie: comanda + produse; la orice eroare → rollback complet;
+  - numar `MUG-2026-000042`; token public aleator de 48 hex pentru pagina de confirmare (numarul nu e suficient
+    ca sa vezi o comanda);
+  - **anti-dublura pe doua niveluri:** (1) token per formular, `UNIQUE` in baza — dublu-click, retrimitere, cereri
+    simultane; (2) acelasi continut (client + livrare + produse/cantitati) in 10 minute — „Inapoi" + „Trimite" din nou.
+    In ambele cazuri clientul primeste confirmarea comenzii deja salvate.
+- `comanda.php` — camp ascuns `idem`; dupa salvare **redirect 303** spre `/comanda-trimisa.html?t=…` (un refresh nu
+  retrimite); la eroare de baza: 503, datele raman, mesaj cu telefonul. Token anti-dublura lipsa/falsificat → respins.
+- `dev/fixtures/cos_test.sql` sterge comenzile de test; `dev/run_tests.sh` aplica fixturile la inceput.
+- Teste: `admin/tests/test_orders.php` (nou, 31), `test_order_security.php` (+1), testele de comanda din browser
+  asteapta acum redirectul spre confirmare.
+
+**Teste executate si rezultate:**
+
+| Test | Rezultat |
+|---|---|
+| Numar, token, amprenta (independenta de ordinea produselor; alta cantitate / alt client → alta amprenta) | trecut |
+| Creare: numar, token, total 201,23 lei, datele clientului, 2 produse cu copie exacta (12,49 × 2,5 ml = 31,23) | trecut |
+| Copia nu se schimba dupa scumpirea produsului | trecut |
+| Acelasi formular de doua ori → aceeasi comanda; formular nou, acelasi continut → aceeasi comanda; o singura comanda in baza | trecut |
+| Alt cos → comanda noua; acelasi continut dupa 11 minute → comanda noua | trecut |
+| **Rollback:** eroare la scrierea unui produs → nicio comanda, niciun produs orfan, tranzactia inchisa | trecut |
+| Cos cu produs indisponibil → refuzat; token public malformat / injectie SQL → null | trecut |
+| **HTTP real:** comanda → 303 spre confirmare; a doua trimitere → aceeasi confirmare, 1 comanda in baza; total recalculat pe server (3 × 75 = 225 lei) | trecut |
+| `test_orders.php` | **31/31** |
+| `dev/test_fresh_deploy.sh orders.form_token order_items.line_bani` | tabelele exista dupa fiecare rulare |
+| Regresie `dev/run_tests.sh` | **461** asertiuni — trecut |
+| Regresie browser completa | **152** trecute, 13 sarite |
+
+**Probleme gasite si rezolvate:** 4 teste de securitate trimiteau formularul fara noul token anti-dublura si erau
+respinse (corect) inainte de verificarea testata — testele trimit acum tokenul; s-a adaugat un test explicit pentru
+token lipsa/falsificat.
+
+**De stiut:** pagina de confirmare se construieste in T14; pana atunci redirectul duce la 404 (local).
+Lista comenzilor in `/admin` nu face parte din proiect — comenzile ajung pe email (T12) si raman in baza.

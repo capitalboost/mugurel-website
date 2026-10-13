@@ -97,7 +97,7 @@ if ($code !== 200) {
     ok($token !== '',                                        'http: formularul contine tokenul CSRF');
     $form = ['nume' => 'Ion Popescu', 'telefon' => '0749130565', 'email' => 'ion@exemplu.ro', 'judet' => 'Dolj',
              'localitate' => 'Dabuleni', 'adresa' => 'Str. Caracal 52', 'plata' => 'ramburs', 'acord' => '1',
-             'cos' => json_encode([['id' => 3470, 'qty' => 1]])];
+             'cos' => json_encode([['id' => 3470, 'qty' => 1]]), 'idem' => bin2hex(random_bytes(16))];
 
     [$c, $b] = http($base . '/comanda.html', $form, $jar);
     ok($c === 400 && str_contains($b, 'Sesiunea a expirat'),  'http: fara token CSRF => 400');
@@ -108,6 +108,8 @@ if ($code !== 200) {
 
     [$c, $b] = http($base . '/comanda.html', $form + ['csrf' => $token, ORDER_HONEYPOT => 'spam'], $jar);
     ok($c === 422 && str_contains($b, 'Comanda nu a putut fi trimisa'), 'http: campul ascuns completat => respins, mesaj generic');
+    [$c, $b] = http($base . '/comanda.html', ['idem' => 'falsificat'] + $form + ['csrf' => $token], $jar);
+    ok($c === 422 && str_contains($b, 'Comanda nu a putut fi trimisa'), 'http: token anti-dublura lipsa/falsificat => respins');
 
     [$c, $b] = http($base . '/comanda.html', ['acord' => ''] + $form + ['csrf' => $token], $jar);
     ok($c === 422 && str_contains($b, 'id="err-acord"'),     'http: fara acord GDPR => eroare pe bifa');
@@ -119,15 +121,16 @@ if ($code !== 200) {
     [$c, $b] = http($base . '/comanda.html', ['cos' => str_repeat('x', 20001)] + $form + ['csrf' => $token], $jar);
     ok($c === 422 && str_contains($b, 'data-cart-error'),    'http: cos prea mare => respins');
 
-    [$c] = http($base . '/comanda.html', $form + ['csrf' => $token], $jar);
-    ok($c === 503,                                             'http: totul valid => trece de toate protectiile (inregistrarea vine in T11)');
+    [$c] = http($base . '/comanda.html', $form + ['csrf' => $token, 'idem' => bin2hex(random_bytes(16))], $jar);
+    ok($c === 303,                                             'http: totul valid => trece de toate protectiile si comanda e salvata');
+    $pdo->exec("DELETE FROM orders WHERE email = 'ion@exemplu.ro'");
 
     // limita pe IP, cap-coada: umplem fereastra pentru IP-ul local, apoi curatam
     $local = ['::1', '127.0.0.1'];
     $ins = $pdo->prepare('INSERT INTO order_attempts (ip) VALUES (?)');
     try {
         foreach ($local as $lip) { for ($i = 0; $i < ORDER_RATE_MAX; $i++) { $ins->execute([$lip]); } }
-        [$c, $b] = http($base . '/comanda.html', $form + ['csrf' => $token], $jar);
+        [$c, $b] = http($base . '/comanda.html', $form + ['csrf' => $token, 'idem' => bin2hex(random_bytes(16))], $jar);
         ok($c === 429 && str_contains($b, 'de prea multe ori'), 'http: peste limita de trimiteri pe IP => 429');
     } finally {
         $pdo->exec("DELETE FROM order_attempts WHERE ip IN ('::1', '127.0.0.1')");

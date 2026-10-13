@@ -52,10 +52,8 @@ test('ridicare din magazin: adresa de livrare dispare si nu e ceruta', async ({ 
   await radio(page, 'ridicare').check();
   await expect(page.locator('[data-adresa-block]')).toBeHidden();
   await expect(page.locator('[data-transport-info]')).toBeHidden();
-  expect(await submitAndGetStatus(page)).toBe(503); // valid; inregistrarea reala vine in T11
-  await expect(page.locator('.form-error')).toHaveCount(0);
-  await expect(radio(page, 'ridicare')).toBeChecked();
-  await expect(page.locator('[data-adresa-block]')).toBeHidden(); // si dupa raspunsul serverului
+  expect(await submitAndGetStatus(page)).toBe(303); // salvata fara adresa de livrare
+  await expect(page).toHaveURL(/comanda-trimisa\.html\?t=[0-9a-f]{48}$/);
 });
 
 test('ramburs: adresa de livrare ramane obligatorie', async ({ page }) => {

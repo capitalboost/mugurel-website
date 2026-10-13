@@ -12,3 +12,6 @@ UPDATE products SET price_is_from = 0, stock_status = 'la_comanda'   WHERE id = 
 UPDATE products SET price_is_from = 0, stock_status = 'indisponibil' WHERE id = 3686;
 -- Pret cu zecimale si unitate la metru, pentru calculul totalurilor (12,49 lei/ml)
 UPDATE products SET price = 12.49, price_unit = 'ml', price_is_from = 0, stock_status = 'in_stoc' WHERE id = 3674;
+
+-- Comenzile create de testele automate (adresele de email folosite doar in teste).
+DELETE FROM orders WHERE email IN ('ion@exemplu.ro', 'achizitii@firma.ro', 'test@exemplu.ro', 'http@exemplu.ro');
