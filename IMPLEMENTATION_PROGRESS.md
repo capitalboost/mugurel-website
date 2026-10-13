@@ -97,7 +97,7 @@ Complexitate: **S** = mic (≤ ~2h), **M** = mediu, **L** = mare (impartit in su
   sediu social, persoana de contact.
 - **Teste:** CUI valid/invalid (cu si fara „RO"), comutarea nu pierde datele comune.
 
-### T9 — Plata si mesaje despre transport · S · Neinceput
+### T9 — Plata si mesaje despre transport · S · **Finalizat**
 - **De facut:** metodele de plata alese (vezi „Decizii"), texte despre transport pe cos si pe formular.
 - **Teste:** metoda e obligatorie; textele apar pe mobil si desktop.
 
@@ -567,3 +567,37 @@ Verificarea CUI la ANAF (firma activa, platitoare de TVA) **nu** e inclusa: ar c
 fraze editoriale („potrivita pante de la 8°"). Testul verifica acum doar elementele de pret.
 
 **T9 (plata + transport)** era inceput si e pus deoparte (`git stash`), netestat — se reia dupa verificarea ta.
+
+---
+
+### T9 — Plata si mesaje despre transport — Finalizat (2026-10-13)
+
+**Obiectiv:** clientul alege cum plateste; stie clar ce se intampla cu transportul.
+
+**Textele** sunt luate din ce spune deja site-ul (Termeni: „costul si termenul de livrare se stabilesc… la confirmarea
+comenzii"; adresa si programul de pe contact) si stau intr-un singur loc, `includes/order_form.php`
+(`ORDER_PLATA`, `ORDER_TRANSPORT_INFO`) — **de confirmat cu Mugurel inainte de lansare**.
+
+**Fisiere:**
+- `includes/order_form.php` — `plata` obligatorie, din lista fixa: ramburs / transfer bancar (proforma pe email) /
+  ridicare si plata in magazin (numerar sau card, Str. Caracal 52, L–V 8–18). **La ridicare adresa de livrare nu
+  mai e ceruta si e ignorata** (nu exista livrare).
+- `comanda.php` — blocul „Livrare si plata" cu explicatie la fiecare optiune si mesajul de transport; adresa si
+  mesajul de transport ascunse la ridicare (si dupa raspunsul serverului).
+- `js/comanda-pagina.js` — comutarea adresei; eroarea pentru grupul de optiuni sta **sub lista** si e marcata pe grup
+  (`aria-invalid` pe fieldset), nu in interiorul primei optiuni.
+- `css/style.css` — optiunile de plata, nota de transport.
+- Teste: `test_order_form.php` (+12), `dev/e2e/tests/comanda-plata.spec.js` (nou); `comanda-pf/pj.spec.js` aleg acum o metoda.
+
+**Teste executate si rezultate:**
+
+| Test | Rezultat |
+|---|---|
+| Cele 3 metode valide; `''`, `card`, `RAMBURS`, array → respinse; ridicare fara adresa → valid si adresa ignorata; transfer cere adresa; fara card online | `test_order_form.php` **94/94** |
+| Playwright × 3 latimi: 3 optiuni cu explicatie + mesaj transport; fara metoda → eroare pe grup, sub optiuni; ridicare → adresa si transportul ascunse, valid la server; ramburs → adresa obligatorie; metoda falsificata (`card`) → 422; mesajul de transport si in cos | trecut |
+| Captura mobil | optiunea aleasa evidentiata, explicatiile lizibile |
+| Regresie `dev/run_tests.sh` | **383** asertiuni — trecut |
+| Regresie browser completa | **140** trecute, 13 sarite |
+
+**Probleme gasite si rezolvate:** mesajul de eroare pentru butoanele radio ar fi fost inserat in prima optiune — mutat
+sub lista; mesajul „Transportul nu este inclus" nu avea sens la ridicare — ascuns in acel caz.

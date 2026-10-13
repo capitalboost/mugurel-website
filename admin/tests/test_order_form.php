@@ -26,7 +26,7 @@ ok(mb_strlen(orderText(str_repeat('ă', 150), 100)) === 100,                  't
 
 // ── validare completa ──
 $good = ['nume' => 'Ion Popescu', 'telefon' => '0749 130 565', 'email' => 'Ion.Popescu@Exemplu.ro',
-         'judet' => 'Dolj', 'localitate' => 'Dabuleni', 'adresa' => 'Str. Caracal nr. 52', 'mentiuni' => ''];
+         'judet' => 'Dolj', 'localitate' => 'Dabuleni', 'adresa' => 'Str. Caracal nr. 52', 'mentiuni' => '', 'plata' => 'ramburs'];
 $r = orderFormValidate($good);
 ok($r['errors'] === [],                                     'valid: fara erori');
 ok($r['data']['telefon'] === '+40749130565',               'valid: telefon normalizat');
@@ -35,7 +35,7 @@ ok($r['data']['email'] === 'ion.popescu@exemplu.ro',       'valid: email cu lite
 ok(orderFormValidate(['nume' => "Ștefan O'Neil-Dumitrașcu"] + $good)['errors'] === [], 'nume: diacritice, apostrof, cratima');
 
 $bad = orderFormValidate([]);
-ok(array_keys($bad['errors']) === ['nume', 'telefon', 'email', 'judet', 'localitate', 'adresa'], 'gol: toate campurile obligatorii semnalate');
+ok(array_keys($bad['errors']) === ['nume', 'telefon', 'email', 'plata', 'judet', 'localitate', 'adresa'], 'gol: toate campurile obligatorii semnalate');
 ok(!isset($bad['errors']['mentiuni']),                       'gol: mentiunile sunt optionale');
 
 $cases = [
@@ -88,6 +88,23 @@ $pf = orderFormValidate(['tip' => 'pf', 'firma' => 'Ignorata SRL', 'cui' => 'gre
 ok($pf['errors'] === [] && $pf['data']['firma'] === '' && $pf['data']['cui'] === '', 'PF: campurile de firma sunt ignorate complet');
 ok(orderFormValidate(['tip' => 'altceva'] + $good)['data']['tip'] === 'pf', 'tip necunoscut => persoana fizica');
 ok(orderFormValidate(['tip' => ['pj']] + $good)['data']['tip'] === 'pf',   'tip trimis ca array => persoana fizica');
+
+// ── plata si livrare (T9) ──
+foreach (array_keys(ORDER_PLATA) as $pl) {
+    ok(orderFormValidate(['plata' => $pl] + $good)['errors'] === [], "plata valida: $pl");
+}
+foreach (['', 'card', 'RAMBURS', ['ramburs']] as $pl) {
+    $res = orderFormValidate(['plata' => $pl] + $good);
+    ok(($res['errors']['plata'] ?? '') === 'Alege cum vrei sa platesti.' && $res['data']['plata'] === '', 'plata invalida: ' . json_encode($pl));
+}
+$rid = orderFormValidate(['plata' => 'ridicare', 'judet' => '', 'localitate' => '', 'adresa' => ''] + $good);
+ok($rid['errors'] === [],                                   'ridicare: adresa de livrare nu e ceruta');
+$rid2 = orderFormValidate(['plata' => 'ridicare'] + $good);
+ok($rid2['data']['adresa'] === '' && $rid2['data']['judet'] === '' && $rid2['data']['localitate'] === '', 'ridicare: adresa completata e ignorata (nu exista livrare)');
+$tr = orderFormValidate(['plata' => 'transfer', 'adresa' => ''] + $good);
+ok(isset($tr['errors']['adresa']),                          'transfer: adresa de livrare ceruta');
+ok(isset(ORDER_PLATA['ramburs']['info'], ORDER_PLATA['transfer']['info'], ORDER_PLATA['ridicare']['info']) && strlen(ORDER_TRANSPORT_INFO) > 40, 'texte: fiecare metoda are explicatie; mesaj de transport');
+ok(!isset(ORDER_PLATA['card']),                             'fara plata cu cardul online (decizia din 13 oct)');
 
 echo "\nRezultat: $pass passed, $fail failed\n";
 exit($fail > 0 ? 1 : 0);

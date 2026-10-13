@@ -722,3 +722,14 @@ img { max-width: 100%; }
 .form-tip-option:has(input:checked) { border-color: var(--verde); background: var(--verde-light); color: var(--verde); }
 .form-tip-option input { width: 18px; height: 18px; accent-color: var(--verde); }
 .form-hint { font-size: 12.5px; color: var(--text-muted); margin-top: 4px; }
+
+/* Livrare si plata (T9) */
+.form-plata-options { display: flex; flex-direction: column; gap: 8px; margin-top: 8px; }
+.form-plata-option { display: flex; align-items: flex-start; gap: 10px; padding: 12px 14px; border: 1px solid #c9d3d4; border-radius: var(--radius); cursor: pointer; }
+.form-plata-option:has(input:checked) { border-color: var(--verde); background: var(--verde-light); }
+.form-plata-option input { width: 18px; height: 18px; margin-top: 2px; accent-color: var(--verde); flex: none; }
+.form-plata-text { display: flex; flex-direction: column; gap: 3px; }
+.form-plata-label { font-weight: 700; color: #222; font-size: 14px; }
+.form-plata-info { font-size: 12.5px; color: #555; line-height: 1.45; }
+.form-plata[aria-invalid="true"] .form-plata-option { border-color: #a32020; }
+.form-transport { margin-top: 12px; padding: 10px 12px; border-left: 3px solid var(--verde-mid); background: #f6faf9; font-size: 12.5px; color: #333; line-height: 1.5; }

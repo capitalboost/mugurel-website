@@ -147,7 +147,25 @@ require __DIR__ . '/templates/header.php';
         </div>
       </fieldset>
 
-      <fieldset class="form-block">
+      <?php [$a, $msg] = fieldError($errors, 'plata'); ?>
+      <fieldset class="form-block form-plata"<?= $a ? ' aria-describedby="err-plata"' : '' ?>>
+        <legend>Livrare si plata <span aria-hidden="true">*</span></legend>
+        <div class="form-plata-options">
+          <?php foreach (ORDER_PLATA as $plVal => $pl): ?>
+          <label class="form-plata-option">
+            <input type="radio" name="plata" value="<?= $plVal ?>"<?= ($values['plata'] ?? '') === $plVal ? ' checked' : '' ?> data-plata>
+            <span class="form-plata-text">
+              <span class="form-plata-label"><?= htmlspecialchars($pl['label'], ENT_QUOTES, 'UTF-8') ?></span>
+              <span class="form-plata-info"><?= htmlspecialchars($pl['info'], ENT_QUOTES, 'UTF-8') ?></span>
+            </span>
+          </label>
+          <?php endforeach; ?>
+        </div>
+        <?= $msg ?>
+        <p class="form-transport" data-transport-info<?= ($values['plata'] ?? '') === 'ridicare' ? ' hidden' : '' ?>><?= htmlspecialchars(ORDER_TRANSPORT_INFO, ENT_QUOTES, 'UTF-8') ?></p>
+      </fieldset>
+
+      <fieldset class="form-block" data-adresa-block<?= ($values['plata'] ?? '') === 'ridicare' ? ' hidden' : '' ?>>
         <legend>Adresa de livrare</legend>
         <div class="form-row">
           <?php [$a, $msg] = fieldError($errors, 'judet'); ?>

@@ -23,6 +23,22 @@ const ORDER_MAX = [
     'firma' => 150, 'cui' => 16, 'reg_com' => 24, 'sediu' => 200,
 ];
 
+/**
+ * Metodele de plata (decizia din 13 oct: fara card online). Textele apar pe pagina de comanda
+ * si in emailuri — de confirmat cu Mugurel inainte de lansare.
+ */
+const ORDER_PLATA = [
+    'ramburs'  => ['label' => 'Ramburs la livrare',
+                   'info'  => 'Platesti numerar la primirea marfii.'],
+    'transfer' => ['label' => 'Transfer bancar (ordin de plata)',
+                   'info'  => 'Iti trimitem pe email factura proforma cu datele de plata, dupa ce confirmam comanda.'],
+    'ridicare' => ['label' => 'Ridicare si plata in magazin',
+                   'info'  => 'Platesti numerar sau cu cardul cand ridici marfa: Strada Caracal 52, Dabuleni, L–V 8:00–18:00. Te anuntam cand comanda e pregatita.'],
+];
+
+/** Mesajul despre transport (acelasi peste tot). */
+const ORDER_TRANSPORT_INFO = 'Transportul nu este inclus in total. Costul si termenul de livrare le stabilim impreuna cand te sunam sa confirmam comanda, in functie de cantitate si adresa.';
+
 /** Tipurile de client acceptate. */
 const ORDER_TIPURI = ['pf' => 'Persoana fizica', 'pj' => 'Persoana juridica'];
 
@@ -106,11 +122,16 @@ function orderFormValidate(array $in): array
         'localitate' => orderText($in['localitate'] ?? null, ORDER_MAX['localitate']),
         'adresa'     => orderText($in['adresa'] ?? null, ORDER_MAX['adresa']),
         'mentiuni'   => orderText($in['mentiuni'] ?? null, ORDER_MAX['mentiuni'], true),
+        'plata'      => is_string($in['plata'] ?? null) && isset(ORDER_PLATA[$in['plata']]) ? $in['plata'] : '',
         'firma'      => '',
         'cui'        => '',
         'reg_com'    => '',
         'sediu'      => '',
     ];
+    // La ridicarea din magazin nu exista livrare, deci nici adresa de livrare.
+    if ($d['plata'] === 'ridicare') {
+        $d['judet'] = $d['localitate'] = $d['adresa'] = '';
+    }
     // Campurile de firma conteaza doar la persoana juridica; la PF sunt ignorate complet.
     if ($d['tip'] === 'pj') {
         foreach (['firma', 'cui', 'reg_com', 'sediu'] as $k) {
@@ -139,14 +160,19 @@ function orderFormValidate(array $in): array
         $e['email'] = 'Adresa de email nu pare corecta.';
     }
 
-    if (!in_array($d['judet'], ORDER_JUDETE, true)) {
-        $e['judet'] = 'Alege judetul.';
+    if ($d['plata'] === '') {
+        $e['plata'] = 'Alege cum vrei sa platesti.';
     }
-    if (mb_strlen($d['localitate']) < 2) {
-        $e['localitate'] = 'Scrie localitatea.';
-    }
-    if (mb_strlen($d['adresa']) < 5) {
-        $e['adresa'] = 'Scrie adresa de livrare (strada, numar, bloc, apartament).';
+    if ($d['plata'] !== 'ridicare') {
+        if (!in_array($d['judet'], ORDER_JUDETE, true)) {
+            $e['judet'] = 'Alege judetul.';
+        }
+        if (mb_strlen($d['localitate']) < 2) {
+            $e['localitate'] = 'Scrie localitatea.';
+        }
+        if (mb_strlen($d['adresa']) < 5) {
+            $e['adresa'] = 'Scrie adresa de livrare (strada, numar, bloc, apartament).';
+        }
     }
 
     if ($d['tip'] === 'pj') {

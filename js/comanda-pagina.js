@@ -85,6 +85,7 @@
     nume: function (v) { return v.length >= 3 ? '' : 'Scrie numele si prenumele.'; },
     telefon: function (v) { return v.replace(/\D/g, '').length >= 9 ? '' : (v ? 'Numarul de telefon nu pare corect (ex. 0749 130 565).' : 'Scrie un numar de telefon — te sunam ca sa confirmam comanda.'); },
     email: function (v) { return /^[^\s@]+@[^\s@]+\.[a-z]{2,}$/i.test(v) ? '' : (v ? 'Adresa de email nu pare corecta.' : 'Scrie adresa de email — iti trimitem confirmarea comenzii.'); },
+    plata: function () { return form.querySelector('[data-plata]:checked') ? '' : 'Alege cum vrei sa platesti.'; },
     judet: function (v) { return v ? '' : 'Alege judetul.'; },
     localitate: function (v) { return v.length >= 2 ? '' : 'Scrie localitatea.'; },
     adresa: function (v) { return v.length >= 5 ? '' : 'Scrie adresa de livrare (strada, numar, bloc, apartament).'; },
@@ -99,6 +100,20 @@
 
   // ── persoana fizica / juridica ──────────────────────────────────────────
   var pjBlock = form.querySelector('[data-pj-block]');
+  var adresaBlock = form.querySelector('[data-adresa-block]');
+  var ADRESA = ['judet', 'localitate', 'adresa'];
+
+  function isPickup() {
+    var r = form.querySelector('[data-plata]:checked');
+    return !!r && r.value === 'ridicare';
+  }
+
+  /** La ridicarea din magazin nu cerem adresa de livrare. */
+  function applyPlata() {
+    adresaBlock.hidden = isPickup();
+    form.querySelector('[data-transport-info]').hidden = isPickup(); // la ridicare nu exista transport
+    if (isPickup()) { ADRESA.forEach(function (n) { setError(form.elements[n], ''); }); }
+  }
   var numeLabel = form.querySelector('[data-nume-label]');
 
   function isPj() {
@@ -116,31 +131,35 @@
   }
   form.addEventListener('change', function (ev) {
     if (ev.target.hasAttribute('data-tip')) { applyTip(); }
+    if (ev.target.hasAttribute('data-plata')) { applyPlata(); checkField(form.elements.plata[0]); }
   });
 
   function setError(field, msg) {
     var id = 'err-' + field.name;
     var p = document.getElementById(id);
+    // La un grup de butoane radio, eroarea apartine grupului (fieldset), nu primului buton.
+    var target = field.type === 'radio' ? field.closest('fieldset') : field;
+    var anchor = field.type === 'radio' ? target.querySelector('.form-plata-options') : field;
     if (!msg) {
-      field.removeAttribute('aria-invalid');
-      field.removeAttribute('aria-describedby');
+      target.removeAttribute('aria-invalid');
+      target.removeAttribute('aria-describedby');
       if (p) { p.remove(); }
       return;
     }
-    field.setAttribute('aria-invalid', 'true');
-    field.setAttribute('aria-describedby', id);
+    target.setAttribute('aria-invalid', 'true');
+    target.setAttribute('aria-describedby', id);
     if (!p) {
       p = document.createElement('p');
       p.className = 'form-error';
       p.id = id;
-      field.insertAdjacentElement('afterend', p);
+      anchor.insertAdjacentElement('afterend', p);
     }
     p.textContent = msg;
   }
 
   function checkField(field) {
     var check = CHECKS[field.name] || (isPj() && CHECKS_PJ[field.name]);
-    if (!check) { return true; }
+    if (!check || (isPickup() && ADRESA.indexOf(field.name) !== -1)) { return true; }
     var msg = check(field.value.trim());
     setError(field, msg);
     return !msg;
@@ -151,6 +170,7 @@
     var names = isPj() ? Object.keys(CHECKS_PJ).concat(Object.keys(CHECKS)) : Object.keys(CHECKS);
     names.forEach(function (name) {
       var field = form.elements[name];
+      if (field && field.length !== undefined && !field.tagName) { field = field[0]; } // grup de butoane radio
       if (field && !checkField(field) && !first) { first = field; }
     });
     if (first || submit.disabled || !cosField.value) {
@@ -171,5 +191,6 @@
   if (serverErrors) { serverErrors.focus(); }
 
   applyTip();
+  applyPlata();
   loadSummary();
 })();
