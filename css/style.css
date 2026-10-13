@@ -659,7 +659,7 @@ img { max-width: 100%; }
 .cos-qty-ctrl { display: flex; align-items: stretch; border: 1px solid var(--border); border-radius: var(--radius); overflow: hidden; }
 .cos-qty-ctrl button { width: 36px; min-height: 40px; border: none; background: var(--verde-light); color: var(--verde); font-size: 18px; font-weight: 700; cursor: pointer; }
 .cos-qty-ctrl button:hover { background: #d7ecea; }
-.cos-qty-ctrl input { width: 72px; border: none; border-left: 1px solid var(--border); border-right: 1px solid var(--border); text-align: center; font-size: 15px; font-family: inherit; -moz-appearance: textfield; }
+.cos-qty-ctrl input { width: 72px; color: #222; border: none; border-left: 1px solid var(--border); border-right: 1px solid var(--border); text-align: center; font-size: 15px; font-family: inherit; -moz-appearance: textfield; }
 .cos-qty-ctrl input::-webkit-inner-spin-button, .cos-qty-ctrl input::-webkit-outer-spin-button { -webkit-appearance: none; margin: 0; }
 .cos-remove { border: none; background: none; color: #a32020; font-size: 13px; font-weight: 600; text-decoration: underline; cursor: pointer; padding: 8px 4px; }
 .cos-summary { background: #fff; border: 1px solid var(--border); border-radius: var(--radius); padding: 18px; position: sticky; top: 80px; display: flex; flex-direction: column; gap: 10px; }

@@ -130,7 +130,7 @@ Complexitate: **S** = mic (≤ ~2h), **M** = mediu, **L** = mare (impartit in su
   ghici comenzile altora); goleste cosul.
 - **Teste:** token valid → rezumat; token gresit → 404; cosul e gol dupa confirmare.
 
-### T15 — Testare integrata si responsive · M · Neinceput
+### T15 — Testare integrata si responsive · M · **Finalizat**
 - **De facut:** flux complet PF si PJ cu Playwright la 375 / 768 / 1280 px, cu capturi de ecran;
   regresie: 13 pagini 200, 231 + 264 carduri, catalog 534, JSON-LD, admin; toate testele PHP.
 - **Acceptanta:** totul verde, capturi atasate in acest fisier.
@@ -822,3 +822,45 @@ site-ul real, unde pagina inca nu exista. Pe productie va fi corect. Textele ema
 
 **De stiut (T16):** pe server, `.htaccess` seteaza `Referrer-Policy: strict-origin-when-cross-origin` cu `Header always set`,
 care poate suprascrie `no-referrer` din PHP. Si asa, catre alte site-uri se trimite doar domeniul, fara token — fara scurgere.
+
+---
+
+### T15 — Testare integrata si responsive — Finalizat (2026-10-13)
+
+**Obiectiv:** tot fluxul, cap-coada, pe telefon, tableta si desktop; nimic din site-ul existent stricat.
+
+**Fisiere:** `dev/e2e/tests/flux-complet.spec.js` (nou), `dev/e2e/package.json` (+ `@axe-core/playwright` 4.10.1, doar local),
+`dev/fixtures/cos_test.sql` (curata si comenzile acestui test), `css/style.css` (culoarea cifrei din campul de cantitate),
+`docs/capturi-cos/` (7 capturi selectate, 890 KB; toate cele 36 raman in runner-ul local).
+
+**Ce s-a testat:**
+
+| Test | 375 px | 768 px | 1280 px |
+|---|---|---|---|
+| **PF + ramburs**: 2 produse din 2 pagini → cos (97,49 lei) → formular → confirmare → 2 emailuri | ✓ | ✓ | ✓ |
+| **PJ + transfer**: 3 produse (unul „La comanda") → date firma → confirmare (134,00 lei) → 2 emailuri | ✓ | ✓ | ✓ |
+| **PF + ridicare**: subcategorie (`router.php`) → fara adresa → confirmare (180,00 lei) → 2 emailuri | ✓ | ✓ | ✓ |
+| Fara scroll orizontal pe formular | ✓ | ✓ | ✓ |
+| Doar cu tastatura: buton cos → header → cos → formular; ordinea Tab logica; capcana anti-robot sare | — | ✓ | ✓ |
+| Accesibilitate (axe-core) pe cos (cu produs problema) si pe formular (cu erori afisate) | — | — | ✓ 0 probleme |
+
+In fiecare flux emailurile sunt verificate in Mailpit: confirmarea clientului cu subiectul si numarul corect si **o singura**
+notificare interna catre `lucian@capitalboost.ro`, cu totalul corect.
+
+**Regresie si alte verificari:**
+
+| Verificare | Rezultat |
+|---|---|
+| `dev/run_tests.sh` — 11 fisiere de teste PHP | **516** asertiuni trecute |
+| `php -l` cu PHP 8.1 (versiunea serverului) pe tot codul | trecut |
+| Site existent: 13 pagini 200, 231 materiale + 264 accesorii, catalog 534, JSON-LD, protectia admin | neschimbat |
+| `dev/e2e/run.sh` — toate testele in browser | **183** trecute, 18 sarite (intentionat: admin/API/accesibilitate doar pe desktop, tastatura nu pe mobil) |
+| `dev/test_fresh_deploy.sh` — deploy pe baza goala, de doua ori, cu toate tabelele noi | trecut |
+| Timp de raspuns `cos-produse.php` cu cosul maxim (100 de randuri) | 15–33 ms (local) |
+| Marimea scripturilor noi | `cos.js` 6,8 KB, `cos-pagina.js` 8,2 KB, `comanda-pagina.js` 9,6 KB, `comanda-trimisa.js` 0,7 KB (necomprimate) |
+| Capturi revazute: cos pe tableta, formular PJ, confirmari | corecte; o singura corectura (culoarea cifrei din cantitate) |
+
+**Probleme gasite si rezolvate:** cifra din campul de cantitate aparea albastra (culoarea implicita a browserului) — setata la culoarea textului.
+
+**Ce NU s-a testat (si de ce):** browsere reale Safari / Firefox (testele ruleaza pe Chromium); livrarea reala de email prin
+internet (lipsesc datele SMTP); comportamentul in spatele Cloudflare si pe LiteSpeed (doar pe server). Toate sunt in planul T16.
