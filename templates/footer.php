@@ -83,5 +83,8 @@
 <script src="/js/main.js"></script>
 
 <script src="<?= '/js/cos.js?v=' . @filemtime(__DIR__ . '/../js/cos.js') ?>" defer></script>
+<?php foreach (($pageScripts ?? []) as $script): /* scripturi proprii paginii, din js/, cu versiune */ ?>
+<script src="<?= '/js/' . htmlspecialchars($script, ENT_QUOTES, 'UTF-8') . '?v=' . @filemtime(__DIR__ . '/../js/' . basename($script)) ?>" defer></script>
+<?php endforeach; ?>
 </body>
 </html>

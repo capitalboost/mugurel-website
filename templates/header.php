@@ -29,7 +29,7 @@
 <meta property="og:url" content="<?= htmlspecialchars($canonicalUrl ?? 'https://mugurel-bricolaj.ro/', ENT_QUOTES, 'UTF-8') ?>">
 <meta property="og:site_name" content="Mugurel — Materiale Constructii Dabuleni">
 <meta property="og:locale" content="ro_RO">
-<meta name="robots" content="index, follow">
+<meta name="robots" content="<?= htmlspecialchars($metaRobots ?? 'index, follow', ENT_QUOTES, 'UTF-8') ?>">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Roboto+Condensed:wght@400;700&family=Open+Sans:wght@400;600;700&display=swap" rel="stylesheet">

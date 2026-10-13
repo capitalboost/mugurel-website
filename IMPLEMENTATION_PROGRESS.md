@@ -81,7 +81,7 @@ Complexitate: **S** = mic (≤ ~2h), **M** = mediu, **L** = mare (impartit in su
 - **Teste (Playwright):** adaug pe o pagina, contorul se vede pe alta pagina si dupa reload;
   date corupte in localStorage nu strica pagina.
 
-### T6 — Pagina de cos si cantitati · L · Neinceput
+### T6 — Pagina de cos si cantitati · L · **Finalizat**
 - **T6a** `api/cos.php`: primeste id-uri, intoarce nume/pret/unitate/stoc **din baza**; id-urile
   invalide/ascunse sunt eliminate. Teste PHP pe endpoint.
 - **T6b** `cos.php`: lista, +/−, stergere, subtotal pe rand, total; mesaj „total estimativ" cand exista
@@ -405,3 +405,48 @@ Aceeasi regula va fi reverificata pe server in T6/T10 — butonul e doar interfa
 header, pentru ca bannerul de cookie-uri si butonul WhatsApp il acopereau in captura completa.
 
 **De stiut:** legatura duce la `/cos.html`, pagina care se construieste in T6 (pana atunci 404 local).
+
+---
+
+### T6 — Pagina de cos si cantitati — Finalizat (2026-10-13)
+
+**Obiectiv:** `/cos.html` arata produsele alese cu pretul **din baza**, permite schimbarea cantitatii si scoaterea produselor.
+
+**T6a — server (`includes/cart.php`, `cos-produse.php`):**
+- `cartNormalizeItems()` — curata ce vine din browser (id intreg > 0, cantitate > 0 cu max 2 zecimale, fara dubluri, max 100).
+- `cartProducts()` — citeste din baza doar produsele **vizibile**; la eroare de baza intoarce `null`
+  (nu `[]`, care ar fi afisat fals „produsul nu mai exista" la toate randurile).
+- `priceCart()` — **singurul loc** cu regula de comanda (refolosit la inregistrarea comenzii in T11): fiecare rand e
+  comandabil (pret, subtotal) sau are un motiv clar; sumele in **bani (intregi)** — 0,10 × 3 = 0,30 exact;
+  la unitatile cu zecimale (m², ml, kg…) se accepta 2,5; la buc/set doar intregi.
+- `cos-produse.php` (la radacina — `.cpanel.yml` copiaza deja `*.php`, deploy-ul nu se schimba):
+  doar POST, max 20 KB, raspuns JSON `no-store`, 503 cu mesaj si telefon cand baza nu raspunde.
+
+**T6b — pagina (`cos.php`, `js/cos-pagina.js`):**
+- `noindex, nofollow`; construita pe `templates/header.php` / `footer.php`.
+- Randuri cu imagine, nume, pret/unitate, stoc, cantitate (− / camp / +), subtotal, „Scoate"; sumar cu total cu TVA
+  si „Costul transportului nu este inclus" (mesajele de transport complete vin in T9).
+- Produsele care nu se mai pot comanda raman vizibile cu motivul; „Continua comanda" e blocat pana sunt scoase.
+- Raspunsurile vechi ale serverului sunt ignorate daca a plecat deja o cerere mai noua (clicuri rapide pe +).
+- `templates/header.php` (`$metaRobots`) si `templates/footer.php` (`$pageScripts`) — optiuni noi, cu valori implicite
+  care nu schimba paginile existente.
+
+**Teste executate si rezultate:**
+
+| Test | Rezultat |
+|---|---|
+| `test_cart.php` (nou): normalizare (14 cazuri), unitati cu zecimale, `formatLei`, calcul (0,10×3; 12,49×2,5=31,23; „de la"; indisponibil; la comanda; fara pret; inexistent; 1,5 buc), chei identice pe randuri, produs ascuns, restaurare | **24/24** |
+| `curl` pe endpoint cu cos mixt (valid, „2,5", „de la", indisponibil, inexistent, 1,5 buc, negativ, dublura) | fiecare rand cu motivul corect; total 201,23 lei |
+| Playwright `cos-pagina.spec.js` × 3 latimi: cos gol; flux real din pagini → cos; **pret falsificat in localStorage ignorat**; +/−; zecimale cu virgula; „Scoate" + contor header; produse problema blocheaza comanda; server 503 + „Incearca din nou"; fara scroll orizontal | **29 trecute** |
+| API (o data): GET → 405, JSON invalid → 400, fara `items` → 400, corp > 20 KB → 413, `Cache-Control: no-store`, chei identice | trecut |
+| Capturi mobil 375 px + desktop 1280 px | doua coloane pe desktop, stivuit pe mobil, randul problema evidentiat |
+| Regresie `dev/run_tests.sh` | **287** asertiuni, `php -l` 8.1, 231+264, catalog 534 — trecut |
+| Regresie browser completa | **85** trecute, 11 sarite |
+
+**Probleme gasite si rezolvate:**
+1. **Raspuns JSON stricat** pentru produsele inexistente (randul nu avea `price_bani`/`line_bani` → avertisment PHP in JSON).
+   Acum fiecare rand are aceleasi chei; acoperit de test.
+2. `cartProducts()` intorcea `[]` si la eroare de baza → ar fi aparut „produsul nu mai exista" la tot cosul. Acum `null` → 503.
+3. **Campul de cantitate refuza „2,5"** (`type="number"` respinge virgula in Chrome cu setari in engleza).
+   Trecut pe `type="text"` + `inputmode="decimal"`/`numeric` (tastatura numerica pe telefon), afisare cu virgula.
+4. O aserțiune din `test_cart.php` avea o problema de precedenta `&&`/`||` — rescrisa explicit.
