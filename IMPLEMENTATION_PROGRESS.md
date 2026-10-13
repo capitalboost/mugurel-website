@@ -162,7 +162,9 @@ Complexitate: **S** = mic (≤ ~2h), **M** = mediu, **L** = mare (impartit in su
 
 - [x] **Plata:** ramburs la livrare, transfer bancar (OP, pe baza de proforma), plata la ridicare din magazin.
       Fara card online.
-- [x] **Preturi „de la":** in cos intra **doar produsele cu pret fix**. Cele „de la" au doar „Cere oferta" (WhatsApp).
+- [x] **MODIFICAT 13 oct (dupa T8): toate produsele au pret FIX** si toate cele disponibile se pot pune in cos.
+      „De la" nu mai exista nicaieri: nici pe site, nici in admin, nici la import. Decizia de mai jos e inlocuita.
+- [x] ~~**Preturi „de la":** in cos intra **doar produsele cu pret fix**.~~ Cele „de la" au doar „Cere oferta" (WhatsApp).
       Consecinta: cu Excel-ul actual (534/534 „de la") **niciun produs nu poate fi pus in cos** pana nu se
       confirma preturi fixe. Pentru teste, baza **locala** primeste cateva produse cu pret fix (fixturi de test).
 - [x] **Stoc initial:** toate cele 534 de produse „In stoc" (default al coloanei).
@@ -530,3 +532,38 @@ limitare / acord GDPR (T10), inregistrarea comenzii (T11).
 
 **De stiut:** fara JavaScript blocul de firma ramane ascuns — acceptabil, pentru ca fara JavaScript nu exista nici cos.
 Verificarea CUI la ANAF (firma activa, platitoare de TVA) **nu** e inclusa: ar cere un serviciu extern; o putem adauga separat.
+
+---
+
+### Schimbare de decizie — toate preturile fixe (2026-10-13, intre T8 si T9)
+
+**Cerut de:** utilizator, dupa verificarea locala: „Toate produsele or sa aiba pretul fix… sa putem baga in cos."
+
+**Ce s-a schimbat:**
+- **Date locale:** `Fisiere de lucru/Preturi produse - pret fix.xlsx` (copie a estimarilor, cu coloana „De la?" golita;
+  fisierul original cu estimari ramane neatins), importat local → **534 produse cu pret fix, 0 „de la"**.
+- **Admin:** scoasa bifa „Pret minim"; controllerul salveaza mereu pret fix.
+- **Import (`db/import_preturi.php`):** coloana „De la?" nu mai e ceruta; daca exista si contine DA, importul e
+  respins cu mesajul „toate preturile sunt fixe — sterge DA din coloana De la?".
+- **Export (`Fisiere de lucru/export_preturi.py`):** lista noua nu mai are coloana „De la?".
+- Codul de afisare „de la" ramane in `priceLabel()` (coloana `price_is_from` exista in baza), dar nimic nu il mai
+  activeaza; poate fi sters complet la cerere.
+- **Fixturi de test:** nu mai forteaza preturi fixe; fixeaza doar starile speciale (un produs „La comanda",
+  unul „Indisponibil", unul cu 12,49 lei/ml).
+
+**Teste:**
+
+| Test | Rezultat |
+|---|---|
+| Pagini locale: butoane de cos | **494 / 495** carduri (singurul fara buton: produsul marcat „Indisponibil" in fixturi) |
+| „de la" in preturile afisate | **0** |
+| `test_import_preturi.php` (DA respins cu mesaj, fisier fara coloana „De la?" acceptat) | 27/27 |
+| Export nou | fara coloana „De la?" |
+| Playwright: adminul nu mai are bifa; salvarea pastreaza pretul fix si butonul de cos | trecut |
+| Regresie `dev/run_tests.sh` | **371** asertiuni — trecut |
+| Regresie browser completa | **122** trecute, 13 sarite |
+
+**Problema gasita la test:** prima varianta a testului cauta textul „de la <cifra>" in toata pagina si a prins
+fraze editoriale („potrivita pante de la 8°"). Testul verifica acum doar elementele de pret.
+
+**T9 (plata + transport)** era inceput si e pus deoparte (`git stash`), netestat — se reia dupa verificarea ta.

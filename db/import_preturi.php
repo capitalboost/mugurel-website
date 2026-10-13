@@ -8,10 +8,11 @@ declare(strict_types=1);
  *   php db/import_preturi.php "Preturi produse.xlsx" --apply    # scrie in baza din admin/config.local.php
  *
  * Fisierul: foaia „Preturi", generata de export_preturi.py. Coloanele se recunosc dupa antet:
- *   ID | ... | Pret (lei, cu TVA) | De la? | Unitate | ...
+ *   ID | ... | Pret (lei, cu TVA) | Unitate | ...
+ * Toate preturile sunt FIXE (decizia din 13 oct). O coloana veche „De la?" e acceptata doar goala.
  * Randul e identificat DOAR prin ID (= products.id); numele si descrierea sunt ignorate.
  *
- * Reguli: pret gol => produsul ramane „Pret la cerere"; „De la?" = DA => price_is_from = 1;
+ * Reguli: pret gol => produsul ramane „Pret la cerere"; importul seteaza price_is_from = 0;
  * orice rand invalid opreste importul intreg (nu se aplica nimic partial).
  */
 
@@ -106,7 +107,7 @@ function parsePriceRows(array $rows): array
         elseif (str_starts_with($t, 'de la')) { $cols['from'] = $col; }
         elseif (str_starts_with($t, 'unitate')) { $cols['unit'] = $col; }
     }
-    foreach (['id' => 'ID', 'price' => 'Pret', 'from' => 'De la?', 'unit' => 'Unitate'] as $k => $label) {
+    foreach (['id' => 'ID', 'price' => 'Pret', 'unit' => 'Unitate'] as $k => $label) {
         if (!isset($cols[$k])) {
             $errors[] = "Lipseste coloana „{$label}\" din antet.";
         }
@@ -120,7 +121,7 @@ function parsePriceRows(array $rows): array
         if ($r === $headerRow) { continue; }
         $rawId = trim((string) ($cells[$cols['id']] ?? ''));
         $rawPrice = trim((string) ($cells[$cols['price']] ?? ''));
-        $rawFrom = mb_strtoupper(trim((string) ($cells[$cols['from']] ?? '')));
+        $rawFrom = isset($cols['from']) ? mb_strtoupper(trim((string) ($cells[$cols['from']] ?? ''))) : '';
         $unit = trim((string) ($cells[$cols['unit']] ?? ''));
 
         if ($rawId === '' && $rawPrice === '' && $rawFrom === '' && $unit === '') {
@@ -151,15 +152,11 @@ function parsePriceRows(array $rows): array
             }
         }
 
-        if (!in_array($rawFrom, ['', 'DA', 'NU'], true)) {
-            $errors[] = "Randul $r (ID $id): „De la?\" trebuie sa fie DA sau gol (este „{$rawFrom}\").";
+        if (!in_array($rawFrom, ['', 'NU'], true)) {
+            $errors[] = "Randul $r (ID $id): toate preturile sunt fixe — sterge „{$rawFrom}\" din coloana „De la?\".";
             continue;
         }
-        $isFrom = $rawFrom === 'DA' ? 1 : 0;
-        if ($isFrom === 1 && $price === null) {
-            $errors[] = "Randul $r (ID $id): „De la?\" = DA, dar pretul lipseste.";
-            continue;
-        }
+        $isFrom = 0;
         if (mb_strlen($unit) > 40) {
             $errors[] = "Randul $r (ID $id): unitatea are peste 40 de caractere.";
             continue;

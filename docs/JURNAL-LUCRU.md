@@ -38,8 +38,10 @@ dupa ea se face importul. Baza are deja `price` si `price_unit`, goale.
 
 **Decizii luate:**
 - Preturile sunt **cu TVA inclus**.
-- Pe site **doar afisam pretul**; comanda ramane pe WhatsApp/telefon (fara cos, fara plata online).
-- Produsele fara pret exact primesc **„de la X lei"** (coloana „De la?" = DA in Excel).
+- ~~Pe site doar afisam pretul.~~ **Inlocuit pe 13 oct:** cos + comanda online (fara plata cu cardul) — in lucru pe
+  branch-ul `feat/cos-comenzi`, doar local.
+- ~~Produsele fara pret exact primesc „de la X lei".~~ **Inlocuit tot pe 13 oct: toate preturile sunt FIXE**
+  si toate produsele disponibile se pot pune in cos (proiectul cos/comenzi, vezi `IMPLEMENTATION_PROGRESS.md`).
   Atentie: baza **nu are** inca un camp pentru „de la" — trebuie o migrare mica.
 - Pe viitor preturile se schimba **in ambele feluri**: import/export Excel din `/admin` pentru
   modificari mari + editare punctuala din formularul de produs.

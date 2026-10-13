@@ -7,10 +7,12 @@ test.beforeEach(async ({ page }) => {
   await page.route(THIRD_PARTY, (r) => r.abort());
 });
 
-test('butoanele apar doar la produsele cu pret fix si disponibile', async ({ page }) => {
+test('toate produsele disponibile au buton de cos (preturile sunt fixe)', async ({ page }) => {
   await page.goto('/acoperis.html');
-  await expect(page.locator('.btn-cart')).toHaveCount(3);
-  await expect(page.locator('.material-card', { hasText: 'Tabla Cutata (Ondulata)' }).locator('.btn-cart')).toHaveCount(0); // „de la"
+  const cards = await page.locator('.material-card, .accessory-card').count();
+  await expect(page.locator('.btn-cart')).toHaveCount(cards); // pe acoperis nu e niciun produs indisponibil
+  await expect(page.locator('.material-card', { hasText: 'Tabla Cutata (Ondulata)' }).locator('.btn-cart')).toHaveCount(1);
+  await expect(page.locator('.material-price, .accessory-price').filter({ hasText: /^de la/ })).toHaveCount(0); // doar preturile, nu textele editoriale
 
   await page.goto('/electrice.html');
   const indisponibil = page.locator('.accessory-card', { hasText: 'Doza electrica ingropata 60mm' });

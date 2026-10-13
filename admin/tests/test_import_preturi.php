@@ -51,7 +51,7 @@ function makeXlsx(array $rows, string $sheetName = 'Preturi'): string
 $H = ['ID', 'Pagina', 'Produs', 'Pret (lei, cu TVA)', 'De la? (DA = pret minim)', 'Unitate (buc, m², ml...)', 'Observatii'];
 
 // ── citirea .xlsx ──
-$f = makeXlsx([$H, [1, 'Acoperis', 'Tabla', 55, 'DA', 'm²', 'x'], [2, 'Acoperis', 'Tigla', '6,5', null, 'buc', null]]);
+$f = makeXlsx([$H, [1, 'Acoperis', 'Tabla', 55, null, 'm²', 'x'], [2, 'Acoperis', 'Tigla', '6,5', null, 'buc', null]]);
 $rows = readXlsxSheet($f, 'Preturi');
 ok(count($rows) === 3,                         'xlsx: 3 randuri (antet + 2)');
 ok(($rows[1]['A'] ?? '') === 'ID',             'xlsx: antetul vine din sharedStrings');
@@ -67,13 +67,13 @@ ok($threw,                                     'xlsx: fisier care nu e xlsx => e
 $p = parsePriceRows($rows);
 ok($p['errors'] === [],                        'parse: fisier valid fara erori');
 ok(count($p['changes']) === 2,                 'parse: 2 modificari');
-ok($p['changes'][0] == ['id' => 1, 'price' => 55.0, 'is_from' => 1, 'unit' => 'm²', 'row' => 2], 'parse: rand „de la" corect');
+ok($p['changes'][0] == ['id' => 1, 'price' => 55.0, 'is_from' => 0, 'unit' => 'm²', 'row' => 2], 'parse: rand cu pret fix corect');
 ok($p['changes'][1]['price'] === 6.5 && $p['changes'][1]['is_from'] === 0, 'parse: „6,5" => 6.5, pret fix');
 
 $bad = parsePriceRows(readXlsxSheet(makeXlsx([$H,
     [3, '', '', 'abc', null, 'buc', null],          // pret text
     [4, '', '', -5, null, 'buc', null],             // pret negativ
-    [5, '', '', null, 'DA', 'buc', null],           // DA fara pret
+    [5, '', '', 10, 'DA', 'buc', null],             // „de la" nu mai e permis (toate preturile sunt fixe)
     [6, '', '', 10, 'poate', 'buc', null],          // valoare De la invalida
     [7, '', '', 10, null, str_repeat('x', 41), null], // unitate prea lunga
     ['x7', '', '', 10, null, 'buc', null],          // ID invalid
@@ -88,7 +88,10 @@ ok(str_contains($all, 'ID 3') && str_contains($all, 'pret invalid'), 'parse: mes
 ok(str_contains($all, 'de doua ori'),          'parse: ID dublat semnalat');
 
 $noHeader = parsePriceRows([1 => ['A' => 'Cod', 'B' => 'Cost']]);
-ok(count($noHeader['errors']) === 4,           'parse: antet fara coloanele cerute => 4 erori');
+ok(count($noHeader['errors']) === 3,           'parse: antet fara coloanele cerute => 3 erori (ID, Pret, Unitate)');
+ok(str_contains($all, 'toate preturile sunt fixe'), 'parse: DA la „De la?" respins cu mesaj clar');
+$fara = parsePriceRows(readXlsxSheet(makeXlsx([['ID', 'Produs', 'Pret (lei, cu TVA)', 'Unitate'], [1, 'Tabla', 55, 'm²']]), 'Preturi'));
+ok($fara['errors'] === [] && $fara['changes'][0]['is_from'] === 0, 'parse: fisier fara coloana „De la?" (sablonul nou) => pret fix');
 ok(parsePriceRows([])['errors'] !== [],        'parse: foaie goala => eroare');
 
 // ── applyPrices pe baza locala (restauram la final) ──

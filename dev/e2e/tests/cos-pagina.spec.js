@@ -95,15 +95,14 @@ test('„Scoate" elimina produsul; ultimul scos => cos gol', async ({ page }) =>
 });
 
 test('produse care nu se mai pot comanda: mesaj pe rand si comanda blocata pana sunt scoase', async ({ page }) => {
-  await openCart(page, [{ id: 3470, qty: 1 }, { id: 1, qty: 1 }, { id: 3686, qty: 1 }, { id: 999999, qty: 1 }]);
-  await expect(line(page, 1).locator('.cos-line-problem')).toContainText('la cerere');
+  await openCart(page, [{ id: 3470, qty: 1 }, { id: 3686, qty: 1 }, { id: 999999, qty: 1 }]);
   await expect(line(page, 3686).locator('.cos-line-problem')).toHaveText('Produsul nu mai este in stoc.');
   await expect(line(page, 999999).locator('.cos-line-problem')).toHaveText('Produsul nu mai este disponibil pe site.');
   await expect(total(page)).toHaveText('85,00 lei');
   await expect(page.locator('button.cos-continue')).toBeDisabled();
   await expect(page.locator('.cos-msg--warn')).toBeVisible();
 
-  for (const id of [1, 3686, 999999]) {
+  for (const id of [3686, 999999]) {
     await line(page, id).getByRole('button', { name: /Scoate/ }).click();
   }
   await expect(page.locator('a.cos-continue')).toBeVisible();
@@ -121,7 +120,7 @@ test('serverul indisponibil: mesaj clar si „Incearca din nou" functioneaza', a
 });
 
 test('pagina incape pe ecran (fara scroll orizontal)', async ({ page }) => {
-  await openCart(page, [{ id: 3470, qty: 12 }, { id: 3674, qty: 1234.5 }, { id: 1, qty: 1 }]);
+  await openCart(page, [{ id: 3470, qty: 12 }, { id: 3674, qty: 1234.5 }, { id: 3686, qty: 1 }]);
   await expect(page.locator('.cos-line')).toHaveCount(3);
   const overflow = await page.evaluate(() => document.documentElement.scrollWidth - window.innerWidth);
   expect(overflow).toBeLessThanOrEqual(0);

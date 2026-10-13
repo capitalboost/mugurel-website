@@ -44,6 +44,17 @@ test('starea de stoc din admin ajunge pe pagina produsului', async ({ page }) =>
   }
 });
 
+test('pretul e mereu fix: adminul nu mai are bifa „Pret minim", iar salvarea pastreaza pretul fix', async ({ page }) => {
+  await login(page);
+  await page.goto(EDIT);
+  await expect(page.locator('input[name="price_is_from"]')).toHaveCount(0);
+  await page.click('button[type="submit"]');
+  await expect(page).not.toHaveURL(/action=edit/);
+  await page.goto('/acoperis.html');
+  await expect(card(page).locator('.material-price')).toHaveText(/^55,00 lei \/ m²$/);
+  await expect(card(page).locator('.btn-cart')).toHaveCount(1);
+});
+
 test('o valoare de stoc falsificata in formular e respinsa', async ({ page }) => {
   await login(page);
   await page.goto(EDIT);
