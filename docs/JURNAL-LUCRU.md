@@ -29,6 +29,59 @@ pe o masina noua e goala si trebuie reconstruita din scripturi.
 
 ---
 
+## 13 octombrie 2026 — Harta codului si corecturi de facut (DESCHIS)
+
+Nicio modificare pe site. S-a facut harta codului in `.planning/codebase/` (7 documente,
+commit `4d7bff2`), ca baza pentru planificarea urmatoarelor faze. Analiza a scos la iveala
+probleme care **nu erau in jurnal**. Le notam aici ca sa ne ocupam de ele ulterior.
+Detaliile complete, cu fisiere si linii, sunt in `.planning/codebase/CONCERNS.md`.
+
+**Verificat direct:** doar punctul 1. Restul vin din analiza automata si trebuie confirmate
+in cod inainte de reparatie.
+
+### Securitate — prioritate mare
+
+- [ ] **1. Parola de admin in clar, in git.** `db/seed_admin.php` (linia 18) contine parola
+      ca text. Daca e aceeasi cu cea de pe live, **schimb-o pe site**. Apoi scoate literalul din
+      fisier (citeste-o din variabila de mediu sau prompt CLI).
+- [ ] **2. Log-ul de deploy e public si se recreeaza la fiecare deploy.**
+      `__deploy_m7x2verif.log` se poate citi din browser, iar `.htaccess` nu blocheaza `*.log`.
+      Nu ajunge sa-l stergi o data — trebuie scris **in afara `public_html`** din `.cpanel.yml`.
+- [ ] **3. Limita de incercari la login foloseste IP-ul Cloudflare.**
+      `admin/controllers/AuthController.php` numara esecurile dupa `REMOTE_ADDR`, care in spatele
+      Cloudflare e IP-ul proxy-ului. Cateva parole gresite pot bloca `/admin` pentru toata lumea.
+      Solutie: `CF-Connecting-IP` (doar cand cererea vine din range-urile Cloudflare) sau blocare
+      pe cont. Aceeasi problema poate deloga adminul cand se schimba IP-ul (sesiunea e legata de IP).
+- [ ] **4. `Sanitize::html()` se poate ocoli.** E filtru pe regex (lista neagra):
+      `<p onclick=...>` fara ghilimele si `href='javascript:...'` cu ghilimele simple trec.
+      Continutul iese neescapat in `templates/page.php` linia 14.
+- [ ] **5. CSP-ul permite `'unsafe-inline'` la scripturi** (`.htaccess` din radacina). Se rezolva
+      odata cu punctul 6: mutam gtag/Clarity in `js/analytics.js`. Posibil si ca CSP-ul din
+      `admin/.htaccess` sa blocheze skin-ul/iconitele TinyMCE (neverificat).
+
+### GDPR — prioritate mare
+
+- [ ] **6. Google Analytics si Clarity se incarca inainte de acord**, in `<head>`, pe 22 de pagini.
+      Banner-ul din `js/main.js` doar salveaza alegerea; „Refuz" nu opreste nimic. Clarity
+      inregistreaza sesiuni, deci e mai mult decat statistica. Codul e copiat in 22 de fisiere —
+      de facut o singura data, intr-un fisier comun.
+
+### Corecturi la ce scria in jurnal
+
+- [ ] **7. Lipsesc 32 de fotografii, nu 31.** Pe langa lista din 28 septembrie mai lipseste
+      `img/masina-gaurit-acumulator.jpg` (referita in `db/productie_date.sql`).
+- [ ] **8. Lipseste `img/og-image.jpg`**, desi 18 pagini il declara in `og:image`. Exista doar
+      `img/og-image.svg`. Rezultat: Facebook/WhatsApp arata link-ul fara imagine. Exporta SVG-ul
+      ca JPG 1200x630.
+- [ ] **9. Paginile `.html` statice nu au versiune la `css/style.css` si `js/main.js`.** Doar
+      paginile PHP primesc `?v=` din `templates/header.php`. Dupa un deploy cu CSS/JS nou,
+      paginile `.html` raman pe versiunea veche pana la 4 ore (cache Cloudflare).
+- [ ] **10. Garda din `db/deploy_db.php` reimporta tot daca `products` e goala.** Importul are
+      `DROP TABLE`, deci o tabela de produse golita (ex. adminul sterge tot) inseamna ca la
+      urmatorul deploy se pierd si categoriile/proprietatile noi.
+
+---
+
 ## 29 septembrie 2026 — LIVE pe mugurel-bricolaj.ro
 
 Catalogul pe baza de date **ruleaza in productie**. 46 de commit-uri pe `feat/catalog-db`,
@@ -193,7 +246,7 @@ orice `cd`, si cale absoluta la invocare.
 
 - [ ] **Merge `feat/catalog-db` in `main`.** cPanel deployeaza acum de pe branch, ceea ce
       functioneaza, dar pe termen lung `main` ar trebui sa fie ramura de productie.
-- [ ] **Cele 31 de fotografii** cu calea deja configurata in baza — lista completa e in intrarea
+- [ ] **Cele 31 de fotografii** (de fapt 32 — vezi 13 octombrie) cu calea deja configurata in baza — lista completa e in intrarea
       din 28 septembrie. Pui fisierul in `Website/img/` cu numele exact si poza apare singura,
       peste panoul generat, fara nicio modificare de cod.
 - [ ] **Sterge `__deploy_m7x2verif.log`** din `public_html` cand nu mai e nevoie de el.
