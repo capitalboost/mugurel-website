@@ -99,6 +99,9 @@ in cod inainte de reparatie.
 - [ ] **10. Garda din `db/deploy_db.php` reimporta tot daca `products` e goala.** Importul are
       `DROP TABLE`, deci o tabela de produse golita (ex. adminul sterge tot) inseamna ca la
       urmatorul deploy se pierd si categoriile/proprietatile noi.
+- [ ] **11. Harta Google de pe `contact.html` nu se afiseaza (si pe live).** CSP-ul din `.htaccess`
+      nu are `frame-src`, deci `default-src 'self'` blocheaza iframe-ul `maps.google.com`. Gasit la
+      testele in browser din T1 (proiectul cos). Reparatie: `frame-src https://maps.google.com https://www.google.com`.
 
 ---
 

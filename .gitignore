@@ -1,3 +1,8 @@
 admin/config.local.php
 uploads/products/*
 !uploads/products/.gitkeep
+
+# Teste locale in browser
+dev/e2e/node_modules/
+dev/e2e/test-results/
+dev/e2e/playwright-report/

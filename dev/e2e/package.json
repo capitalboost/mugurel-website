@@ -1,0 +1,7 @@
+{
+  "name": "mugurel-e2e",
+  "private": true,
+  "description": "Teste in browser (Playwright) — doar local, nu se deployeaza",
+  "scripts": { "test": "playwright test" },
+  "devDependencies": { "@playwright/test": "1.49.1" }
+}
