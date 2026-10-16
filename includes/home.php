@@ -61,7 +61,7 @@ function renderHomeCategoryCards(): string
 /** Sidebar-ul primei pagini: acelasi arbore ca in liste + colectiile. */
 function renderHomeSidebar(): string
 {
-    $out = '<div class="sidebar-head"><span>Categorii produse</span></div><ul class="cat-tree">';
+    $out = '<div class="sidebar-head cat-tree-head"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" aria-hidden="true"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg><span>Categorii produse</span></div><ul class="cat-tree">';
     foreach (catTreeForSidebar() as $node) { $out .= catTreeNode($node, []); }
     $out .= '</ul>';
     $cols = catCollections();

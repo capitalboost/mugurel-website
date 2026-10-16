@@ -24,7 +24,7 @@ $L = $list;
 
   <aside class="sidebar cat-sidebar" aria-label="Categorii si filtre">
     <?php if ($L['tree']): ?>
-    <div class="sidebar-head"><span>Categorii</span></div>
+    <div class="sidebar-head cat-tree-head"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" aria-hidden="true"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg><span>Categorii produse</span></div>
     <ul class="cat-tree">
       <?php foreach ($L['tree'] as $node) { echo catTreeNode($node, $L['activeIds']); } ?>
     </ul>
