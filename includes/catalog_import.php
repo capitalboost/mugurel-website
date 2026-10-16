@@ -230,6 +230,16 @@ function applyCatalog(PDO $pdo, array $products, array $tagGroups, bool $apply, 
 
         if ($replaceOld) {
             $st['old_deleted'] = $pdo->exec('DELETE FROM products WHERE barcode IS NULL');
+            // Categoriile ramase fara produse (cele vechi) se sterg ACUM, inainte sa creez categoriile noi: altfel o
+            // categorie noua cu acelasi nume (ex. „Acoperis") nu ar mai primi slug-ul vechi `acoperis` si s-ar pierde
+            // adresa /acoperis.html indexata de Google. Frunzele intai (parent_id e RESTRICT).
+            do {
+                $del = $pdo->exec('DELETE c FROM categories c
+                    LEFT JOIN products p ON p.category_id = c.id
+                    LEFT JOIN categories ch ON ch.parent_id = c.id
+                    WHERE p.id IS NULL AND ch.id IS NULL');
+                $st['old_categories_deleted'] += $del;
+            } while ($del > 0);
         }
 
         // --- categorii: gasite dupa (parinte, nume), create la nevoie
@@ -326,19 +336,6 @@ function applyCatalog(PDO $pdo, array $products, array $tagGroups, bool $apply, 
                 $insPT->execute([$id, $tagIds[$slug]]);
             }
         }
-
-        if ($replaceOld) {
-            // categoriile vechi ramase fara produse si fara rol in arborele nou; frunzele intai (parent_id e RESTRICT)
-            do {
-                $del = $pdo->exec('DELETE c FROM categories c
-                    LEFT JOIN products p ON p.category_id = c.id
-                    LEFT JOIN categories ch ON ch.parent_id = c.id
-                    WHERE p.id IS NULL AND ch.id IS NULL'
-                    . ($usedCats ? ' AND c.id NOT IN (' . implode(',', array_map('intval', array_keys($usedCats))) . ')' : ''));
-                $st['old_categories_deleted'] += $del;
-            } while ($del > 0);
-        }
-
         $st['untouched'] = (int) $pdo->query('SELECT COUNT(*) FROM products WHERE barcode IS NOT NULL')->fetchColumn()
             - $st['created'] - $st['updated'];
         $st['old_remaining'] = (int) $pdo->query('SELECT COUNT(*) FROM products WHERE barcode IS NULL')->fetchColumn();

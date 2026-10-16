@@ -130,3 +130,22 @@ Reguli noi: grupe **Putere** (700 W), **Clasa energetica** (clasa E), **Alimenta
 (Materiale constructii ▾, Electrocasnice ▾, Incalzire, Instalatii electrice) cu **panou derulant** (grupe + subcategorii,
 CSS :hover/:focus-within, fara JS), apoi Toate produsele, Contact, UE. Sidebar-ul si prima pagina: ramurile mari primele;
 produsele recomandate alternativ din ramurile cu 20+ produse.
+
+### N8 — deploy, SEO, stergerea catalogului vechi: GATA (16 oct)
+- **Garda din `db/deploy_db.php` rescrisa.** Cea veche ar fi STERS catalogul nou la primul deploy (considera „reale" doar
+  produsele cu `page_slug`) si ar fi reimportat cele 534 de produse vechi (`productie_date.sql`, cu DROP TABLE — fisier scos).
+  Acum pasul 2 importa catalogul nou din **`db/catalog/*.xlsx`** (cele 3 fisiere, numerotate 1-/2-/3- pentru ordine)
+  **o singura data** — doar cand nu exista niciun produs cu cod de bare — intr-o singura tranzactie care sterge si
+  catalogul vechi. La orice deploy urmator pasul se sare: modificarile din admin raman.
+- **Capcana gasita la testul pe copia live:** categoriile vechi (`acoperis`, `incalzire`, `electrocasnice`) trebuie sterse
+  INAINTE de a crea categoriile noi, altfel acestea primeau slug-uri noi si se pierdeau adresele indexate. Reparat in
+  `applyCatalog()`.
+- `dev/test_fresh_deploy.sh` rescris: **A** baza goala, **B** copia bazei live din 16 oct (534 => 511, adresele vechi
+  pastrate, colectii, tabelele cosului), plus redeploy care pastreaza pret/stoc/vizibilitate schimbate „din admin". Trece.
+- **`.cpanel.yml`**: sterge pe server cele 13 pagini vechi `.php` (altfel ar avea prioritate fata de categoriile noi),
+  `page_bootstrap.php`, `templates/category.php`, `js/produse-acasa.js`, `sitemap.xml` static; scoasa copierea `*.xml`
+  (fara fisiere .xml, `cp` ar fi dat eroare si ar fi oprit deploy-ul).
+- **Sitemap generat** (`sitemap.php`, `/sitemap.xml` in `.htaccess` + router local): 563 adrese — prima pagina, catalog,
+  contact, despre noi, 46 de categorii (fara cele „de trecere"), 5 colectii, 511 produse, cu `lastmod`. `robots.txt`:
+  `Disallow: /admin/`. Redirecturile 301 ale paginilor vechi erau deja facute (vezi al doilea fisier).
+- Teste: `test_catalog_repo.php` 48 (inclusiv sitemap).

@@ -17,11 +17,14 @@ deployment:
     - /bin/cp .htaccess $DEPLOYPATH
     - /bin/cp *.html $DEPLOYPATH
     - /bin/cp *.txt $DEPLOYPATH
-    - /bin/cp *.xml $DEPLOYPATH
+    # sitemap.xml se genereaza din catalog (sitemap.php); nu mai exista fisiere .xml de copiat
     - /bin/cp *.svg $DEPLOYPATH
     - /bin/cp *.php $DEPLOYPATH
     - cd $DEPLOYPATH && for f in *.php; do [ -f "${f%.php}.html" ] && rm -f "${f%.php}.html"; done; true
     - /bin/rm -f $DEPLOYPATH/__diag.php
+    # Catalogul vechi (pana la 16 oct 2026): paginile fixe de categorie ar avea prioritate fata de categoriile noi
+    # (/acoperis.html ar deschide acoperis.php, nu categoria noua). Deploy-ul doar copiaza, deci le stergem explicit.
+    - cd $DEPLOYPATH && /bin/rm -f acoperis.php izolatie.php gips-carton.php zidarie-bca.php gard-imprejmuiri.php electrice.php incalzire.php sanitare.php apa-canal.php gradina.php mobilier.php electrocasnice.php scule-unelte.php includes/page_bootstrap.php templates/category.php js/produse-acasa.js sitemap.xml
     # PHP din linia de comanda pe cPanel e adesea alta versiune decat handlerul web.
     # Incercam intai binarul ea-php81 explicit, apoi alternativele, si scriem tot
     # output-ul intr-un log ca sa nu mai esueze in tacere.

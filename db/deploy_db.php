@@ -9,10 +9,9 @@ declare(strict_types=1);
  *
  * Ce face:
  *   1. Incarca credentialele din <public_html>/admin/config.local.php.
- *   2. Aplica migrarile 002..006 (idempotente).
- *   3. Importa datele de productie din productie_date.sql O SINGURA DATA —
- *      doar daca tabela `products` e goala (guard obligatoriu: fisierul
- *      contine DROP TABLE si ar sterge orice a adaugat Mugurel din admin).
+ *   2. Aplica migrarile 002..012 (idempotente).
+ *   3. Importa catalogul nou din db/catalog/*.xlsx O SINGURA DATA — doar cand
+ *      nu exista inca niciun produs cu cod de bare (vezi pasul 2 din main()).
  *   4. Afiseaza un rezumat.
  *
  * Contract critic: acest script NU trebuie sa opreasca niciodata deploy-ul.
@@ -169,87 +168,67 @@ function main(array $argv): int
 
     $applied = $runMigrations();
 
-    // 2. Import date de productie — o singura data, cu guard pe tabela goala.
-    $dataFile = $dbDir . '/productie_date.sql';
+    // 2. Catalogul nou (fisierele Dunlite din db/catalog/*.xlsx) — O SINGURA DATA.
+    //
+    // Se importa doar daca baza nu are inca niciun produs cu cod de bare (= catalogul nou nu exista inca).
+    // Atunci, intr-o singura tranzactie: se sterg produsele vechi (fara cod de bare) si categoriile lor ramase
+    // goale, si se importa toate fisierele. La orice deploy urmator catalogul nou exista => pasul se sare, deci
+    // preturile/stocul/pozele schimbate de Mugurel din admin NU sunt suprascrise. Fisierele noi se incarca din
+    // admin (Import Excel), nu prin deploy.
+    //
+    // (Pana la 16 oct 2026 aici se importa productie_date.sql — catalogul vechi de 534 de produse, cu DROP TABLE.
+    //  Garda veche ar fi considerat catalogul nou „date vechi" si l-ar fi sters. Fisierul a fost scos.)
+    $catalogDir = $dbDir . '/catalog';
     $importStatus = 'sarit';
+    $files = glob($catalogDir . '/*.xlsx') ?: [];
+    sort($files, SORT_NATURAL); // 1-constructii, 2-tabla, 3-electrocasnice: ordinea categoriilor din meniu
 
-    if (!is_file($dataFile)) {
-        out('ATENTIE: productie_date.sql lipseste din db/, sar peste import.');
+    $newProducts = null;
+    try {
+        $stmt = $pdo->query('SELECT COUNT(*) FROM products WHERE barcode IS NOT NULL');
+        $newProducts = $stmt === false ? null : (int) $stmt->fetchColumn();
+    } catch (Throwable $e) {
+        out('EROARE: nu pot citi produsele (probabil migrarea 011 a esuat mai sus): ' . $e->getMessage());
+    }
+
+    if ($newProducts === null) {
+        out('Catalog SARIT: tabela `products` nu poate fi citita.');
+    } elseif ($newProducts > 0) {
+        out("Catalog SARIT: catalogul nou exista deja ($newProducts produse cu cod de bare) — nu-l ating.");
+    } elseif (!$files) {
+        out('ATENTIE: niciun fisier in db/catalog/*.xlsx — catalogul nou nu s-a importat.');
     } else {
-        $productsCount = countTable($pdo, 'products');
-
-        // Distinge datele NOASTRE de resturi dintr-un import vechi.
-        //
-        // Importul curent seteaza `page_slug` pe fiecare produs — e coloana care
-        // decide pe ce pagina apare. Randurile ramase dintr-o rulare veche (dinainte
-        // sa existe coloana) au `page_slug` gol dupa migrare, deci nu s-ar afisa
-        // nicaieri. Pe productie exista exact asa ceva: 231 de randuri din iunie.
-        //
-        // Deci importam cand tabela e goala SAU cand niciun rand nu are `page_slug`.
-        // Orice produs adaugat din noul admin are page_slug setat, deci e protejat.
-        $productsReale = null;
-        if ($productsCount !== null && $productsCount > 0) {
-            try {
-                $stmt = $pdo->query("SELECT COUNT(*) FROM products WHERE page_slug IS NOT NULL AND page_slug <> ''");
-                $productsReale = $stmt === false ? null : (int) $stmt->fetchColumn();
-            } catch (Throwable $e) {
-                // Coloana nu exista inca => date dinainte de migrare, deci vechi.
-                $productsReale = 0;
-            }
-        }
-
-        if ($productsCount === null) {
-            out('Import SARIT: tabela `products` nu exista sau nu poate fi citita (probabil migrarile au esuat mai sus).');
-        } elseif ($productsCount > 0 && $productsReale !== null && $productsReale > 0) {
-            out("Import SARIT: tabela `products` are $productsReale produse cu pagina setata — sunt date reale, nu le ating.");
-        } else {
-            if ($productsCount > 0) {
-                out("Curat $productsCount randuri vechi din `products` (fara page_slug, dintr-un import anterior).");
-            }
-            // productie_date.sql seteaza created_by=1 pe toate produsele (FK catre users.id).
-            $adminExists = countTable($pdo, 'users');
-            $hasUserOne = false;
-            if ($adminExists !== null) {
-                try {
-                    $stmt = $pdo->query('SELECT COUNT(*) FROM users WHERE id = 1');
-                    $hasUserOne = $stmt !== false && ((int) $stmt->fetchColumn()) > 0;
-                } catch (Throwable $e) {
-                    out('EROARE: nu pot verifica users.id=1: ' . $e->getMessage());
+        try {
+            require_once $dbDir . '/../includes/catalog_import.php';
+            $all = [];
+            foreach ($files as $file) {
+                $parsed = parseCatalogRows(readXlsxSheet($file, null));
+                if ($parsed['errors']) {
+                    throw new RuntimeException(basename($file) . ' are ' . count($parsed['errors']) . ' erori, ex.: ' . $parsed['errors'][0]);
                 }
-            } else {
-                out('EROARE: tabela `users` nu exista sau nu poate fi citita.');
+                out('Citit ' . basename($file) . ': ' . count($parsed['products']) . ' produse.');
+                $all = array_merge($all, $parsed['products']);
             }
-
-            if (!$hasUserOne) {
-                out('Import SARIT: nu exista un user cu id=1 in tabela `users`. ' .
-                    'productie_date.sql seteaza created_by=1 pe toate produsele (cheie straina catre users.id) — ' .
-                    'creeaza intai un user admin cu id=1, apoi ruleaza deploy-ul din nou.');
-            } else {
-                try {
-                    runSqlFile($pdo, $dataFile);
-                    $importStatus = 'importat';
-                    out('OK — date importate din productie_date.sql');
-                    // productie_date.sql face DROP + CREATE pe `products` cu structura de la
-                    // momentul exportului, deci coloanele adaugate de migrarile mai noi dispar.
-                    // Migrarile sunt idempotente: le reaplicam ca sa le readucem.
-                    out('Reaplic migrarile peste structura importata:');
-                    $runMigrations();
-                } catch (Throwable $e) {
-                    out('EROARE la importul de date: ' . $e->getMessage());
-                }
-            }
+            $st = applyCatalog($pdo, $all, classifyCatalogTags($all), true, true);
+            $importStatus = 'importat';
+            out("OK — catalog nou: {$st['created']} produse, {$st['categories_created']} categorii, {$st['tags_created']} tag-uri; "
+                . "catalog vechi sters: {$st['old_deleted']} produse, {$st['old_categories_deleted']} categorii.");
+        } catch (Throwable $e) {
+            // applyCatalog lucreaza intr-o singura tranzactie: la eroare baza ramane exact cum era.
+            out('EROARE la importul catalogului (nimic schimbat): ' . $e->getMessage());
         }
     }
 
     // 3. Rezumat.
     out('--- Rezumat ---');
     out('Migrari aplicate: ' . (count($applied) > 0 ? implode(', ', $applied) : 'niciuna'));
-    out('Import date: ' . $importStatus);
+    out('Import catalog: ' . $importStatus);
 
     $counts = [
         'categories' => 'categorii',
         'products' => 'produse',
-        'product_properties' => 'proprietati',
+        'tags' => 'tag-uri',
+        'collections' => 'colectii',
     ];
     foreach ($counts as $table => $label) {
         $n = countTable($pdo, $table);

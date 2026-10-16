@@ -107,5 +107,14 @@ ok($c === 301 && str_ends_with($loc, '/termoizolatii.html'),          'adresa ve
 [$c, , $loc] = http("$base/mobilier.html");
 ok($c === 301 && str_ends_with($loc, '/catalog.html'),               'pagina veche fara echivalent => 301 spre catalog');
 
+// ── sitemap (N8) ──
+[$c, $b] = http("$base/sitemap.xml");
+$locs = preg_match_all('#<loc>([^<]+)</loc>#', $b, $m) ? $m[1] : [];
+$nProd = (int) Database::get()->query('SELECT COUNT(*) FROM products WHERE is_visible = 1 AND barcode IS NOT NULL')->fetchColumn();
+ok($c === 200 && @simplexml_load_string($b) !== false,                'sitemap.xml: 200, XML valid');
+ok(count(array_filter($locs, fn ($u) => str_contains($u, '/produs/'))) === $nProd, 'sitemap: toate produsele vizibile');
+ok(in_array(SITE_URL . '/acoperis.html', $locs, true) && in_array(SITE_URL . '/fier-forjat.html', $locs, true), 'sitemap: categorii si colectii');
+ok(!in_array(SITE_URL . '/ciment-si-var.html', $locs, true) && !in_array(SITE_URL . '/termeni-conditii.html', $locs, true), 'sitemap: fara categorii de trecere si pagini noindex');
+
 echo "\nRezultat: $pass passed, $fail failed\n";
 exit($fail > 0 ? 1 : 0);

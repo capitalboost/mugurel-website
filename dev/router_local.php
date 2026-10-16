@@ -77,6 +77,12 @@ if (preg_match('#^/admin(/|$)#', $path)) {
 
 sendHeaders(htaccessHeaders("$root/.htaccess"));
 
+// /sitemap.xml → sitemap.php (aceeasi regula ca in .htaccess)
+if ($path === '/sitemap.xml') {
+    runPhp("$root/sitemap.php");
+    return true;
+}
+
 // /produs/<slug>.html → produs.php (aceeasi regula ca in .htaccess)
 if (preg_match('#^/produs/([a-z0-9-]+)\.html$#', $path, $m)) {
     $_GET['slug'] = $m[1];
