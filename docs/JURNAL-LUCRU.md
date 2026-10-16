@@ -43,11 +43,11 @@ pe o masina noua e goala si trebuie reconstruita din scripturi.
 
 **Ce mai e de facut, in ordine:**
 1. [x] **Backup de pe server din cPanel** — complet si verificat (16 oct), in `Fisiere de lucru/Backup CpAneL/`.
-2. [ ] **Lista noua de categorii si produse** de la Mugurel (inlocuieste tot catalogul actual).
-3. [ ] **Plan de inlocuire a catalogului** — baza, pagini de categorie noi, meniu, sitemap, redirecturi 301, garda din
-       `deploy_db.php` (altfel deploy-ul reimporta produsele vechi). Se aproba inainte de executie.
-4. [ ] **Lansarea cosului** (`docs/PLAN-LANSARE-COS.md`) — ramase blocante: A1 preturi reale (vin cu lista noua),
-       A2 stoc real, A3 textele aprobate, A6 pagini legale (Termeni, retur 14 zile, ANPC/SOL, confidentialitate).
+2. [~] **Lista noua de produse**: primul fisier primit (147 produse, `Fisiere de lucru/Prouse Dunlite client/`);
+       urmeaza 2 (alte materiale de constructii + electrocasnice).
+3. [ ] **Catalogul nou + cosul, lansate impreuna** — directia stabilita 16 oct, plan in **`docs/PLAN-CATALOG-NOU.md`**
+       (pasii N1–N11, cu opriri pentru verificare). Ramase blocante: A2 stoc real, A3 textele, A6 paginile legale.
+4. [ ] ~~Lansarea cosului separat~~ — se face odata cu catalogul nou (pasul 3).
 5. [ ] **Corecturile de securitate si GDPR** din 13 oct (punctele 1–6): parola admin pe live, log-ul de deploy public,
        limita de login dupa IP-ul real, `Sanitize::html()`, CSP, Analytics/Clarity doar dupa acord.
 6. [ ] **Corecturi mici:** `og-image.jpg` lipsa (8), versiune la CSS/JS pe paginile `.html` (9), harta de pe contact (11).
@@ -56,6 +56,20 @@ pe o masina noua e goala si trebuie reconstruita din scripturi.
 8. [ ] **Git:** `feat/cos-comenzi` nu e pe GitHub; `feat/catalog-db` local e in urma cu `54fbee1`; merge in `main` ramas de facut.
 
 Fotografiile lipsa (punctul 7) si „cele 3000+ produse din gestiune” devin probabil inutile odata cu catalogul nou.
+
+---
+
+## 16 octombrie 2026 — Catalogul nou: directia stabilita (DESCHIS)
+
+Primul fisier de la client: `Fisiere de lucru/Prouse Dunlite client/constructii_complet_MU.xlsx` — **147 produse**, 18 coloane
+(cod de bare, SKU, denumire originala/site, pret cu TVA, unitate, producator, tip, categorie pe 3 niveluri, tag-uri,
+descriere HTML, specificatii „Cheie: valoare”, documente PDF, surse, status, observatii). **Fara poze.**
+Toate sub „Materiale constructii”; „Metal si profile” = 97 de produse. Status: 27 OK, 117 De verificat, 3 Negasit; 1 fara pret.
+Problema gasita: tag-urile sunt separate prin virgula, deci „grosime 1,5 mm” se rupe in doua (10 cazuri).
+
+**Decizii:** pagina proprie pentru fiecare produs; un card pe cod de bare + filtre; Metal si profile sub Materiale constructii;
+tag-uri → filtre (atribute) + colectii (utilizari); se publica tot (fara pret → „Pret la cerere”); poze generate, apoi
+din admin; **lansare imediat cu primul fisier, catalog nou + cos impreuna**. Detalii si pasi: **`docs/PLAN-CATALOG-NOU.md`**.
 
 ---
 
