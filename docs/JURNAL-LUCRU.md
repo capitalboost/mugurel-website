@@ -29,6 +29,84 @@ pe o masina noua e goala si trebuie reconstruita din scripturi.
 
 ---
 
+## 📍 UNDE AM RAMAS (actualizat 16 octombrie 2026)
+
+**Pe live:** catalogul pe baza de date (534 produse, „Pret la cerere” + WhatsApp), de pe branch-ul `feat/catalog-db`.
+**Doar local, nepublicat:** cosul si comenzile online (`feat/cos-comenzi`, 16 taskuri testate), email-ul pe domeniu e gata.
+
+**Ce s-a facut pana acum:**
+- [x] Catalog pe baza de date + panou `/admin` — live din 29 sept.
+- [x] Harta codului si lista de corecturi (13 oct, punctele 1–11).
+- [x] Cos + comanda online PF/PJ, ramburs / transfer / ridicare, emailuri, confirmare — local (13 oct).
+- [x] Email `comenzi@mugurel-bricolaj.ro` cu SPF/DKIM/DMARC, 10/10 la mail-tester (13 oct).
+- [x] Backup local: cod, baza locala, copie publica a site-ului live (16 oct).
+
+**Ce mai e de facut, in ordine:**
+1. [ ] **Backup de pe server din cPanel** (baza de productie + home directory) — vezi intrarea din 16 oct. Inainte de orice stergere.
+2. [ ] **Lista noua de categorii si produse** de la Mugurel (inlocuieste tot catalogul actual).
+3. [ ] **Plan de inlocuire a catalogului** — baza, pagini de categorie noi, meniu, sitemap, redirecturi 301, garda din
+       `deploy_db.php` (altfel deploy-ul reimporta produsele vechi). Se aproba inainte de executie.
+4. [ ] **Lansarea cosului** (`docs/PLAN-LANSARE-COS.md`) — ramase blocante: A1 preturi reale (vin cu lista noua),
+       A2 stoc real, A3 textele aprobate, A6 pagini legale (Termeni, retur 14 zile, ANPC/SOL, confidentialitate).
+5. [ ] **Corecturile de securitate si GDPR** din 13 oct (punctele 1–6): parola admin pe live, log-ul de deploy public,
+       limita de login dupa IP-ul real, `Sanitize::html()`, CSP, Analytics/Clarity doar dupa acord.
+6. [ ] **Corecturi mici:** `og-image.jpg` lipsa (8), versiune la CSS/JS pe paginile `.html` (9), harta de pe contact (11).
+7. [ ] **Email:** redirectionarea `comenzi@` → `dunlite@gmail.com` ramane; in Gmail-ul dunlite: „Trimite ca”
+       `comenzi@…` si filtru pentru rapoartele DMARC. Peste cateva saptamani: DMARC `p=quarantine`.
+8. [ ] **Git:** `feat/cos-comenzi` nu e pe GitHub; `feat/catalog-db` local e in urma cu `54fbee1`; merge in `main` ramas de facut.
+
+Fotografiile lipsa (punctul 7) si „cele 3000+ produse din gestiune” devin probabil inutile odata cu catalogul nou.
+
+---
+
+## 16 octombrie 2026 — Backup + pregatire pentru inlocuirea catalogului (DESCHIS)
+
+**Decizie:** toate produsele de pe site (534) si categoriile actuale (13 pagini, 31 de categorii in baza) vor fi
+**inlocuite** cu alte produse si alte categorii. Inca nu s-a sters nimic, nici local, nici pe live.
+
+### Backup facut azi — `Backup/2026-10-16/` (langa folderul `Website/`, pe Google Drive)
+
+| Fisier | Ce contine |
+|---|---|
+| `mugurel-website-toate-branchurile.bundle` | Tot repo-ul git, toate branch-urile (inclusiv `feat/cos-comenzi`, care e doar local). Refacere: `git clone mugurel-website-toate-branchurile.bundle Website` |
+| `baza-locala-mugurel_cms.sql` | Baza **locala** (534 produse, 31 categorii, 464 blocuri de proprietati + comenzile de test) |
+| `copie-publica-live.zip` | Copia publica a site-ului live: 31 de pagini + 91 de fisiere (poze, CSS, JS), descarcate din browser |
+| `produse-live.csv` | Cele 495 de produse vizibile pe paginile de categorie live (231 materiale + 264 accesorii): pagina, tip, nume, descriere, poza |
+| `raport-copie.txt` | Ce s-a descarcat si cele 32 de poze care lipsesc si pe server (problema cunoscuta, punctul 7) |
+
+**LIPSESTE inca backup-ul de pe server**, singurul care are baza de productie reala (eventuale produse adaugate de
+Mugurel din `/admin`) si pozele incarcate din admin. Nu am acces la server — il face Lucian din cPanel:
+1. cPanel → **Backup** → „Download a MySQL Database Backup” → baza site-ului (`.sql.gz`).
+2. cPanel → **Backup** → „Download a Home Directory Backup” (contine `public_html`, inclusiv `config.local.php` si `img/` incarcate din admin).
+3. Ambele fisiere in `Backup/2026-10-16/`. **Nu se sterge nimic de pe live inainte de pasul asta.**
+
+### Ce atinge inlocuirea catalogului (analiza, nimic modificat)
+
+- **Baza:** `products`, `product_properties`, `product_categories`, `categories` (cu ierarhie `parent_id`).
+- **Paginile de categorie sunt fisiere separate** (`acoperis.php`, `electrice.php` … 13 fisiere), fiecare cu texte, sectiuni
+  (`section_key`), FAQ si JSON-LD scrise de mana. Categorii noi = pagini noi.
+- **Legaturi catre categorii:** `templates/header.php` (meniu), `templates/footer.php`, `index.html`, `contact.html`,
+  `despre-noi.html`, `finantari-europene/index.html`, `catalog.php`, `sitemap.xml`, `admin/models/Product.php` (lista de pagini/sectiuni din admin).
+- **Prima pagina:** cele 6 carduri au `data-product-id` (3, 30, 33, 47, 65, 25) — dispar odata cu produsele.
+- **Testele** (`dev/fixtures/cos_test.sql`, specificatiile din `dev/e2e/tests/`) folosesc ID-uri de produse actuale.
+- ⚠️ **CAPCANA (punctul 10):** daca tabela `products` de pe live ramane goala, urmatorul deploy reimporta automat cele 534
+  de produse vechi din `db/productie_date.sql` (cu `DROP TABLE`). **Inainte de golire** trebuie schimbata garda din
+  `db/deploy_db.php` si inlocuit/scos `productie_date.sql`.
+- ⚠️ **SEO:** cele 13 pagini de categorie sunt indexate in Google. Pentru cele care dispar: redirect 301 catre categoria noua
+  cea mai apropiata, altfel se pierde pozitia in cautari.
+
+### Urmeaza
+1. Backup-ul de pe server (mai sus).
+2. Lista noua de la Mugurel: categorii (+ subcategorii) si produse — nume, descriere, pret cu TVA, unitate, stoc, poza.
+3. Plan de inlocuire, aprobat inainte de executie; se lucreaza pe `feat/cos-comenzi` (are deja pret, stoc, cos).
+
+### Altele observate azi
+- Pe GitHub a aparut commit-ul `54fbee1` pe `feat/catalog-db` (Lucian, 13 oct): parola de admin si datele bazei scoase din
+  `db/seed_admin.php` — rezolva partial punctul 1 (ramane de verificat/schimbat parola pe live). Branch-ul local
+  `feat/catalog-db` e in urma cu acest commit.
+
+---
+
 ## 13 octombrie 2026 — Email pe domeniu: GATA (conditiile A4 + A5 din planul de lansare)
 
 - Casuta `comenzi@mugurel-bricolaj.ro` (1 GB) creata in cPanel (Hostgate, IP 185.246.122.88, PTR hg488.dnsgate.ro).
