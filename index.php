@@ -60,6 +60,8 @@ $extraHead = <<<'HTML'
 </script>
 HTML;
 require_once __DIR__ . '/includes/home.php';
+$hidePromoWa     = true; // prima pagina: fara „Afla disponibilitate" din banda de sus
+$hideWaFloat     = true; // si fara butonul WhatsApp plutitor (16 oct)
 require __DIR__ . '/templates/header.php';
 ?>
 <!-- BODY: SIDEBAR + MAIN -->
