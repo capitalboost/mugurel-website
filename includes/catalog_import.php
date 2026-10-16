@@ -411,6 +411,11 @@ function attachCatalogPhotos(PDO $pdo, string $imgDir): array
         AND (image_path IS NULL OR image_path = '' OR (image_path LIKE 'img/produse/%' AND image_path <> ?))");
     $find = $pdo->prepare('SELECT COUNT(*) FROM products WHERE UPPER(barcode) = ?');
     $linked = 0; $unmatched = [];
+    // poza scoasa din folder (ex. una gresita, mutata la „Poze de corectat") => produsul revine la panoul generat
+    $gone = $pdo->prepare('UPDATE products SET image_path = NULL WHERE image_path = ?');
+    foreach ($pdo->query("SELECT DISTINCT image_path FROM products WHERE image_path LIKE 'img/produse/%'")->fetchAll(PDO::FETCH_COLUMN) as $path) {
+        if (!is_file(rtrim($imgDir, '/\\') . '/' . basename($path))) { $gone->execute([$path]); }
+    }
     foreach (glob(rtrim($imgDir, '/\\') . '/mu-*.webp') ?: [] as $file) {
         $name = basename($file);
         if (!preg_match('/^mu-([a-z0-9]+)-/i', $name, $m)) { continue; }
