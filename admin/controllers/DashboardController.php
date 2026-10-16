@@ -4,6 +4,8 @@ $db = Database::get();
 $stats = $db->query("
     SELECT
         (SELECT COUNT(*) FROM products WHERE is_visible=1) AS produse_active,
+        (SELECT COUNT(*) FROM products WHERE verify_status IN ('de_verificat','negasit')) AS de_verificat,
+        (SELECT COUNT(*) FROM products WHERE barcode IS NOT NULL AND (price IS NULL OR price = 0)) AS fara_pret,
         (SELECT COUNT(*) FROM products WHERE is_visible=0) AS produse_ascunse,
         (SELECT COUNT(*) FROM products WHERE image_path IS NULL OR image_path='') AS produse_fara_imagine,
         (SELECT COUNT(*) FROM users   WHERE is_active=1)  AS utilizatori_activi,

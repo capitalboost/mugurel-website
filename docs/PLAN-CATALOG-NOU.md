@@ -91,3 +91,29 @@ si copia bazei de productie `mugurel_live_20261016` (migrarile 002–011 prin `d
 - **Ramane pentru N8:** cele 13 pagini vechi (`acoperis.php`…) inca exista — devin redirect 301.
 - **Texte de revazut (N10):** prima pagina inca spune „Constructii · Mobilier · Electrocasnice", „3000+ produse", „instalatii,
   mobilier"; despre-noi/contact mentioneaza categoriile vechi in text.
+
+### Al doilea fisier — `tabla_complet_MU.xlsx`: IMPORTAT local (16 oct)
+164 produse: Materiale constructii > **Acoperis** (149: accesorii, sisteme pluviale, folii, tabla tip tigla/cutata/plana),
+ramuri noi **Incalzire** (14, burlane pentru sobe) si **Instalatii electrice** (1). Total local: **311 produse**.
+Reguli noi (`includes/catalog_rules.php`): zecimalele se compara ca valoare („0,40 mm" in denumire = tag „grosime 0,4 mm" —
+68 de grosimi reparate), grupe noi **Finisaj** (mat/lucios/emailat) si **Lungime (module)**, culori compuse si coduri RR,
+dimensiuni cu „×", g/m² si m²; un tag identic cu numele categoriei („acoperis") se ignora.
+**N8 partial:** cele 13 pagini vechi `.php` sterse; `/acoperis.html` este acum categoria noua (aceeasi adresa!), celelalte
+au redirect 301 (`router.php`, `LEGACY_REDIRECTS`). Meniul pastreaza numele ramurilor („Incalzire"), adresa duce direct
+la singura subcategorie.
+
+### N7 — admin: GATA (16 oct)
+- `admin/models/CatalogProduct.php`, `admin/controllers/ProductsController.php` (rescris), `admin/views/products/{list,edit}.php`:
+  lista cu cautare (nume, cod de bare, SKU, brand) si filtre (categorie cu subcategorii, verificare, stoc, poza, pret,
+  vizibilitate), 50/pagina, ordonata dupa arborele de categorii; formular cu toate campurile noi — pret cu virgula,
+  descriere HTML (curatata pe lista alba la salvare), specificatii pe randuri, tag-uri separate prin „;" (virgula ramane
+  pentru zecimale), fise tehnice, note interne, sursele si denumirea din gestiune afisate doar in admin. Cod de bare gol la
+  produs nou => cod intern `INT-…`. Adresa produsului nu se schimba la redenumire. Validare cu formular pastrat la eroare.
+- **Import Excel din admin** (`admin/controllers/ImportController.php`, `admin/views/import.php`): incarci .xlsx (max 10 MB,
+  verificat ca arhiva Excel) => raport + cifre (nimic scris) => „Aplica importul" (token legat de sesiune, fisierul temporar
+  se sterge, intrare in `audit_log`). Acelasi cod ca linia de comanda — importul s-a mutat in `includes/catalog_import.php`
+  (+ `includes/xlsx_reader.php`), pentru ca `db/` nu ajunge pe server.
+- Dashboard: „Fara poza", „De verificat", „Fara pret", cu legaturi spre lista filtrata.
+- Teste: `dev/e2e/tests/admin-catalog.spec.js` (5 teste: acces fara login, cautare/filtre, produs nou cu validare + pagina
+  pe site + colectie dupa tag + stergere, stoc/vizibilitate pe site, import gresit respins + import real fara dubluri).
+  `admin-stoc.spec.js` (catalogul vechi) sters.

@@ -65,6 +65,21 @@ function catCategories(): array
     }
 }
 
+/** Pozitia fiecarei categorii in arbore (parcurgere in adancime, in ordinea din meniu). @return array<int,int> */
+function catTreePositions(): array
+{
+    static $cache = null;
+    if ($cache !== null) { return $cache; }
+    $cats = catCategories();
+    $pos = [];
+    $walk = function (int $id) use (&$walk, &$pos, $cats): void {
+        $pos[$id] = count($pos);
+        foreach ($cats[$id]['children'] as $ch) { $walk($ch); }
+    };
+    foreach ($cats as $id => $c) { if ($c['parent_id'] === null) { $walk($id); } }
+    return $cache = $pos;
+}
+
 function catCategoryBySlug(string $slug): ?array
 {
     foreach (catCategories() as $c) {
@@ -153,9 +168,15 @@ function catScope(?array $categoryIds, ?array $tagSlugs = null, ?string $search 
                 array_push($params, $like, $like, $like, $word, $word);
             }
         }
-        $stmt = $pdo->prepare('SELECT p.id FROM products p WHERE ' . implode(' AND ', $where) . ' ORDER BY p.sort_order, p.id');
+        $stmt = $pdo->prepare('SELECT p.id, p.category_id, p.sort_order FROM products p WHERE ' . implode(' AND ', $where));
         $stmt->execute($params);
-        $ids = array_map('intval', $stmt->fetchAll(PDO::FETCH_COLUMN));
+        // ordinea „Recomandate": dupa locul categoriei in arbore, apoi ordinea din fisier — produsele din fisiere
+        // diferite (fiecare numerotat de la 1) nu se amesteca intre ele
+        $pos = catTreePositions();
+        $rows = $stmt->fetchAll();
+        usort($rows, fn ($a, $b) => [$pos[(int) $a['category_id']] ?? PHP_INT_MAX, (int) $a['sort_order'], (int) $a['id']]
+                                <=> [$pos[(int) $b['category_id']] ?? PHP_INT_MAX, (int) $b['sort_order'], (int) $b['id']]);
+        $ids = array_map(fn ($r) => (int) $r['id'], $rows);
         if (!$ids) { return $empty; }
 
         $tags = []; $tagInfo = [];

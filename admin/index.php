@@ -21,6 +21,7 @@ $routes = [
     'logout'    => __DIR__ . '/controllers/AuthController.php',
     'dashboard' => __DIR__ . '/controllers/DashboardController.php',
     'products'  => __DIR__ . '/controllers/ProductsController.php',
+    'import'    => __DIR__ . '/controllers/ImportController.php',
     'pages'     => __DIR__ . '/controllers/PagesController.php',
     'users'     => __DIR__ . '/controllers/UsersController.php',
 ];

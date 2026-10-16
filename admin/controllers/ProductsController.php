@@ -1,24 +1,27 @@
 <?php
-require_once __DIR__ . '/../models/Product.php';
-require_once __DIR__ . '/../models/ProductProperty.php';
+/**
+ * Produsele catalogului nou (pasul N7). Formularul vechi (pagini fixe, sectiuni, iconite, badge-uri) a disparut
+ * odata cu catalogul vechi; produsele se identifica acum prin codul de bare si au pagina lor pe site.
+ */
+require_once __DIR__ . '/../models/CatalogProduct.php';
 require_once __DIR__ . '/../helpers/Upload.php';
-require_once __DIR__ . '/../../includes/products_repo.php';
-require_once __DIR__ . '/../../includes/product_icons.php';
 
 $db = Database::get();
+$audit = function (string $action, int $id) use ($db): void {
+    $db->prepare('INSERT INTO audit_log (user_id, entity_type, entity_id, action, ip_address) VALUES (?, ?, ?, ?, ?)')
+       ->execute([Auth::id(), 'product', $id, $action, $_SERVER['REMOTE_ADDR'] ?? '']);
+};
 
 switch ($action) {
     case 'new':
     case 'edit':
         $id = Sanitize::posInt($_GET['id'] ?? 0);
-        $product = $id ? Product::byId($id) : null;
+        $product = $id ? CatalogProduct::byId($id) : null;
         if ($id && !$product) { Flash::error('Produsul nu exista.'); header('Location: /admin/?page=products'); exit; }
-        $categoryTree = categoryTree();
-        $sectionsByPage = Product::sectionsByPage();
-        $knownPageSlugs = Product::KNOWN_PAGE_SLUGS;
-        $knownBadgeKinds = Product::KNOWN_BADGE_KINDS;
-        $productIcons = PRODUCT_ICONS;
-        $productProperties = $id ? ProductProperty::forProduct($id) : [];
+        // dupa o eroare de validare, formularul se reafiseaza cu ce a scris utilizatorul
+        $old = $_SESSION['product_form'] ?? null;
+        unset($_SESSION['product_form']);
+        $categoryOptions = CatalogProduct::categoryOptions();
         ob_start();
         require __DIR__ . '/../views/products/edit.php';
         $bodyContent = ob_get_clean();
@@ -30,144 +33,75 @@ switch ($action) {
         if ($_SERVER['REQUEST_METHOD'] !== 'POST') { header('Location: /admin/?page=products'); exit; }
         Csrf::verify();
         $id = Sanitize::posInt($_POST['id'] ?? 0);
+        $existing = $id ? CatalogProduct::byId($id) : null;
+        if ($id && !$existing) { Flash::error('Produsul nu exista.'); header('Location: /admin/?page=products'); exit; }
+        $back = '/admin/?page=products&action=' . ($id ? 'edit&id=' . $id : 'new');
 
-        $imagePath = null;
-        if ($id) {
-            $existing = Product::byId($id);
-            $imagePath = $existing['image_path'] ?? null;
+        [$data, $errors] = CatalogProduct::validate($_POST, $existing);
+        if ($errors) {
+            $_SESSION['product_form'] = $_POST;
+            Flash::error(implode(' ', $errors));
+            header('Location: ' . $back);
+            exit;
         }
 
+        $imagePath = $existing['image_path'] ?? null;
+        $oldImage = null;
+        if (!empty($_POST['remove_image']) && $imagePath) { $oldImage = $imagePath; $imagePath = null; }
         if (!empty($_FILES['image']['name']) && $_FILES['image']['error'] !== UPLOAD_ERR_NO_FILE) {
             try {
                 $newPath = Upload::image($_FILES['image']);
-                if ($imagePath) Upload::delete($imagePath);
+                if ($imagePath) { $oldImage = $imagePath; }
                 $imagePath = $newPath;
             } catch (RuntimeException $e) {
-                Flash::error('Upload imagine: ' . $e->getMessage());
-                header('Location: /admin/?page=products&action=' . ($id ? 'edit&id=' . $id : 'new'));
+                $_SESSION['product_form'] = $_POST;
+                Flash::error('Poza: ' . $e->getMessage());
+                header('Location: ' . $back);
                 exit;
             }
         }
 
-        // section_key: fie una din cele existente (select), fie una noua (text) — textul are prioritate.
-        $sectionKeyNew = Sanitize::slug($_POST['section_key_new'] ?? '');
-        $sectionKeyExisting = Sanitize::slug($_POST['section_key_existing'] ?? '');
-        $sectionKey = $sectionKeyNew !== '' ? $sectionKeyNew : $sectionKeyExisting;
-
-        $pageSlug   = Sanitize::slug($_POST['page_slug'] ?? '');
-        $cardKind   = $_POST['card_kind'] ?? 'material';
-        $cardModifier = Sanitize::slug($_POST['card_modifier'] ?? '');
-        $iconKey    = Sanitize::text($_POST['icon_key'] ?? '', 40);
-        $badgeKind  = Sanitize::slug($_POST['badge_kind'] ?? '');
-
-        $data = [
-            'category_id'       => Sanitize::posInt($_POST['category_id'] ?? 0),
-            'name'              => Sanitize::text($_POST['name'] ?? '', 200),
-            'short_description' => Sanitize::text($_POST['short_description'] ?? '', 1000),
-            'image_path'        => $imagePath,
-            'image_alt'         => Sanitize::text($_POST['image_alt'] ?? '', 200),
-            'price'             => Sanitize::price($_POST['price'] ?? ''),
-            'price_unit'        => Sanitize::text($_POST['price_unit'] ?? '', 40),
-            'price_is_from'     => 0, // toate preturile sunt fixe (decizia din 13 oct)
-            'stock_status'      => $_POST['stock_status'] ?? 'in_stoc',
-            'is_visible'        => isset($_POST['is_visible']) ? 1 : 0,
-            'sort_order'        => Sanitize::posInt($_POST['sort_order'] ?? 0),
-            'created_by'        => Auth::id(),
-            'page_slug'         => $pageSlug,
-            'section_key'       => $sectionKey !== '' ? $sectionKey : null,
-            'card_kind'         => $cardKind,
-            'card_modifier'     => $cardModifier !== '' ? $cardModifier : null,
-            'icon_key'          => $iconKey !== '' ? $iconKey : null,
-            'icon_label'        => Sanitize::text($_POST['icon_label'] ?? '', 120),
-            'badge_label'       => Sanitize::text($_POST['badge_label'] ?? '', 60),
-            'badge_kind'        => $badgeKind !== '' ? $badgeKind : null,
-            'wa_text'           => Sanitize::text($_POST['wa_text'] ?? '', 400),
-        ];
-        if ($data['wa_text'] === '') { $data['wa_text'] = null; }
-        if ($data['icon_label'] === '') { $data['icon_label'] = null; }
-        if ($data['badge_label'] === '') { $data['badge_label'] = null; }
-
-        $errors = [];
-        if (empty($data['name']) || $data['category_id'] === 0) {
-            $errors[] = 'Numele si categoria sunt obligatorii.';
-        }
-        if (!in_array($data['page_slug'], Product::KNOWN_PAGE_SLUGS, true)) {
-            $errors[] = 'Pagina aleasa nu este valida.';
-        }
-        if (!in_array($data['stock_status'], ['in_stoc', 'la_comanda', 'indisponibil'], true)) {
-            $errors[] = 'Starea de stoc nu e valida.';
-        }
-        if (!in_array($data['card_kind'], ['material', 'accessory'], true)) {
-            $errors[] = 'Tipul de card nu este valid.';
-        }
-        if ($data['card_modifier'] !== null && $data['card_modifier'] !== 'sm') {
-            $errors[] = 'Modificatorul de card nu este valid.';
-        }
-        if ($data['icon_key'] !== null && !isset(PRODUCT_ICONS[$data['icon_key']])) {
-            $errors[] = 'Iconita aleasa nu este valida.';
-        }
-        if ($data['badge_kind'] !== null && !in_array($data['badge_kind'], Product::KNOWN_BADGE_KINDS, true)) {
-            $errors[] = 'Tipul de badge nu este valid.';
-        }
-
-        if ($errors) {
-            Flash::error(implode(' ', $errors));
-            header('Location: /admin/?page=products&action=' . ($id ? 'edit&id=' . $id : 'new'));
+        try {
+            $savedId = CatalogProduct::save($id ?: null, $data, $imagePath, Auth::id());
+        } catch (Throwable $e) {
+            error_log('ProductsController save: ' . $e->getMessage());
+            if ($imagePath && $imagePath !== ($existing['image_path'] ?? null)) { Upload::delete($imagePath); }
+            $_SESSION['product_form'] = $_POST;
+            Flash::error('Produsul nu a putut fi salvat. Incearca din nou.');
+            header('Location: ' . $back);
             exit;
         }
-
-        // Blocuri de proprietati: array-uri paralele, sort_order dedus din ordine.
-        // Blocurile cu eticheta sau continut gol se ignora la salvare.
-        $propLabels  = $_POST['prop_label'] ?? [];
-        $propBodies  = $_POST['prop_body'] ?? [];
-        $propIsList  = $_POST['prop_is_list'] ?? [];
-        $blocks = [];
-        foreach ($propLabels as $i => $rawLabel) {
-            $label = Sanitize::text($rawLabel, 60);
-            $body  = Sanitize::text($propBodies[$i] ?? '', 5000);
-            if ($label === '' || $body === '') { continue; }
-            $blocks[] = [
-                'label'   => $label,
-                'body'    => $body,
-                'is_list' => !empty($propIsList[$i]) ? 1 : 0,
-            ];
-        }
-
-        if ($id) {
-            Product::update($id, $data);
-            ProductProperty::replaceAll($id, $blocks);
-            $db->prepare("INSERT INTO audit_log (user_id,entity_type,entity_id,action,ip_address) VALUES (?,?,?,?,?)")
-               ->execute([Auth::id(), 'product', $id, 'update', $_SERVER['REMOTE_ADDR'] ?? '']);
-            Flash::success('Produsul a fost actualizat.');
-        } else {
-            $newId = Product::create($data);
-            ProductProperty::replaceAll($newId, $blocks);
-            $db->prepare("INSERT INTO audit_log (user_id,entity_type,entity_id,action,ip_address) VALUES (?,?,?,?,?)")
-               ->execute([Auth::id(), 'product', $newId, 'create', $_SERVER['REMOTE_ADDR'] ?? '']);
-            Flash::success('Produs creat cu succes.');
-        }
-        header('Location: /admin/?page=products');
+        if ($oldImage) { Upload::delete($oldImage); }
+        $audit($id ? 'update' : 'create', $savedId);
+        Flash::success($id ? 'Produsul a fost actualizat.' : 'Produsul a fost creat.');
+        header('Location: /admin/?page=products&action=edit&id=' . $savedId);
         exit;
 
     case 'delete':
         if ($_SERVER['REQUEST_METHOD'] !== 'POST') { header('Location: /admin/?page=products'); exit; }
         Csrf::verify();
         $id = Sanitize::posInt($_POST['id'] ?? 0);
-        $imgPath = Product::delete($id);
-        if ($imgPath) Upload::delete($imgPath);
-        $db->prepare("INSERT INTO audit_log (user_id,entity_type,entity_id,action,ip_address) VALUES (?,?,?,?,?)")
-           ->execute([Auth::id(), 'product', $id, 'delete', $_SERVER['REMOTE_ADDR'] ?? '']);
+        $img = CatalogProduct::delete($id);
+        if ($img) { Upload::delete($img); }
+        $audit('delete', $id);
         Flash::success('Produsul a fost sters.');
         header('Location: /admin/?page=products');
         exit;
 
-    default: // index
-        $search      = Sanitize::text($_GET['q'] ?? '', 100);
-        $catId       = Sanitize::posInt($_GET['cat'] ?? 0);
-        $pageSlug    = Sanitize::slug($_GET['page_slug'] ?? '');
-        $products    = Product::all($catId, $search, $pageSlug);
-        $categories  = Product::categories();
-        $knownPageSlugs = Product::KNOWN_PAGE_SLUGS;
+    default: // lista
+        $filters = [
+            'q' => Sanitize::text($_GET['q'] ?? '', 100),
+            'cat' => Sanitize::posInt($_GET['cat'] ?? 0),
+            // valorile necunoscute sunt ignorate in CatalogProduct::search()
+            'verify' => is_string($_GET['verify'] ?? null) ? $_GET['verify'] : '',
+            'stock' => is_string($_GET['stock'] ?? null) ? $_GET['stock'] : '',
+            'photo' => is_string($_GET['photo'] ?? null) ? $_GET['photo'] : '',
+            'price' => is_string($_GET['price'] ?? null) ? $_GET['price'] : '',
+            'visible' => is_string($_GET['visible'] ?? null) ? $_GET['visible'] : '',
+            'page' => Sanitize::posInt($_GET['p'] ?? 1),
+        ];
+        $result = CatalogProduct::search($filters);
+        $categoryOptions = CatalogProduct::categoryOptions();
         ob_start();
         require __DIR__ . '/../views/products/list.php';
         $bodyContent = ob_get_clean();

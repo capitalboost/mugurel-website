@@ -3,10 +3,18 @@
     <div class="adm-stat__num"><?= $stats['produse_active'] ?></div>
     <div class="adm-stat__label">Produse active</div>
   </div>
-  <div class="adm-stat">
+  <a class="adm-stat" href="/admin/?page=products&photo=fara">
     <div class="adm-stat__num" style="color:var(--warn)"><?= $stats['produse_fara_imagine'] ?></div>
-    <div class="adm-stat__label">Fara imagine</div>
-  </div>
+    <div class="adm-stat__label">Fara poza</div>
+  </a>
+  <a class="adm-stat" href="/admin/?page=products&verify=de_verificat">
+    <div class="adm-stat__num" style="color:var(--warn)"><?= $stats['de_verificat'] ?></div>
+    <div class="adm-stat__label">De verificat</div>
+  </a>
+  <a class="adm-stat" href="/admin/?page=products&price=fara">
+    <div class="adm-stat__num"><?= $stats['fara_pret'] ?></div>
+    <div class="adm-stat__label">Fara pret</div>
+  </a>
   <div class="adm-stat">
     <div class="adm-stat__num"><?= $stats['utilizatori_activi'] ?></div>
     <div class="adm-stat__label">Utilizatori activi</div>
@@ -18,9 +26,9 @@
 </div>
 
 <?php if ($stats['produse_fara_imagine'] > 0): ?>
-<div class="flash flash--error">
-  <?= $stats['produse_fara_imagine'] ?> produse fara imagine.
-  <a href="/admin/?page=products&q=&cat=0" style="color:inherit;font-weight:700">Completeaza &rarr;</a>
+<div class="flash flash--warn">
+  <?= $stats['produse_fara_imagine'] ?> produse fara poza (pe site apare un panou colorat in locul ei).
+  <a href="/admin/?page=products&photo=fara" style="color:inherit;font-weight:700">Vezi lista &rarr;</a>
 </div>
 <?php endif; ?>
 

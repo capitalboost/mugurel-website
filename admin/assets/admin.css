@@ -90,3 +90,51 @@ body { font-family: 'Open Sans', sans-serif; font-size: 14px; color: var(--text)
 .adm-stat  { background: #fff; border: 1px solid var(--border); border-radius: var(--radius); padding: 1.2rem; text-align: center; }
 .adm-stat__num { font-size: 2rem; font-weight: 700; color: var(--verde); }
 .adm-stat__label { font-size: .8rem; color: #777; margin-top: .2rem; }
+
+/* Catalogul nou (N7) */
+.adm-head { display: flex; justify-content: space-between; align-items: center; gap: 1rem; flex-wrap: wrap; margin-bottom: 1rem; }
+.adm-head h2 { margin-bottom: 0; }
+.adm-head__actions { display: flex; gap: .5rem; flex-wrap: wrap; }
+.adm-muted { color: #778; font-weight: 400; }
+.adm-small { font-size: .78rem; }
+.adm-strong { font-weight: 600; color: var(--verde); text-decoration: none; }
+.adm-strong:hover { text-decoration: underline; }
+.adm-nowrap { white-space: nowrap; }
+.adm-link { color: var(--verde-mid); font-size: .85rem; }
+.adm-empty { text-align: center; color: #aaa; padding: 2rem; }
+.btn--light { background: #eef3f3; color: var(--verde); }
+.btn--light:hover { background: var(--verde-light); }
+.btn + .btn { margin-left: .3rem; }
+.adm-filters { display: flex; flex-wrap: wrap; gap: .5rem; align-items: center; margin-bottom: 1.2rem; }
+.adm-filters input, .adm-filters select { padding: .45rem .6rem; border: 1px solid var(--border); border-radius: var(--radius); font-size: .85rem; max-width: 220px; }
+.adm-filters input[type=search] { min-width: 240px; }
+.adm-table-wrap { overflow-x: auto; }
+.adm-table tr.is-hidden td { opacity: .55; }
+.adm-badge { display: inline-block; padding: .15rem .5rem; border-radius: 10px; font-size: .72rem; font-weight: 700; white-space: nowrap; }
+.adm-badge--ok { background: #d4edda; color: #155724; }
+.adm-badge--warn { background: #fff3cd; color: #856404; }
+.adm-badge--danger { background: #f8d7da; color: #721c24; }
+.adm-badge--muted { background: #eee; color: #888; }
+.adm-pages { display: flex; flex-wrap: wrap; gap: .3rem; margin-top: 1rem; }
+.adm-pages a, .adm-pages span { padding: .3rem .65rem; border: 1px solid var(--border); border-radius: 4px; font-size: .85rem; text-decoration: none; color: var(--verde); }
+.adm-pages .is-current { background: var(--verde); color: #fff; border-color: var(--verde); }
+.flash--warn { background: #fff3cd; color: #856404; border: 1px solid #ffe8a1; }
+.adm-fieldset { border: 1px solid var(--border); border-radius: var(--radius); padding: 1rem 1.2rem .2rem; margin-bottom: 1.2rem; }
+.adm-fieldset legend { padding: 0 .4rem; font-weight: 700; color: var(--verde); }
+.adm-form .adm-check { display: flex; align-items: center; gap: .5rem; flex: none; align-self: center; }
+.adm-form .adm-check input { width: auto; margin: 0; }
+.adm-mono { font-family: Consolas, monospace; font-size: .82rem !important; }
+.adm-specs { width: 100%; border-collapse: collapse; margin-bottom: .6rem; }
+.adm-specs th { text-align: left; font-size: .75rem; color: #667; padding: .2rem .3rem; }
+.adm-specs td { padding: .2rem .3rem; }
+.adm-specs td:first-child { width: 35%; }
+.adm-specs input { width: 100%; padding: .4rem .5rem; border: 1px solid var(--border); border-radius: 4px; font-size: .85rem; }
+.adm-actions { display: flex; gap: .6rem; margin-top: 1rem; }
+.adm-delete { margin-top: 1.5rem; padding-top: 1rem; border-top: 1px solid var(--border); text-align: right; }
+.adm-list { margin: .5rem 0 1rem 1.2rem; line-height: 1.7; }
+.adm-upload { max-width: 520px; background: #f9fbfb; border: 1px dashed var(--border); border-radius: var(--radius); padding: 1rem; }
+.adm-report pre { white-space: pre-wrap; font-size: .78rem; background: #f6f8f8; border: 1px solid var(--border); border-radius: 4px; padding: .8rem; max-height: 480px; overflow: auto; }
+.adm-report summary { cursor: pointer; font-weight: 600; color: var(--verde); margin: .5rem 0; }
+a.adm-stat { text-decoration: none; color: inherit; }
+a.adm-stat:hover { border-color: var(--verde-mid); }
+@media (max-width: 700px) { .adm-form .form-row { flex-direction: column; gap: 0; } .adm-main { padding: 0 .8rem; } }

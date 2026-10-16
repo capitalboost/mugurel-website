@@ -241,7 +241,8 @@ function applyCatalog(PDO $pdo, array $products, array $tagGroups, bool $apply, 
         }
         $insCat = $pdo->prepare('INSERT INTO categories (slug, parent_id, name, sort_order, is_active) VALUES (?, ?, ?, ?, 1)');
         $usedCats = [];
-        $catSort = 0;
+        // categoriile noi se adauga dupa cele existente (fiecare fisier ar porni altfel tot de la 1)
+        $catSort = (int) $pdo->query('SELECT COALESCE(MAX(sort_order), 0) FROM categories')->fetchColumn();
         $categoryFor = function (array $path) use (&$catByKey, &$slugs, $insCat, $pdo, &$st, &$usedCats, &$catSort): int {
             $parent = 0; $parentSlug = '';
             foreach ($path as $name) {
