@@ -399,6 +399,31 @@ function catalogReport(array $parsed, array $tagGroups): string
     return implode("\n", $out) . "\n";
 }
 
+/**
+ * Pozele catalogului: img/produse/mu-<cod de bare>-<descriere>.webp (fisierele de la Dunlite). Leaga fiecare poza
+ * de produsul cu acel cod de bare. Nu atinge pozele urcate din admin (uploads/products): leaga doar produsele fara
+ * poza sau cu o poza tot din img/produse. Se poate rula oricand (deploy, import) — rezultatul e acelasi.
+ * @return array{linked:int, unmatched:string[]}
+ */
+function attachCatalogPhotos(PDO $pdo, string $imgDir): array
+{
+    $upd = $pdo->prepare("UPDATE products SET image_path = ? WHERE UPPER(barcode) = ?
+        AND (image_path IS NULL OR image_path = '' OR (image_path LIKE 'img/produse/%' AND image_path <> ?))");
+    $find = $pdo->prepare('SELECT COUNT(*) FROM products WHERE UPPER(barcode) = ?');
+    $linked = 0; $unmatched = [];
+    foreach (glob(rtrim($imgDir, '/\\') . '/mu-*.webp') ?: [] as $file) {
+        $name = basename($file);
+        if (!preg_match('/^mu-([a-z0-9]+)-/i', $name, $m)) { continue; }
+        $code = strtoupper($m[1]);
+        $path = 'img/produse/' . $name;
+        $upd->execute([$path, $code, $path]);
+        $linked += $upd->rowCount();
+        $find->execute([$code]);
+        if ((int) $find->fetchColumn() === 0) { $unmatched[] = $name; }
+    }
+    return ['linked' => $linked, 'unmatched' => $unmatched];
+}
+
 function importCatalogMain(array $argv): int
 {
     $file = null; $apply = false; $replaceOld = false;
@@ -445,7 +470,9 @@ function importCatalogMain(array $argv): int
         echo "{$verb}catalog vechi sters: {$st['old_deleted']} produse, {$st['old_categories_deleted']} categorii.\n";
     }
     echo "Produse vechi (fara cod de bare) ramase: {$st['old_remaining']}; produse noi din alte fisiere, neatinse: {$st['untouched']}.\n";
-    if (!$apply) { echo "Nimic scris. Ruleaza cu --apply ca sa aplici.\n"; }
+    if (!$apply) { echo "Nimic scris. Ruleaza cu --apply ca sa aplici.\n"; return 0; }
+    $ph = attachCatalogPhotos($pdo, __DIR__ . '/../img/produse');
+    echo "Poze legate: {$ph['linked']}" . ($ph['unmatched'] ? '; fara produs: ' . implode(', ', $ph['unmatched']) : '') . "\n";
     return 0;
 }
 

@@ -220,6 +220,17 @@ function main(array $argv): int
         }
     }
 
+    // Pozele catalogului (img/produse) — la fiecare deploy, ca pozele adaugate ulterior sa se lege singure.
+    if ($newProducts !== null) {
+        try {
+            require_once $dbDir . '/../includes/catalog_import.php';
+            $ph = attachCatalogPhotos($pdo, $dbDir . '/../img/produse');
+            out("Poze catalog legate acum: {$ph['linked']}" . ($ph['unmatched'] ? '; fara produs: ' . implode(', ', $ph['unmatched']) : ''));
+        } catch (Throwable $e) {
+            out('EROARE la legarea pozelor (catalogul nu e afectat): ' . $e->getMessage());
+        }
+    }
+
     // 3. Rezumat.
     out('--- Rezumat ---');
     out('Migrari aplicate: ' . (count($applied) > 0 ? implode(', ', $applied) : 'niciuna'));

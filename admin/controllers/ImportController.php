@@ -83,6 +83,7 @@ switch ($action) {
             $parsed = parseCatalogRows(readXlsxSheet($p['path'], null));
             if ($parsed['errors']) { throw new RuntimeException('fisierul are erori'); }
             $st = applyCatalog(Database::get(), $parsed['products'], classifyCatalogTags($parsed['products']), true, false);
+            attachCatalogPhotos(Database::get(), __DIR__ . '/../../img/produse'); // produsele noi primesc poza, daca exista
         } catch (Throwable $e) {
             error_log('ImportController apply: ' . $e->getMessage());
             Flash::error('Importul NU s-a aplicat (nimic nu s-a schimbat): ' . $e->getMessage());
