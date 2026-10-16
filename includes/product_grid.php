@@ -242,6 +242,43 @@ function renderAccessoryCards(array $products): string {
     return $out;
 }
 
+/** Adresa paginii unui produs din catalogul nou. */
+function productUrl(array $p): string {
+    return '/produs/' . rawurlencode((string)$p['slug']) . '.html';
+}
+
+/**
+ * Cardurile catalogului nou (categorii, colectii, cautare, prima pagina). Acelasi aspect ca .prod-card din
+ * catalog, dar imaginea si numele duc la pagina produsului. Fara pret => „Pret la cerere" + WhatsApp, fara cos.
+ */
+function renderCatalogCards(array $products): string {
+    $out = '';
+    foreach ($products as $p) {
+        $url = e(productUrl($p));
+        $img = '<a class="prod-img-wrap" href="' . $url . '" tabindex="-1" aria-hidden="true">' . panouGenerat($p['name']);
+        if (!empty($p['image_path'])) {
+            $img .= '<img src="' . e('/' . ltrim($p['image_path'], '/')) . '" alt="" class="prod-img-photo" width="220" height="150"'
+                  . ' loading="lazy" decoding="async" onerror="this.style.display=\'none\'">';
+        }
+        $img .= '</a>';
+        $action = canAddToCart($p)
+            ? cartButton($p)
+            : '<a href="' . e(waLink($p['name'], $p['wa_text'] ?? null)) . '" class="btn-wa-prod" target="_blank" rel="noopener">'
+              . WA_ICON . 'Cere oferta</a>';
+        $out .= '<div class="prod-card cat-card" data-product-id="' . (int)$p['id'] . '">'
+              . $img
+              . '<div class="prod-body">'
+              . (!empty($p['category_name']) ? '<div class="prod-cat">' . e($p['category_name']) . '</div>' : '')
+              . '<h3 class="prod-name"><a href="' . $url . '">' . e($p['name']) . '</a></h3>'
+              . (!empty($p['short_description']) ? '<div class="prod-desc">' . e($p['short_description']) . '</div>' : '')
+              . stockLabel($p)
+              . '<div class="prod-footer"><div class="prod-price">' . priceLabel($p) . '</div></div>'
+              . $action
+              . '</div></div>';
+    }
+    return $out;
+}
+
 /** Modificatorul de badge al unei categorii de nivel 1. Null = culoarea implicita. */
 const BADGE_KIND = [
     'electrice'      => 'electric',

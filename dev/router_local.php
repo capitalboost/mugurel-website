@@ -77,6 +77,13 @@ if (preg_match('#^/admin(/|$)#', $path)) {
 
 sendHeaders(htaccessHeaders("$root/.htaccess"));
 
+// /produs/<slug>.html → produs.php (aceeasi regula ca in .htaccess)
+if (preg_match('#^/produs/([a-z0-9-]+)\.html$#', $path, $m)) {
+    $_GET['slug'] = $m[1];
+    runPhp("$root/produs.php");
+    return true;
+}
+
 // /slug.html serveste slug.php cand exista
 if (preg_match('#^/(.+)\.html$#', $path, $m) && is_file("$root/{$m[1]}.php")) {
     runPhp("$root/{$m[1]}.php");

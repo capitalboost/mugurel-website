@@ -14,6 +14,9 @@
     # Admin — nu atinge
     RewriteRule ^admin/ - [L]
 
+    # Pagina unui produs din catalogul nou: /produs/<slug>.html → produs.php
+    RewriteRule ^produs/([a-z0-9-]+)\.html$ /produs.php?slug=$1 [L,QSA]
+
     # /slug.html serveste slug.php cand acesta exista — URL-urile publice raman .html
     RewriteCond %{REQUEST_FILENAME} ^(.+)\.html$
     RewriteCond %1.php -f

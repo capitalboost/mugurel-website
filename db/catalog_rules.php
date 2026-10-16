@@ -38,15 +38,6 @@ const TAG_PATTERNS = [
     ['clasa',      '/^(?:C\d|CS\s|CEM\s|CT-|M\d|C2|S\d|IPE\s|\d+(?:,\d+)?\s*[NR]$)/u'],  // 42,5R = clasa de rezistenta a cimentului
 ];
 
-/** Numele afisat al grupei, in filtre. */
-const TAG_GROUP_LABELS = [
-    'brand' => 'Brand', 'tip' => 'Tip produs', 'material' => 'Material', 'culoare' => 'Culoare',
-    'dimensiune' => 'Dimensiune', 'grosime' => 'Grosime', 'diametru' => 'Diametru', 'lungime' => 'Lungime',
-    'cantitate' => 'Cantitate', 'granulatie' => 'Granulație', 'clasa' => 'Clasă / standard',
-    'utilizare' => 'Utilizare', 'compozitie' => 'Compoziție', 'caracteristica' => 'Caracteristici',
-    'aplicatie' => 'Aplicații',
-];
-
 /**
  * Grupa unui tag. $brands = producatorii cunoscuti (din coloana Producator), $types = tipurile de produs
  * (din coloana Tip produs), ambele cu litere mici.

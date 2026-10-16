@@ -7,6 +7,14 @@
  * dispar, dar textul din ele ramane; <script>, <style> si altele asemenea dispar cu tot cu continut.
  */
 
+/** Grupele de tag-uri (tags.grp), in ordinea in care apar filtrele pe pagina; numele afisat. */
+const TAG_GROUP_LABELS = [
+    'tip' => 'Tip produs', 'brand' => 'Brand', 'dimensiune' => 'Dimensiune', 'grosime' => 'Grosime',
+    'diametru' => 'Diametru', 'lungime' => 'Lungime', 'cantitate' => 'Cantitate', 'culoare' => 'Culoare',
+    'material' => 'Material', 'utilizare' => 'Utilizare', 'clasa' => 'Clasă / standard', 'compozitie' => 'Compoziție',
+    'caracteristica' => 'Caracteristici', 'granulatie' => 'Granulație', 'aplicatie' => 'Aplicații',
+];
+
 const DESCRIPTION_TAGS = ['p', 'strong', 'em', 'ul', 'ol', 'li', 'br', 'h3', 'h4'];
 const DESCRIPTION_RENAME = ['b' => 'strong', 'i' => 'em', 'h1' => 'h3', 'h2' => 'h3', 'h5' => 'h4', 'h6' => 'h4'];
 const DESCRIPTION_DROP = ['script', 'style', 'iframe', 'object', 'embed', 'template', 'svg', 'math', 'noscript', 'form'];
@@ -82,4 +90,18 @@ function shortFromDescription(string $html, int $max = 220): string
         return rtrim(mb_substr($cut, 0, $sp !== false ? $sp : $max), ' ,;:.–-') . '…';
     }
     return '';
+}
+
+/**
+ * Cod de bare GTIN real (EAN-8/12/13/14) cu cifra de control corecta. Codurile care incep cu 2 sunt rezervate
+ * uzului intern al magazinelor (GS1) — nu le trimitem la Google ca GTIN.
+ */
+function isValidGtin(string $code): bool
+{
+    if (!preg_match('/^(\d{8}|\d{12,14})$/', $code) || $code[0] === '2' && strlen($code) === 13) { return false; }
+    $digits = array_map('intval', str_split($code));
+    $check = array_pop($digits);
+    $sum = 0;
+    foreach (array_reverse($digits) as $i => $d) { $sum += $d * ($i % 2 === 0 ? 3 : 1); }
+    return (10 - $sum % 10) % 10 === $check;
 }

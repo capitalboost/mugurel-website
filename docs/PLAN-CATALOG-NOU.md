@@ -68,3 +68,26 @@ si copia bazei de productie `mugurel_live_20261016` (migrarile 002–011 prin `d
 - **Asteptat, se repara in N3/N9:** testele legate de catalogul vechi pica (`test_products_repo`, `test_db`, `test_cart`,
   `test_orders`, `test_order_mail`, `test_order_security` — folosesc ID-uri si pagini vechi). Paginile vechi de
   categorie sunt goale local pana la N3.
+
+### N3–N6 — liste, pagina produsului, colectii, navigare: GATA (16 oct), asteapta verificarea pe localhost 🛑
+- **Colectii** (`db/migration_012_collections.sql`): 5 colectii legate de tag-uri prin slug — Fier forjat 14,
+  Termoizolatii 12, Fatada 11, Masa de spaclu 11, Baie si bucatarie 4. Sub 3 produse o colectie nu se afiseaza.
+- **Liste** (`includes/catalog_repo.php`, `includes/catalog_page.php`, `templates/catalog_list.php`, `js/catalog-filtre.js`):
+  categorie / colectie / cautare cu acelasi sablon — arbore de categorii, filtre din tag-uri (SAU in grupa, SI intre grupe;
+  o grupa apare doar cu 2+ valori), ordonare, paginare 30/pagina. Paginile filtrate/sortate: `noindex, follow`, canonical
+  spre categorie. Categoriile „de trecere" (ex. Ciment si var > Ciment) sar un nivel (302 + lipsesc din meniu/breadcrumb).
+- **Pagina produsului** (`produs.php`, `/produs/<slug>.html` in `.htaccess` + router local): descriere (HTML curatat si la
+  afisare), specificatii, fisa tehnica, pret, stoc, cos, WhatsApp, produse similare, JSON-LD `Product` (GTIN doar cu cifra de
+  control valida — 83 de coduri interne „100…" nu se trimit) + `BreadcrumbList`.
+- **Navigare**: meniul de sus, meniul de pe telefon, footer-ul si cautarea (formular real, `/catalog.html?q=`) generate din
+  catalog (`includes/site_nav.php`). `catalog.php` rescris (toate produsele + cautare; `?cat=` vechi => 301).
+- **Paginile statice trecute pe sabloane**: `index`, `contact`, `despre-noi`, `politica-*`, `termeni-conditii` sunt acum `.php`
+  (continut identic; `.cpanel.yml` sterge automat `.html`-ul vechi de pe server cand exista `.php`). Prima pagina:
+  sidebar, grila de categorii si 6 produse recomandate din catalog (`includes/home.php`); `js/produse-acasa.js` scos.
+  Bonus: rezolva punctul 9 din jurnal (versiune la CSS/JS pe toate paginile).
+- Teste: `admin/tests/test_catalog_repo.php` — 38 asertiuni (categorii, filtre, cautare cu `%`, sortare, colectii, produs,
+  pagini HTTP: coduri, robots/canonical, JSON-LD, 404, 301/302, XSS in cautare). Capturi 375/1280 px: fara scroll orizontal,
+  fara erori JS.
+- **Ramane pentru N8:** cele 13 pagini vechi (`acoperis.php`…) inca exista — devin redirect 301.
+- **Texte de revazut (N10):** prima pagina inca spune „Constructii · Mobilier · Electrocasnice", „3000+ produse", „instalatii,
+  mobilier"; despre-noi/contact mentioneaza categoriile vechi in text.
