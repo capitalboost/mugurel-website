@@ -52,7 +52,7 @@ test('trimis gol: erori langa fiecare camp, focus pe primul, ramane pe pagina', 
   await openOrder(page, [{ id: I.A, qty: 1 }]);
   await expect(page.locator('[data-cos-total]')).toBeVisible();
   await page.click('[data-comanda-submit]');
-  await expect(page.locator('.form-error')).toHaveCount(8); // 6 campuri + metoda de plata + acordul GDPR
+  await expect(page.locator('.form-error')).toHaveCount(7); // 5 campuri + metoda de plata + acordul GDPR (judetul: doar Dolj, preselectat)
   await expect(page.locator('#err-nume')).toHaveText('Scrie numele si prenumele.');
   await expect(page.locator('#f-nume')).toBeFocused();
   await expect(page.locator('#f-nume')).toHaveAttribute('aria-describedby', 'err-nume');
@@ -113,7 +113,7 @@ test.describe('fara JavaScript', () => {
     await page.fill('#f-nume', 'Ion Popescu');
     await page.fill('#f-email', 'gresit');
     await page.click('[data-comanda-submit]');
-    await expect(page.locator('[data-form-errors]')).toContainText('Verifica campurile marcate mai jos (7)');
+    await expect(page.locator('[data-form-errors]')).toContainText('Verifica campurile marcate mai jos (6)');
     await expect(page.locator('#err-email')).toHaveText('Adresa de email nu pare corecta.');
     await expect(page.locator('#f-nume')).toHaveValue('Ion Popescu');
     await expect(page.locator('#f-email')).toHaveValue('gresit');

@@ -117,7 +117,8 @@ function orderClientEmail(array $order): array
     $plata = ORDER_PLATA[$order['plata']] ?? ['label' => $order['plata'], 'info' => ''];
     $link  = SITE_URL . '/comanda-trimisa.html?t=' . $order['public_token'];
     $next  = 'Te sunam in cel mai scurt timp (L–V 8:00–18:00) ca sa confirmam disponibilitatea produselor'
-           . ($order['plata'] === 'ridicare' ? ' si momentul in care poti ridica marfa.' : ', costul si termenul de livrare.');
+           . ($order['plata'] === 'ridicare' ? ' si momentul in care poti ridica marfa.' : ', costul si termenul de livrare.')
+           . ' Comanda devine ferma dupa ce o confirmam telefonic.';
     $where = $order['plata'] === 'ridicare'
            ? 'Ridicare din magazin: Strada Caracal 52, Dabuleni (L–V 8:00–18:00).'
            : 'Livrare la: ' . trim($order['adresa'] . ', ' . $order['localitate'] . ', jud. ' . $order['judet'], ', ') . '.';

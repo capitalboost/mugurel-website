@@ -27,6 +27,7 @@
           <li><a href="/despre-noi.html">Despre noi</a></li>
           <li><a href="/contact.html">Contact</a></li>
           <li><a href="/politica-retur.html">Politica de retur</a></li>
+          <li><a href="/cerere-retur.html">Cerere de retur</a></li>
           <li><a href="/termeni-conditii.html">Termeni si conditii</a></li>
           <li><a href="/politica-confidentialitate.html">Confidentialitate</a></li>
         </ul>
@@ -34,9 +35,12 @@
       <div class="f-col">
         <h4>Contact</h4>
         <div class="f-contact-row"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 13 19.79 19.79 0 0 1 1.61 4.4 2 2 0 0 1 3.6 2.2h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.91 9.91a16 16 0 0 0 6.16 6.16l1.87-1.87a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg><a href="https://wa.me/40749130565">0749 130 565</a></div>
-        <div class="f-contact-row"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg><a href="mailto:dunlite@gmail.com">dunlite@gmail.com</a></div>
+        <div class="f-contact-row"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg><a href="mailto:office@mugurel-bricolaj.ro">office@mugurel-bricolaj.ro</a></div>
         <div class="f-contact-row"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>L–V: 8:00–18:00</div>
       </div>
+    </div>
+    <div class="f-anpc">
+      <a href="https://anpc.ro/ce-este-sal/" target="_blank" rel="noopener nofollow" title="Soluționarea alternativă a litigiilor (ANPC)"><img src="/img/anpc-sal.svg" alt="ANPC — Soluționarea alternativă a litigiilor" width="250" height="62" loading="lazy" decoding="async"></a>
     </div>
     <div class="f-bottom">
       <span>© 2026 DUNLITE COM SRL — CIF: RO9027530 | J16/1357/1996 | Strada Caracal Nr.52, 207220 Dabuleni, Jud. Dolj</span>

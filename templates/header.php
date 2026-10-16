@@ -8,22 +8,8 @@ $hs = fn ($v) => htmlspecialchars((string) $v, ENT_QUOTES, 'UTF-8');
 <html lang="ro">
 <head>
 <?php if (empty($skipAnalytics)): /* paginile cu date secrete in adresa (ex. confirmarea comenzii) nu incarca analiza */ ?>
-  <!-- Google tag (gtag.js) -->
-  <script async src="https://www.googletagmanager.com/gtag/js?id=G-R6M7YYLB48"></script>
-  <script>
-    window.dataLayer = window.dataLayer || [];
-    function gtag(){dataLayer.push(arguments);}
-    gtag('js', new Date());
-    gtag('config', 'G-R6M7YYLB48');
-  </script>
-  <!-- Microsoft Clarity -->
-  <script type="text/javascript">
-      (function(c,l,a,r,i,t,y){
-          c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};
-          t=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i;
-          y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);
-      })(window, document, "clarity", "script", "y5btegvf2j");
-  </script>
+  <!-- Google Analytics + Microsoft Clarity: pornesc doar dupa „Accept" in bannerul de cookie-uri (js/analytics.js) -->
+  <script src="<?= '/js/analytics.js?v=' . @filemtime(__DIR__ . '/../js/analytics.js') ?>" defer></script>
 <?php endif; ?>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">

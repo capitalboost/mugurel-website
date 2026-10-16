@@ -67,7 +67,9 @@ test('ramburs: adresa de livrare ramane obligatorie', async ({ page }) => {
   await expect(page.locator('[data-adresa-block]')).toBeVisible();
   await page.click('[data-comanda-submit]');
   await expect(page.locator('#err-adresa')).toBeVisible();
-  await expect(page.locator('#err-judet')).toBeVisible();
+  // livram doar in judetul Dolj (16 oct): singura optiune, preselectata, cu mesajul despre livrare
+  await expect(page.locator('#f-judet option')).toHaveText(['Dolj']);
+  await expect(page.locator('#hint-judet')).toContainText('doar in judetul Dolj');
 });
 
 test('serverul refuza o metoda de plata inventata', async ({ page }) => {

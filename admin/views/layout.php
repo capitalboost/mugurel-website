@@ -17,6 +17,7 @@ $flash = Flash::html();
   <div class="adm-nav__links">
     <a href="/admin/?page=products">Produse</a>
     <a href="/admin/?page=import">Import Excel</a>
+    <a href="/admin/?page=returns">Retururi</a>
     <a href="/admin/?page=pages">Pagini</a>
     <?php if (Auth::hasRole('admin')): ?>
     <a href="/admin/?page=users">Utilizatori</a>

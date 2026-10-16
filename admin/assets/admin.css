@@ -138,3 +138,7 @@ body { font-family: 'Open Sans', sans-serif; font-size: 14px; color: var(--text)
 a.adm-stat { text-decoration: none; color: inherit; }
 a.adm-stat:hover { border-color: var(--verde-mid); }
 @media (max-width: 700px) { .adm-form .form-row { flex-direction: column; gap: 0; } .adm-main { padding: 0 .8rem; } }
+/* Cereri de retur */
+.adm-return { border: 1px solid var(--border); border-radius: var(--radius); margin-bottom: .8rem; padding: .2rem .9rem .6rem; }
+.adm-return summary { cursor: pointer; display: flex; flex-wrap: wrap; gap: .6rem; align-items: center; padding: .6rem 0; }
+.adm-return__table th { width: 30%; text-transform: none; letter-spacing: 0; font-size: .82rem; }

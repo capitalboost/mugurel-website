@@ -1,12 +1,12 @@
 <?php
 /** Pagina statica, trecuta pe sabloanele comune (header/meniu/footer generate din catalog). */
 require_once __DIR__ . '/admin/config.php';
-$pageTitle       = 'Mugurel Dăbuleni — Materiale Construcții, Mobilier';
-$metaDescription = 'Mugurel — magazin materiale constructii, mobilier si electrocasnice. Oferta completa A-Z. Comanda pe WhatsApp la 0749 130 565. Livrare rapida, preturi corecte.';
+$pageTitle       = 'Mugurel Dăbuleni — Materiale de construcții și electrocasnice';
+$metaDescription = 'Mugurel, Dăbuleni: materiale de construcții, metal și profile, acoperiș și electrocasnice, cu prețuri afișate cu TVA. Comandă online sau pe WhatsApp la 0749 130 565. Livrare în județul Dolj.';
 $canonicalUrl    = 'https://mugurel-bricolaj.ro/';
 $metaRobots      = 'index, follow';
-$ogTitle         = 'Mugurel — Materiale Constructii, Mobilier, Electrocasnice';
-$ogDescription   = 'Oferta completa pentru casa ta. Comanda pe WhatsApp la 0749 130 565.';
+$ogTitle         = 'Mugurel — Materiale de construcții și electrocasnice, Dăbuleni';
+$ogDescription   = 'Prețuri afișate cu TVA, comandă online sau pe WhatsApp, livrare în județul Dolj.';
 $extraHead = <<<'HTML'
 <link rel="preload" as="image" href="/img/hero.avif" type="image/avif" media="(min-width: 769px)">
 <script type="application/ld+json">
@@ -18,7 +18,7 @@ $extraHead = <<<'HTML'
   "alternateName": "Mugurel Materiale Constructii Dabuleni",
   "url": "https://mugurel-bricolaj.ro",
   "telephone": "+40749130565",
-  "email": "dunlite@gmail.com",
+  "email": "office@mugurel-bricolaj.ro",
   "foundingDate": "2017",
   "address": {
     "@type": "PostalAddress",
@@ -42,10 +42,11 @@ $extraHead = <<<'HTML'
     }
   ],
   "sameAs": ["https://www.facebook.com/byMUGUREL"],
-  "description": "Magazin de materiale de constructii, mobilier si electrocasnice in Dabuleni, judetul Dolj. Oferta completa A-Z pentru casa ta. Comenzi pe WhatsApp la 0749 130 565.",
+  "description": "Magazin de materiale de construcții și electrocasnice în Dăbuleni, județul Dolj. Prețuri afișate cu TVA, comandă online sau pe WhatsApp la 0749 130 565, livrare în județul Dolj.",
+  "areaServed": { "@type": "AdministrativeArea", "name": "Județul Dolj" },
   "priceRange": "$$",
   "currenciesAccepted": "RON",
-  "paymentAccepted": "Cash, Card"
+  "paymentAccepted": "Cash, Card, Bank transfer"
 }
 </script>
 <script type="application/ld+json">
@@ -56,6 +57,54 @@ $extraHead = <<<'HTML'
   "url": "https://mugurel-bricolaj.ro",
   "name": "Mugurel — Materiale Construcții Dăbuleni",
   "inLanguage": "ro-RO"
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "Pot comanda online de la Mugurel?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Da. Pui produsele în coș, completezi datele de livrare și alegi plata: ramburs, transfer bancar sau ridicare din magazin. Te sunăm în programul de lucru să confirmăm stocul și livrarea."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Livrați la domiciliu?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Da, livrăm în tot județul Dolj, de obicei în aceeași zi sau a doua zi în zona Dăbuleni. Costul transportului ți-l spunem la telefon, când confirmăm comanda."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Prețurile includ TVA?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Da, toate prețurile de pe site includ TVA."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Care este programul magazinului?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Luni–Vineri, 08:00–18:00, pe Strada Caracal 52, Dăbuleni. Comenzile online le poți trimite oricând; le confirmăm în programul de lucru."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Vindeți și electrocasnice?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Da: aragazuri, combine frigorifice, aspiratoare, blendere și boxe portabile, alături de materialele de construcții."
+      }
+    }
+  ]
 }
 </script>
 HTML;
@@ -86,13 +135,13 @@ require __DIR__ . '/templates/header.php';
     <section class="hero home-hide-mobile">
       <div class="hero-inner">
         <div class="hero-text">
-          <p class="hero-eyebrow">Constructii · Mobilier · Electrocasnice</p>
+          <p class="hero-eyebrow">Materiale de construcții · Acoperiș · Electrocasnice</p>
           <h1 class="hero-title">Materiale Construcții<br>în <span>Dăbuleni</span></h1>
-          <p class="hero-desc">Gama completa de materiale de constructii, instalatii, mobilier si electrocasnice. Produse de calitate, preturi corecte, livrate rapid la tine acasa.</p>
+          <p class="hero-desc">Adezivi, mortare, țevi și profile metalice, tablă și sisteme pentru acoperiș, plus electrocasnice — toate cu prețul afișat. Comanzi online sau pe WhatsApp, plătești la livrare, prin transfer sau în magazin.</p>
           <div class="hero-stats">
-            <div class="hero-stat"><div class="n">3000+</div><div class="l">Produse disponibile</div></div>
-            <div class="hero-stat"><div class="n">A–Z</div><div class="l">Oferta completa</div></div>
-            <div class="hero-stat"><div class="n">24h</div><div class="l">Raspuns oferta</div></div>
+            <div class="hero-stat"><div class="n">Online</div><div class="l">Comandă cu coș</div></div>
+            <div class="hero-stat"><div class="n">Dolj</div><div class="l">Livrare în județ</div></div>
+            <div class="hero-stat"><div class="n">L–V 8–18</div><div class="l">Te sunăm să confirmăm</div></div>
           </div>
           <div class="hero-ctas">
             <a href="https://wa.me/40749130565?text=Buna%20ziua!%20Vreau%20sa%20cer%20o%20oferta%20de%20la%20Mugurel." class="btn-wa-hero" target="_blank" rel="noopener">
@@ -101,7 +150,7 @@ require __DIR__ . '/templates/header.php';
             </a>
             <a href="catalog.html" class="btn-catalog-hero">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>
-              Vezi catalogul complet
+              Vezi produsele
             </a>
           </div>
         </div>
@@ -116,19 +165,19 @@ require __DIR__ . '/templates/header.php';
     <div class="trust-bar home-hide-mobile">
       <div class="trust-item">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
-        <div><div class="t-title">Comanda pe WhatsApp</div><div class="t-sub">Simplu, rapid, direct</div></div>
+        <div><div class="t-title">Comandă online</div><div class="t-sub">Prețuri cu TVA, confirmare telefonică</div></div>
       </div>
       <div class="trust-item">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="1" y="3" width="15" height="13"/><polygon points="16 8 20 8 23 11 23 16 16 16 16 8"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/></svg>
-        <div><div class="t-title">Livrare rapida</div><div class="t-sub">La adresa ta</div></div>
+        <div><div class="t-title">Livrare în Dolj</div><div class="t-sub">La adresa ta</div></div>
       </div>
       <div class="trust-item">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
-        <div><div class="t-title">Produse de calitate</div><div class="t-sub">Marci verificate</div></div>
+        <div><div class="t-title">Plată la livrare</div><div class="t-sub">Ramburs, transfer sau în magazin</div></div>
       </div>
       <div class="trust-item">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
-        <div><div class="t-title">Program L–V 8–18</div><div class="t-sub">Disponibili zilnic</div></div>
+        <div><div class="t-title">Program L–V 8–18</div><div class="t-sub">Strada Caracal 52, Dăbuleni</div></div>
       </div>
     </div>
 
@@ -164,15 +213,15 @@ require __DIR__ . '/templates/header.php';
     <section class="about-banner">
       <div class="about-banner-inner">
         <div class="about-banner-text">
-          <h2>De ce sa alegi Mugurel?</h2>
-          <p>Suntem un magazin specializat cu experienta in materiale de constructii, mobilier si electrocasnice. Oferim produse de calitate, sfaturi de specialitate si comanda simpla pe WhatsApp.</p>
-          <a href="despre-noi.html" class="btn-outline-white">Afla mai multe &rarr;</a>
+          <h2>De ce să alegi Mugurel?</h2>
+          <p>Suntem un magazin local din Dăbuleni, cu materiale de construcții și electrocasnice la prețuri afișate pe site. Comanzi online sau pe WhatsApp, iar noi te sunăm să confirmăm stocul și livrarea înainte de a pregăti marfa.</p>
+          <a href="despre-noi.html" class="btn-outline-white">Află mai multe &rarr;</a>
         </div>
         <div class="about-banner-items">
-          <div class="ab-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg><span>Produse verificate si garantate</span></div>
-          <div class="ab-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg><span>Raspuns rapid pe WhatsApp</span></div>
-          <div class="ab-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg><span>Echipa cu experienta</span></div>
-          <div class="ab-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="1" y="3" width="15" height="13"/><polygon points="16 8 20 8 23 11 23 16 16 16 16 8"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/></svg><span>Livrare la domiciliu</span></div>
+          <div class="ab-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg><span>Prețuri cu TVA afișate</span></div>
+          <div class="ab-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg><span>Confirmare telefonică a fiecărei comenzi</span></div>
+          <div class="ab-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg><span>Plată la livrare, prin transfer sau în magazin</span></div>
+          <div class="ab-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="1" y="3" width="15" height="13"/><polygon points="16 8 20 8 23 11 23 16 16 16 16 8"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/></svg><span>Livrare la domiciliu în județul Dolj</span></div>
         </div>
       </div>
     </section>
@@ -185,29 +234,23 @@ require __DIR__ . '/templates/header.php';
 <!-- DESPRE MUGUREL -->
 <section style="background:#fff;padding:44px 0;">
   <div class="container" style="max-width:1000px;">
-    <h2 style="font-family:'Roboto Condensed',sans-serif;font-size:24px;color:#06363A;margin-bottom:20px;">Despre Mugurel — Magazinul tău de materiale din Dăbuleni</h2>
+    <h2 style="font-family:'Roboto Condensed',sans-serif;font-size:24px;color:#06363A;margin-bottom:20px;">Despre Mugurel — magazinul tău de materiale din Dăbuleni</h2>
     <div class="despre-grid" style="display:grid;grid-template-columns:1fr 1fr;gap:32px;max-width:960px;margin:0 auto;">
       <div>
         <p style="font-size:14px;line-height:1.8;color:#444;margin-bottom:12px;">
-          Mugurel este magazinul de materiale construcții, mobilier și electrocasnice din Dăbuleni, județul Dolj, deschis din 2017. Oferim o gamă completă de produse pentru construcție, renovare și amenajare interioară — de la fundație până la finisaje.
+          Mugurel este magazinul de materiale de construcții și electrocasnice din Dăbuleni, județul Dolj, deschis din 2017. Găsești la noi materiale pentru construcție, renovare și acoperiș — și electrocasnice pentru casă.
         </p>
         <p style="font-size:14px;line-height:1.8;color:#444;margin-bottom:12px;">
-          Colaborăm cu echipe de constructori, instalatori și clienți individuali din Dăbuleni și localitățile învecinate: Bechet, Corabia, Calafat și întreaga zonă Câmpia Romănă. Comenzile se plasează rapid pe WhatsApp la <strong>0749 130 565</strong>.
+          Lucrăm cu constructori, meșteri și clienți din Dăbuleni și din tot județul Dolj. Toate produsele au prețul afișat cu TVA: le pui în coș și trimiți comanda, sau ne scrii pe WhatsApp la <strong>0749 130 565</strong>. Te sunăm noi să confirmăm disponibilitatea și livrarea.
         </p>
         <p style="font-size:14px;line-height:1.8;color:#444;">
-          Stocul este actualizat săptămânal. Livrăm în aceeași zi sau a doua zi în toată zona Dăbuleni. Ne găsiți pe Strada Caracal 52, Dăbuleni — sau direct pe WhatsApp.
+          Stocul este actualizat săptămânal. Livrăm în județul Dolj, de obicei în aceeași zi sau a doua zi în zona Dăbuleni. Ne găsiți pe Strada Caracal 52, Dăbuleni — sau direct pe WhatsApp.
         </p>
       </div>
       <div>
-        <h3 style="font-size:16px;font-weight:700;color:#06363A;margin-bottom:12px;">Ce găsiți la Mugurel:</h3>
+        <h3 style="font-size:16px;font-weight:700;color:#06363A;margin-bottom:12px;">Ce găsești la Mugurel:</h3>
         <ul style="font-size:14px;line-height:2.1;color:#444;padding-left:18px;">
-          <li>Materiale de construcții: BCA, gips-carton, izolație, acoperiș, tablă, țiglă</li>
-          <li>Instalații electrice: cabluri, prize, tablouri, becuri LED, aparataj</li>
-          <li>Instalații termice: centrale termice, radiatoare, pompe căldură, aer condiționat</li>
-          <li>Sanitare: baterii, căzi, cabine duș, mobilier baie, țevi PEX și PPR</li>
-          <li>Mobilier: living, dormitor, bucătărie, mobilier baie și birou</li>
-          <li>Electrocasnice: aparate mari și mici pentru bucătărie și baie</li>
-          <li>Scule și unelte: electrice, manuale, echipament protecție</li>
+          <?= renderHomeOfferList() /* generata din catalog — nu ramane in urma cand apar categorii noi */ ?>
         </ul>
       </div>
     </div>
@@ -219,20 +262,24 @@ require __DIR__ . '/templates/header.php';
   <div class="container" style="max-width:820px;">
     <h2 style="font-family:'Roboto Condensed',sans-serif;font-size:22px;color:#06363A;margin-bottom:28px;">Întrebări frecvente</h2>
     <div style="margin-bottom:22px;">
-      <h3 style="font-size:15px;font-weight:700;color:#333;margin-bottom:6px;">Ce materiale de construcții găsiți la Mugurel în Dăbuleni?</h3>
-      <p class="faq-answer" style="font-size:14px;line-height:1.75;color:#555;">La Mugurel găsiți o gamă completă: BCA, gips-carton, polistiren grafitat, membrane hidroizolatoare, tablă și țiglă pentru acoperiș, cărămidă, vată minerală, profile metalice și accesorii montaj. Stocul este disponibil permanent și livrăm în Dăbuleni și împrejurimi.</p>
+      <h3 style="font-size:15px;font-weight:700;color:#333;margin-bottom:6px;">Pot comanda online de la Mugurel?</h3>
+      <p class="faq-answer" style="font-size:14px;line-height:1.75;color:#555;">Da. Pui produsele în coș, completezi datele de livrare și alegi plata: ramburs, transfer bancar sau ridicare din magazin. Te sunăm în programul de lucru să confirmăm stocul și livrarea.</p>
     </div>
     <div style="margin-bottom:22px;">
-      <h3 style="font-size:15px;font-weight:700;color:#333;margin-bottom:6px;">Livrați materiale de construcții la domiciliu în Dăbuleni?</h3>
-      <p class="faq-answer" style="font-size:14px;line-height:1.75;color:#555;">Da, livrăm materiale de construcții în Dăbuleni și localitățile din jur. Contactați-ne pe WhatsApp la 0749 130 565 pentru ofertă și disponibilitate transport — de obicei livrăm în aceeași zi sau a doua zi.</p>
+      <h3 style="font-size:15px;font-weight:700;color:#333;margin-bottom:6px;">Livrați la domiciliu?</h3>
+      <p class="faq-answer" style="font-size:14px;line-height:1.75;color:#555;">Da, livrăm în tot județul Dolj, de obicei în aceeași zi sau a doua zi în zona Dăbuleni. Costul transportului ți-l spunem la telefon, când confirmăm comanda.</p>
     </div>
     <div style="margin-bottom:22px;">
-      <h3 style="font-size:15px;font-weight:700;color:#333;margin-bottom:6px;">Care este programul magazinului Mugurel din Dăbuleni?</h3>
-      <p class="faq-answer" style="font-size:14px;line-height:1.75;color:#555;">Suntem deschiși Luni–Vineri între 08:00 și 18:00. Ne găsiți pe Strada Caracal 52, Dăbuleni. Pentru urgențe sau comenzi în afara programului, scrieți-ne pe WhatsApp la 0749 130 565.</p>
+      <h3 style="font-size:15px;font-weight:700;color:#333;margin-bottom:6px;">Prețurile includ TVA?</h3>
+      <p class="faq-answer" style="font-size:14px;line-height:1.75;color:#555;">Da, toate prețurile de pe site includ TVA.</p>
+    </div>
+    <div style="margin-bottom:22px;">
+      <h3 style="font-size:15px;font-weight:700;color:#333;margin-bottom:6px;">Care este programul magazinului?</h3>
+      <p class="faq-answer" style="font-size:14px;line-height:1.75;color:#555;">Luni–Vineri, 08:00–18:00, pe Strada Caracal 52, Dăbuleni. Comenzile online le poți trimite oricând; le confirmăm în programul de lucru.</p>
     </div>
     <div>
-      <h3 style="font-size:15px;font-weight:700;color:#333;margin-bottom:6px;">Vindeți și electrocasnice sau doar materiale de construcții?</h3>
-      <p class="faq-answer" style="font-size:14px;line-height:1.75;color:#555;">Vindem o gamă completă: materiale de construcții, mobilier pentru living, dormitor și bucătărie, electrocasnice mari și mici, scule și unelte. Suntem un magazin all-in-one pentru amenajarea și echiparea casei — deschiși din 2017 în Dăbuleni.</p>
+      <h3 style="font-size:15px;font-weight:700;color:#333;margin-bottom:6px;">Vindeți și electrocasnice?</h3>
+      <p class="faq-answer" style="font-size:14px;line-height:1.75;color:#555;">Da: aragazuri, combine frigorifice, aspiratoare, blendere și boxe portabile, alături de materialele de construcții.</p>
     </div>
   </div>
 </section>

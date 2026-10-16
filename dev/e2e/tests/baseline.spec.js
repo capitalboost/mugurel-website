@@ -5,7 +5,8 @@ const { P } = require('./fixtures');
 
 const PAGES = ['/', '/acoperis.html', '/tevi-patrate-si-rectangulare.html?grosime=grosime-2-mm', '/electrocasnice.html',
   '/aspiratoare.html', '/fier-forjat.html', P.A.url, P.EL.url, '/catalog.html', '/catalog.html?q=ceresit', '/contact.html',
-  '/despre-noi.html', '/cos.html'];
+  '/despre-noi.html', '/cos.html', '/termeni-conditii.html', '/politica-retur.html', '/politica-confidentialitate.html',
+  '/cerere-retur.html'];
 const THIRD_PARTY = /googletagmanager|google-analytics|clarity\.ms|fonts\.(googleapis|gstatic)/;
 
 // Probleme existente si pe live, documentate in docs/JURNAL-LUCRU.md (13 oct). Nu le ascundem:

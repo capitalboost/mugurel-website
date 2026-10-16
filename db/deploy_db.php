@@ -145,6 +145,7 @@ function main(array $argv): int
         'migration_010_orders.sql',
         'migration_011_catalog_nou.sql',
         'migration_012_collections.sql',
+        'migration_013_returns.sql',
     ];
 
     $runMigrations = function () use ($pdo, $dbDir, $migrations): array {

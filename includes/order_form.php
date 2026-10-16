@@ -15,6 +15,10 @@ const ORDER_JUDETE = [
     'Suceava', 'Teleorman', 'Timis', 'Tulcea', 'Valcea', 'Vaslui', 'Vrancea',
 ];
 
+/** Judetele in care livram (decizia din 16 oct: doar Dolj). Ridicarea din magazin e posibila de oriunde. */
+const ORDER_DELIVERY_JUDETE = ['Dolj'];
+const ORDER_DELIVERY_NOTE = 'Livram doar in judetul Dolj. Pentru alt judet alege „Ridicare din magazin" sau suna-ne la 0749 130 565.';
+
 /** Lungimile maxime (si in HTML, ca maxlength). */
 const ORDER_MAX = [
     'nume' => 100, 'telefon' => 20, 'email' => 254, 'judet' => 40,
@@ -37,7 +41,7 @@ const ORDER_PLATA = [
 ];
 
 /** Mesajul despre transport (acelasi peste tot). */
-const ORDER_TRANSPORT_INFO = 'Transportul nu este inclus in total. Costul si termenul de livrare le stabilim impreuna cand te sunam sa confirmam comanda, in functie de cantitate si adresa.';
+const ORDER_TRANSPORT_INFO = 'Livram in judetul Dolj. Transportul nu este inclus in total — costul ti-l spunem la telefon, cand confirmam comanda.';
 
 /** Tipurile de client acceptate. */
 const ORDER_TIPURI = ['pf' => 'Persoana fizica', 'pj' => 'Persoana juridica'];
@@ -167,6 +171,8 @@ function orderFormValidate(array $in): array
     if ($d['plata'] !== 'ridicare') {
         if (!in_array($d['judet'], ORDER_JUDETE, true)) {
             $e['judet'] = 'Alege judetul.';
+        } elseif (!in_array($d['judet'], ORDER_DELIVERY_JUDETE, true)) {
+            $e['judet'] = ORDER_DELIVERY_NOTE;
         }
         if (mb_strlen($d['localitate']) < 2) {
             $e['localitate'] = 'Scrie localitatea.';
@@ -205,4 +211,17 @@ function orderFormValidate(array $in): array
     }
 
     return ['data' => $d, 'errors' => $e];
+}
+
+/** Atributele de eroare ale unui camp + mesajul afisat sub el. */
+function fieldError(array $errors, string $name): array
+{
+    if (!isset($errors[$name])) {
+        return ['', ''];
+    }
+    $id = 'err-' . $name;
+    return [
+        ' aria-invalid="true" aria-describedby="' . $id . '"',
+        '<p class="form-error" id="' . $id . '">' . htmlspecialchars($errors[$name], ENT_QUOTES, 'UTF-8') . '</p>',
+    ];
 }

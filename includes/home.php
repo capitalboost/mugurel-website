@@ -85,3 +85,19 @@ function renderHomeSidebar(): string
     }
     return $out;
 }
+
+/**
+ * „Ce gasesti la Mugurel": fiecare grupa din meniu cu subcategoriile ei (ex. „Acoperiș: tablă tip țiglă, …").
+ * Generata din catalog, ca textul de prezentare sa nu promita categorii care nu mai exista.
+ */
+function renderHomeOfferList(): string
+{
+    $out = '';
+    foreach (siteNavGroups() as $g) {
+        $names = $g['children'] ? array_column($g['children'], 'name')
+               : (($g['target_name'] ?? $g['name']) !== $g['name'] ? [$g['target_name']] : []);
+        $subs = array_map(fn ($n) => mb_strtolower(mb_substr($n, 0, 1)) . mb_substr($n, 1), $names);
+        $out .= '<li><a href="' . e($g['url']) . '">' . e($g['name']) . '</a>' . ($subs ? ': ' . e(implode(', ', $subs)) : '') . '</li>';
+    }
+    return $out;
+}

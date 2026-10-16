@@ -17,7 +17,8 @@ function siteNavNode(array $c, int $depth = 0, int $maxDepth = 2): array
     if ($depth < $maxDepth) {
         foreach (catChildren($target['id']) as $ch) { $children[] = siteNavNode($ch, $depth + 1, $maxDepth); }
     }
-    return ['id' => $c['id'], 'name' => $c['name'], 'url' => '/' . $target['slug'] . '.html', 'count' => $c['count'], 'children' => $children];
+    return ['id' => $c['id'], 'name' => $c['name'], 'url' => '/' . $target['slug'] . '.html', 'count' => $c['count'], 'children' => $children,
+            'target_name' => $target['name']]; // „Ciment si var" duce la „Ciment"
 }
 
 /** Ramurile principale, cele mai mari primele. @return list<array{id:int, name:string, url:string, count:int, children:list<array>}> */

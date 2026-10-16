@@ -2,7 +2,7 @@
 /** Pagina statica, trecuta pe sabloanele comune (header/meniu/footer generate din catalog). */
 require_once __DIR__ . '/admin/config.php';
 $pageTitle       = 'Contact — Mugurel | Materiale Constructii';
-$metaDescription = 'Contacteaza-ne pe WhatsApp la 0749 130 565 sau prin email la dunlite@gmail.com. Program: Luni-Vineri 8:00-18:00.';
+$metaDescription = 'Contactează-ne la 0749 130 565 (telefon și WhatsApp) sau la office@mugurel-bricolaj.ro. Program: Luni–Vineri 8:00–18:00, Strada Caracal 52, Dăbuleni.';
 $canonicalUrl    = 'https://mugurel-bricolaj.ro/contact.html';
 $metaRobots      = 'index, follow';
 $ogTitle         = 'Contact — Mugurel Materiale Constructii';
@@ -24,7 +24,7 @@ $extraHead = <<<'HTML'
     "addressCountry": "RO"
   },
   "telephone": "+40749130565",
-  "email": "dunlite@gmail.com",
+  "email": "office@mugurel-bricolaj.ro",
   "sameAs": ["https://www.facebook.com/byMUGUREL"],
   "openingHoursSpecification": [
     {
@@ -80,7 +80,7 @@ require __DIR__ . '/templates/header.php';
         </div>
         <div class="contact-row-info">
           <div class="label">Email</div>
-          <div class="value"><a href="mailto:dunlite@gmail.com">dunlite@gmail.com</a></div>
+          <div class="value"><a href="mailto:office@mugurel-bricolaj.ro">office@mugurel-bricolaj.ro</a></div>
         </div>
       </div>
       <div class="contact-row">
@@ -120,19 +120,19 @@ require __DIR__ . '/templates/header.php';
       <h3>Intrebari frecvente</h3>
       <div style="margin-bottom:20px;">
         <p style="font-weight:700;color:#222;margin-bottom:6px;font-size:14px;">Cum pot comanda un produs?</p>
-        <p style="font-size:13px;color:#666;line-height:1.6;">Cel mai simplu este sa ne scriei pe WhatsApp la <a href="https://wa.me/40749130565" style="color:#06363A;font-weight:600;">0749 130 565</a>. Ne spui ce produs te intereseaza si iti confirmam disponibilitatea si pretul.</p>
+        <p style="font-size:13px;color:#666;line-height:1.6;">Direct pe site: pui produsele în coș și trimiți comanda — te sunăm noi să o confirmăm. Sau ne scrii pe WhatsApp la <a href="https://wa.me/40749130565" style="color:#06363A;font-weight:600;">0749 130 565</a> și îți confirmăm disponibilitatea și prețul.</p>
       </div>
       <div style="margin-bottom:20px;">
         <p style="font-weight:700;color:#222;margin-bottom:6px;font-size:14px;">Se poate livra la adresa mea?</p>
-        <p style="font-size:13px;color:#666;line-height:1.6;">Da, livrăm produsele direct la adresa ta. Contacteaza-ne pentru detalii despre livrare si costuri.</p>
+        <p style="font-size:13px;color:#666;line-height:1.6;">Da, livrăm în tot județul Dolj. Costul transportului ți-l spunem la telefon, când confirmăm comanda.</p>
       </div>
       <div style="margin-bottom:20px;">
         <p style="font-weight:700;color:#222;margin-bottom:6px;font-size:14px;">Pot vedea produsele fizic?</p>
-        <p style="font-size:13px;color:#666;line-height:1.6;">Da, ne puteti vizita la magazin in programul nostru (L–V 8:00–18:00). Va rugam sa ne contactati in prealabil pentru disponibilitate.</p>
+        <p style="font-size:13px;color:#666;line-height:1.6;">Da, ne găsești în magazin, pe Strada Caracal 52, Dăbuleni, de Luni până Vineri între 8:00 și 18:00.</p>
       </div>
       <div style="margin-bottom:20px;">
         <p style="font-weight:700;color:#222;margin-bottom:6px;font-size:14px;">Ce metode de plata acceptati?</p>
-        <p style="font-size:13px;color:#666;line-height:1.6;">Acceptam plata cash, transfer bancar si card. Contactati-ne pentru detalii specifice comenzii dvs.</p>
+        <p style="font-size:13px;color:#666;line-height:1.6;">Ramburs (numerar la livrare), transfer bancar pe baza facturii proforme, sau numerar ori card când ridici marfa din magazin.</p>
       </div>
       <div>
         <p style="font-weight:700;color:#222;margin-bottom:6px;font-size:14px;">Cat dureaza pana primesc raspuns?</p>

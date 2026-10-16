@@ -138,7 +138,7 @@ for (const [pagina, items] of AXE_PAGES) {
     await page.goto(pagina);
     if (items) { await page.waitForSelector('[data-cos-total]'); }
     if (pagina === '/comanda.html') { await page.click('[data-comanda-submit]'); await page.waitForSelector('.form-error'); }
-    // Exceptii cunoscute (de decis cu Lucian, vezi docs/PLAN-CATALOG-NOU.md, N9): textul alb pe verdele WhatsApp #25D366
+    // Exceptii acceptate (decizia lui Lucian, 16 oct: butoanele WhatsApp raman in culorile actuale): textul alb pe verdele #25D366
     // are contrast 1,98:1 (minim 4,5:1) pe toate butoanele WhatsApp ale site-ului, si pe live; butonul secundar din hero
     // e semnalat fals (axe nu vede fundalul inchis al hero-ului).
     const r = await new AxeBuilder({ page }).include('main').exclude('.btn-wa-hero').exclude('.btn-wa-prod').exclude('.btn-catalog-hero').analyze();

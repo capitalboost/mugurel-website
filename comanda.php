@@ -96,18 +96,6 @@ $canonicalUrl    = SITE_URL . '/comanda.html';
 $metaRobots      = 'noindex, nofollow';
 $pageScripts     = ['comanda-pagina.js'];
 
-/** Atributele de eroare ale unui camp + mesajul afisat sub el. */
-function fieldError(array $errors, string $name): array
-{
-    if (!isset($errors[$name])) {
-        return ['', ''];
-    }
-    $id = 'err-' . $name;
-    return [
-        ' aria-invalid="true" aria-describedby="' . $id . '"',
-        '<p class="form-error" id="' . $id . '">' . htmlspecialchars($errors[$name], ENT_QUOTES, 'UTF-8') . '</p>',
-    ];
-}
 $v = fn (string $k): string => htmlspecialchars($values[$k] ?? '', ENT_QUOTES, 'UTF-8');
 
 require __DIR__ . '/templates/header.php';
@@ -243,12 +231,12 @@ require __DIR__ . '/templates/header.php';
           <?php [$a, $msg] = fieldError($errors, 'judet'); ?>
           <div class="form-field">
             <label for="f-judet">Judet <span aria-hidden="true">*</span></label>
-            <select id="f-judet" name="judet" autocomplete="address-level1" required<?= $a ?>>
-              <option value="">Alege judetul</option>
-              <?php foreach (ORDER_JUDETE as $j): ?>
-              <option value="<?= $j ?>"<?= ($values['judet'] ?? '') === $j ? ' selected' : '' ?>><?= $j ?></option>
+            <select id="f-judet" name="judet" autocomplete="address-level1" required<?= $a ? str_replace('aria-describedby="err-judet"', 'aria-describedby="hint-judet err-judet"', $a) : ' aria-describedby="hint-judet"' ?>>
+              <?php foreach (ORDER_DELIVERY_JUDETE as $j): /* livram doar aici; Dolj e preselectat */ ?>
+              <option value="<?= $j ?>"<?= ($values['judet'] ?? '') === $j || count(ORDER_DELIVERY_JUDETE) === 1 ? ' selected' : '' ?>><?= $j ?></option>
               <?php endforeach; ?>
             </select>
+            <p class="form-hint" id="hint-judet"><?= htmlspecialchars(ORDER_DELIVERY_NOTE, ENT_QUOTES, 'UTF-8') ?></p>
             <?= $msg ?>
           </div>
           <?php [$a, $msg] = fieldError($errors, 'localitate'); ?>

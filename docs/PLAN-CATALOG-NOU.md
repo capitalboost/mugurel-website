@@ -168,3 +168,34 @@ produsele recomandate alternativ din ramurile cu 20+ produse.
 - **De decis (design):** textul alb pe verdele WhatsApp `#25D366` are contrast 1,98:1 (minim recomandat 4,5:1) pe toate
   butoanele WhatsApp — exista si pe live. Exclus temporar din verificarea axe. Propunere: text inchis (#06363A) pe verde,
   sau verde mai inchis (#128C7E) cu text alb + font mai mare.
+
+### N10 — texte, pagini legale, retur, GDPR: GATA (16 oct), cu deciziile lui Lucian
+Decizii: livrare **doar in Dolj**, fara tarif pe site (il spune operatorul la telefon); POS in magazin (card la ridicare);
+afirmatiile de pe prima pagina (din 2017, livrare in aceeasi zi/a doua zi in zona, 10 minute pe WhatsApp) sunt adevarate;
+**email afisat: office@mugurel-bricolaj.ro**; returul il ridica curierul, **pe costul magazinului**; produsele facute la
+comanda nu se returneaza; **fara numar de produse pe prima pagina**; butoanele WhatsApp raman in culorile actuale.
+- **Texte** (`docs/PROPUNERI-TEXTE.md` aplicate): prima pagina (hero, avantaje, „De ce Mugurel", „Despre", 5 intrebari
+  frecvente + `FAQPage` in JSON-LD, meta), Despre noi, Contact. Lista „Ce gasesti la Mugurel" e generata din catalog
+  (`renderHomeOfferList()`), si pe prima pagina, si pe Despre noi.
+- **Termeni si conditii** rescrisi la zi: date firma complete, pasii comenzii, contractul se incheie la confirmarea
+  telefonica, plata (ramburs / transfer / numerar sau card la ridicare), livrare in Dolj, retragere, garantie 2 ani
+  (OUG 140/2021), firme, litigii (ANPC, SAL, ECC Romania).
+- **Politica de retur** strict dupa lege (OUG 34/2014): 14 zile, declaratie pe orice cale, curier pe costul magazinului,
+  rambursare cu livrarea initiala in 14 zile, diminuarea valorii (nu refuz pentru ambalaj), exceptiile art. 16 (inclusiv
+  produsele facute la comanda), neconformitate, **formularul-tip de retragere** (Anexa 1).
+- **Formularul de retur online** `/cerere-retur.html` (`cerere-retur.php`, `includes/returns.php`, migrarea 013
+  `return_requests`): retragere sau produs neconform, IBAN optional (validat), aceleasi protectii ca la comanda (CSRF,
+  capcana, timp minim, limita pe IP, anti-dublura), PRG. Cererea ajunge la **ORDER_NOTIFY_TO (pe productie comenzi@ →
+  dunlite@gmail.com)** cu „Raspunde" catre client + confirmare la client; se pastreaza in baza. Admin: **Retururi**
+  (`?page=returns`) cu starea noua / in lucru / finalizata.
+- **Confidentialitate** rescrisa: date din comenzi si retururi, IP 6 luni, destinatari reali (curier, Hostgate,
+  Cloudflare, Google/Gmail, Microsoft), durate, cookie-uri doar cu acord. Fraza „prin continuarea navigarii" scoasa.
+- **Cod pentru ca textele sa spuna adevarul:** Google Analytics + Clarity pornesc **doar dupa „Accept"** (`js/analytics.js`;
+  rezolva punctul 6 din jurnal si scoate scripturile inline din `<head>`); **IP-ul si browserul din comenzi se sterg dupa
+  6 luni** (`orderPurgeTechnicalData()`); **livrarea doar in Dolj** si in formularul de comanda (Dolj preselectat, alt
+  judet respins pe server); link-ul din bannerul de cookie-uri reparat pentru paginile `/produs/...`.
+- **Footer:** sigla **ANPC SAL** (local, `img/anpc-sal.svg`), email office@, „Cerere de retur". **SOL nu** — platforma
+  europeana a fost inchisa pe 20 iulie 2025 (Regulamentul (UE) 2024/3228), iar obligatia link-ului a disparut.
+- Teste: `test_returns.php` (35), `retur-legal.spec.js` (analiza doar dupa acord, footer, texte legale, fluxul de retur
+  cu Mailpit si admin). **Total: 532 asertiuni PHP + 239 teste in browser, deploy pe copia live — toate trec.**
+- Pe server la lansare: `ORDER_NOTIFY_TO = comenzi@mugurel-bricolaj.ro` in `config.local.php` (si pentru retururi).

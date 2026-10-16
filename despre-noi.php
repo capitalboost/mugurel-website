@@ -1,12 +1,13 @@
 <?php
 /** Pagina statica, trecuta pe sabloanele comune (header/meniu/footer generate din catalog). */
 require_once __DIR__ . '/admin/config.php';
-$pageTitle       = 'Despre noi — Mugurel | Materiale Constructii, Mobilier, Electrocasnice';
-$metaDescription = 'Mugurel by DUNLITE COM SRL — magazin cu experienta in materiale de constructii, mobilier si electrocasnice. Produse de calitate, preturi corecte, livrare rapida.';
+$pageTitle       = 'Despre noi — Mugurel | Materiale de construcții și electrocasnice, Dăbuleni';
+$metaDescription = 'Mugurel, brandul DUNLITE COM SRL din Dăbuleni: materiale de construcții și electrocasnice cu prețuri afișate, comandă online sau pe WhatsApp, livrare în județul Dolj.';
 $canonicalUrl    = 'https://mugurel-bricolaj.ro/despre-noi.html';
 $metaRobots      = 'index, follow';
 $ogTitle         = 'Despre noi — Mugurel Materiale Constructii';
-$ogDescription   = 'Magazin cu experienta in materiale de constructii, mobilier si electrocasnice. Comanda pe WhatsApp la 0749 130 565.';
+$ogDescription   = 'Materiale de construcții și electrocasnice în Dăbuleni. Comandă online sau pe WhatsApp la 0749 130 565.';
+require_once __DIR__ . '/includes/home.php';
 require __DIR__ . '/templates/header.php';
 ?>
 <!-- PAGE HERO -->
@@ -14,7 +15,7 @@ require __DIR__ . '/templates/header.php';
   <div class="page-hero-inner">
     <div class="breadcrumb"><a href="index.html">Acasa</a><span>›</span> Despre noi</div>
     <h1>Despre Mugurel</h1>
-    <p>Magazinul tau de materiale de constructii, mobilier si electrocasnice.</p>
+    <p>Magazinul tău de materiale de construcții și electrocasnice din Dăbuleni.</p>
   </div>
 </div>
 
@@ -22,26 +23,18 @@ require __DIR__ . '/templates/header.php';
 <div class="body-wrap" style="flex-direction:column; max-width:900px;">
   <div class="about-content">
     <h2>Cine suntem</h2>
-    <p>Mugurel este brandul comercial al DUNLITE COM SRL, un magazin specializat in comercializarea materialelor de constructii, mobilierului si electrocasnicelor. Oferim o gama completa de produse pentru toate etapele constructiei si amenajarii casei — de la fundatie pana la finisaje, de la instalatii la mobilier.</p>
-    <p>Ne-am construit reputatia pe baza unor principii simple: produse de calitate, preturi corecte si o relatie directa cu clientii nostri. Credem ca cel mai bun mod de a face afaceri este prin comunicare sincera si transparenta — de aceea am ales WhatsApp ca principal canal de comanda si consultanta.</p>
+    <p>Mugurel este brandul comercial al DUNLITE COM SRL, magazin de materiale de construcții și electrocasnice din Dăbuleni. Avem produse pentru toate etapele unei construcții — de la zidărie și metal până la acoperiș și finisaje — și electrocasnice pentru casă.</p>
+    <p>Ne-am construit reputatia pe baza unor principii simple: produse de calitate, preturi corecte si o relatie directa cu clientii nostri. Credem ca cel mai bun mod de a face afaceri este prin comunicare sincera si transparenta — de aceea te sunăm la fiecare comandă și îți răspundem direct pe WhatsApp.</p>
     <p>Indiferent ca esti un profesionist in constructii, un meserias sau pur si simplu renovezi casa, la Mugurel gasesti tot ce ai nevoie sub un singur acoperis.</p>
 
     <h2>Ce oferim</h2>
     <p>Gama noastra de produse acopera toate nevoile unei case:</p>
     <ul style="margin-left:20px; margin-bottom:16px; color:#444; font-size:14px; line-height:2;">
-      <li><strong>Constructii</strong> — acoperis, izolatie, gips-carton, zidarie, BCA, gard, cherestea, profile metalice</li>
-      <li><strong>Electrice</strong> — cabluri, becuri LED, aparataj, corpuri de iluminat, doze</li>
-      <li><strong>Incalzire</strong> — centrale termice, radiatoare, aer conditionat, sobe, peleti, lemn de foc</li>
-      <li><strong>Sanitare</strong> — baterii de apa, mobilier de baie, accesorii baie</li>
-      <li><strong>Apa &amp; Canal</strong> — tevi PE, fitting, canalizare PVC, pompe, sifoane</li>
-      <li><strong>Mobilier</strong> — living, dormitor, bucatarie, mobilier de gradina</li>
-      <li><strong>Gradina</strong> — unelte, ghivece, plase umbrire, utilaje</li>
-      <li><strong>Scule &amp; Unelte</strong> — masini electrice, unelte manuale, accesorii</li>
-      <li><strong>Electrocasnice</strong> — aparate mari si mici de uz casnic</li>
+      <?= renderHomeOfferList() /* generata din catalog */ ?>
     </ul>
 
     <h2>Cum functionam</h2>
-    <p>Procesul de comanda este cat se poate de simplu: ne scrii pe WhatsApp, ne spui ce produs te intereseaza, noi iti confirmam disponibilitatea si pretul, si convenim asupra livrarii sau ridicarii din magazin. Fara formulare complicate, fara asteptari lungi.</p>
+    <p>Alegi produsele de pe site — toate au prețul afișat cu TVA — și le pui în coș. Trimiți comanda cu datele de livrare și metoda de plată preferată: ramburs, transfer bancar sau ridicare din magazin. Te sunăm să confirmăm stocul și livrarea, apoi pregătim marfa. Preferi să vorbești direct? Scrie-ne pe WhatsApp.</p>
 
     <div class="about-values">
       <div class="value-card">
@@ -56,8 +49,8 @@ require __DIR__ . '/templates/header.php';
       </div>
       <div class="value-card">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="1" y="3" width="15" height="13"/><polygon points="16 8 20 8 23 11 23 16 16 16 16 8"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/></svg>
-        <h4>Livrare rapida</h4>
-        <p>Livrare la adresa ta. Stoc permanent disponibil pentru cele mai cerute produse.</p>
+        <h4>Livrare în județul Dolj</h4>
+        <p>Livrăm la adresa ta în tot județul Dolj. Costul transportului ți-l spunem la telefon, când confirmăm comanda.</p>
       </div>
     </div>
   </div>

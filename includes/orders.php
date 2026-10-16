@@ -52,6 +52,25 @@ function orderFindExisting(PDO $pdo, string $formToken, string $contentHash): ?a
     return $row ?: null;
 }
 
+/** Cat pastram IP-ul si browserul din comenzi (Politica de confidentialitate, sectiunea „Cat pastram datele"). */
+const ORDER_TECH_RETENTION_MONTHS = 6;
+
+/**
+ * Sterge IP-ul si browserul din comenzile mai vechi de ORDER_TECH_RETENTION_MONTHS luni. Rulata la fiecare comanda
+ * noua (o interogare pe index, fara cron). O eroare aici nu opreste comanda.
+ */
+function orderPurgeTechnicalData(PDO $pdo): int
+{
+    try {
+        return (int) $pdo->exec("UPDATE orders SET ip = '', user_agent = ''
+                                 WHERE created_at < DATE_SUB(NOW(), INTERVAL " . ORDER_TECH_RETENTION_MONTHS . " MONTH)
+                                   AND (ip <> '' OR user_agent <> '')");
+    } catch (Throwable $e) {
+        error_log('orderPurgeTechnicalData: ' . $e->getMessage());
+        return 0;
+    }
+}
+
 /**
  * Inregistreaza comanda. $data = orderFormValidate()['data'] (fara erori), $cart = priceCart() fara probleme.
  * @return array{id:int, number:string, token:string, duplicate:bool}
@@ -64,6 +83,7 @@ function orderCreate(PDO $pdo, array $data, array $cart, string $formToken, stri
         throw new InvalidArgumentException('Cosul nu poate fi comandat.');
     }
     $hash = orderContentHash($data, $lines);
+    orderPurgeTechnicalData($pdo);
 
     $pdo->beginTransaction();
     try {

@@ -21,3 +21,5 @@ UPDATE products SET price = NULL,                          price_is_from = 0, st
 
 -- Comenzile create de testele automate (adresele de email folosite doar in teste).
 DELETE FROM orders WHERE email IN ('ion@exemplu.ro', 'achizitii@firma.ro', 'test@exemplu.ro', 'http@exemplu.ro', 'mailtest@exemplu.ro') OR email LIKE '%-flux-%@exemplu.ro';
+-- Cererile de retur create de testele automate.
+DELETE FROM return_requests WHERE email LIKE 'retur-%@exemplu.ro';
