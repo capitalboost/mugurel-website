@@ -43,10 +43,11 @@ pe o masina noua e goala si trebuie reconstruita din scripturi.
 
 **Ce mai e de facut, in ordine:**
 1. [x] **Backup de pe server din cPanel** — complet si verificat (16 oct), in `Fisiere de lucru/Backup CpAneL/`.
-2. [~] **Lista noua de produse**: primul fisier primit (147 produse, `Fisiere de lucru/Prouse Dunlite client/`);
-       urmeaza 2 (alte materiale de constructii + electrocasnice).
-3. [ ] **Catalogul nou + cosul, lansate impreuna** — directia stabilita 16 oct, plan in **`docs/PLAN-CATALOG-NOU.md`**
-       (pasii N1–N11, cu opriri pentru verificare). Ramase blocante: A2 stoc real, A3 textele, A6 paginile legale.
+2. [x] **Lista noua de produse**: toate 3 fisierele importate local (constructii 147, tabla 164, electrocasnice 200 = 511).
+3. [~] **Catalogul nou + cosul, lansate impreuna** — `docs/PLAN-CATALOG-NOU.md`: **N1–N9 GATA local** (import, liste cu
+       filtre, pagina produsului, colectii, meniu derulant, admin + import Excel, deploy sigur, sitemap, cos/comenzi
+       retestate: 497 asertiuni PHP + 217 teste in browser). Ramase: **N10 texte + pagini legale** (cu Lucian),
+       **N11 test final + lansare** (doar cu aprobare). De decis: contrastul butoanelor WhatsApp.
 4. [ ] ~~Lansarea cosului separat~~ — se face odata cu catalogul nou (pasul 3).
 5. [ ] **Corecturile de securitate si GDPR** din 13 oct (punctele 1–6): parola admin pe live, log-ul de deploy public,
        limita de login dupa IP-ul real, `Sanitize::html()`, CSP, Analytics/Clarity doar dupa acord.
