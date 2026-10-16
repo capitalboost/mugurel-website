@@ -92,11 +92,23 @@ function catBreadcrumbs(array $cat): array
     return $out;
 }
 
-/** Un nod din arbore: deschis daca e pe calea categoriei curente. */
+/**
+ * Un nod din arbore: deschis daca e pe calea categoriei curente.
+ * Ramurile principale (nivelul 0) sunt meniuri derulante (<details>, merge si fara JS): inchise implicit, deschise
+ * pe paginile din interiorul lor; primul rand din lista duce la pagina ramurii.
+ */
 function catTreeNode(array $n, array $activeIds, int $depth = 0): string
 {
     $active = in_array($n['id'], $activeIds, true);
     $current = $active && $n['id'] === end($activeIds);
+    if ($depth === 0 && $n['children']) {
+        $out = '<li class="cat-tree-item cat-tree-item--d0 cat-tree-root"><details' . ($active ? ' open' : '') . '>'
+             . '<summary>' . e($n['name']) . ' <span class="cat-tree-n">' . (int) $n['count'] . '</span></summary><ul>'
+             . '<li class="cat-tree-item cat-tree-item--d1 cat-tree-all"><a href="/' . e($n['slug']) . '.html"'
+             . ($current ? ' aria-current="page" class="is-current"' : '') . '>Toate din ' . e($n['name']) . '</a></li>';
+        foreach ($n['children'] as $ch) { $out .= catTreeNode($ch, $activeIds, 1); }
+        return $out . '</ul></details></li>';
+    }
     $out = '<li class="cat-tree-item cat-tree-item--d' . $depth . ($active ? ' is-open' : '') . '">'
          . '<a href="/' . e($n['slug']) . '.html"' . ($current ? ' aria-current="page" class="is-current"' : '') . '>'
          . e($n['name']) . ' <span class="cat-tree-n">' . (int) $n['count'] . '</span></a>';

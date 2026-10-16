@@ -864,3 +864,12 @@ img { max-width: 100%; }
   .produs-specs th, .produs-specs td { padding: 7px 8px; }
 }
 .mobile-nav-item--sub { padding-left: 28px; font-size: 14px; color: #555; }
+/* ramura principala din arbore = meniu derulant */
+.cat-tree-root > details > summary { display: flex; align-items: center; gap: 8px; padding: 10px 14px; font-size: 13px; font-weight: 700; color: var(--verde); cursor: pointer; list-style: none; border-bottom: 1px solid #f0f2f2; }
+.cat-tree-root > details > summary::-webkit-details-marker { display: none; }
+.cat-tree-root > details > summary:hover { background: var(--verde-light); }
+.cat-tree-root > details > summary:focus-visible { outline: 2px solid var(--verde-mid); outline-offset: -2px; }
+.cat-tree-root > details > summary .cat-tree-n { margin-left: auto; }
+.cat-tree-root > details > summary::after { content: '▾'; font-size: 14px; line-height: 1; color: var(--verde-mid); transition: transform 150ms; flex: none; }
+.cat-tree-root > details[open] > summary::after { transform: rotate(180deg); }
+.cat-tree-all > a { font-style: italic; color: var(--verde-mid); }
