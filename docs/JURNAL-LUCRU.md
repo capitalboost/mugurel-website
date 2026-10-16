@@ -42,7 +42,7 @@ pe o masina noua e goala si trebuie reconstruita din scripturi.
 - [x] Backup local: cod, baza locala, copie publica a site-ului live (16 oct).
 
 **Ce mai e de facut, in ordine:**
-1. [ ] **Backup de pe server din cPanel** (baza de productie + home directory) — vezi intrarea din 16 oct. Inainte de orice stergere.
+1. [x] **Backup de pe server din cPanel** — complet si verificat (16 oct), in `Fisiere de lucru/Backup CpAneL/`.
 2. [ ] **Lista noua de categorii si produse** de la Mugurel (inlocuieste tot catalogul actual).
 3. [ ] **Plan de inlocuire a catalogului** — baza, pagini de categorie noi, meniu, sitemap, redirecturi 301, garda din
        `deploy_db.php` (altfel deploy-ul reimporta produsele vechi). Se aproba inainte de executie.
@@ -74,11 +74,22 @@ Fotografiile lipsa (punctul 7) si „cele 3000+ produse din gestiune” devin pr
 | `produse-live.csv` | Cele 495 de produse vizibile pe paginile de categorie live (231 materiale + 264 accesorii): pagina, tip, nume, descriere, poza |
 | `raport-copie.txt` | Ce s-a descarcat si cele 32 de poze care lipsesc si pe server (problema cunoscuta, punctul 7) |
 
-**LIPSESTE inca backup-ul de pe server**, singurul care are baza de productie reala (eventuale produse adaugate de
-Mugurel din `/admin`) si pozele incarcate din admin. Nu am acces la server — il face Lucian din cPanel:
-1. cPanel → **Backup** → „Download a MySQL Database Backup” → baza site-ului (`.sql.gz`).
-2. cPanel → **Backup** → „Download a Home Directory Backup” (contine `public_html`, inclusiv `config.local.php` si `img/` incarcate din admin).
-3. Ambele fisiere in `Backup/2026-10-16/`. **Nu se sterge nimic de pe live inainte de pasul asta.**
+**Backup-ul de pe server — FACUT si verificat (16 oct)**, in `Fisiere de lucru/Backup CpAneL/`:
+
+| Fisier | Ce contine |
+|---|---|
+| `backup-10.16.2026_12-28-48_mugurel.tar.gz` | **Backup complet cPanel** (fisiere + baza `mugurel_cms` + email + DNS + SSL). Se poate restaura integral din cPanel. |
+| `mugurel_cms.sql.gz` | Doar baza de productie (MySQL 8.4) |
+| `backup-mugurel-bricolaj.ro-10-16-2026.tar.gz` | Doar home directory (fisierele, fara baza) |
+| `aliases-mugurel-bricolaj.ro.gz` | Redirectionarile de email |
+
+⚠️ Arhivele contin parola bazei, cheile SSL si emailurile — **nu se trimit nimanui**.
+
+Verificare: baza de productie importata local ca `mugurel_live_20261016` (copie de referinta, nu o atinge nimic) si
+comparata cu baza locala: **534 produse, 31 categorii, 464 proprietati — identice**. Ultima modificare de produs pe live:
+28 sept. Mugurel **nu a adaugat si nu a editat nimic** din `/admin` (un singur login, 29 iunie); `uploads/products/` e gol.
+Singura diferenta: proprietatile produsului 1 au alte ID-uri local (resalvate de teste) — fara importanta.
+`.htaccess` de pe live rescris de cPanel pe 16 oct 02:32 (doar blocul PHP 8.1 mutat sus) — continut identic.
 
 ### Ce atinge inlocuirea catalogului (analiza, nimic modificat)
 
@@ -96,7 +107,7 @@ Mugurel din `/admin`) si pozele incarcate din admin. Nu am acces la server — i
   cea mai apropiata, altfel se pierde pozitia in cautari.
 
 ### Urmeaza
-1. Backup-ul de pe server (mai sus).
+1. ~~Backup-ul de pe server~~ — facut.
 2. Lista noua de la Mugurel: categorii (+ subcategorii) si produse — nume, descriere, pret cu TVA, unitate, stoc, poza.
 3. Plan de inlocuire, aprobat inainte de executie; se lucreaza pe `feat/cos-comenzi` (are deja pret, stoc, cos).
 
