@@ -2,11 +2,11 @@
 declare(strict_types=1);
 
 /**
- * import_catalog.php — catalogul nou din fisierele Dunlite (docs/PLAN-CATALOG-NOU.md, pasul N2).
+ * catalog_import.php — catalogul nou din fisierele Dunlite (docs/PLAN-CATALOG-NOU.md, pasul N2).
  *
- *   php db/import_catalog.php fisier.xlsx                       # doar raport, nu scrie nimic
- *   php db/import_catalog.php fisier.xlsx --apply               # scrie in baza din admin/config(.local).php
- *   php db/import_catalog.php fisier.xlsx --apply --replace-old # + sterge catalogul VECHI (produsele fara cod de bare)
+ *   php includes/catalog_import.php fisier.xlsx                       # doar raport, nu scrie nimic
+ *   php includes/catalog_import.php fisier.xlsx --apply               # scrie in baza din admin/config(.local).php
+ *   php includes/catalog_import.php fisier.xlsx --apply --replace-old # + sterge catalogul VECHI (produsele fara cod de bare)
  *
  * Fisierul: prima foaie; coloanele se recunosc dupa antet (Cod de bare, Denumire site, Pret, Categorie, Tag-uri...).
  *
@@ -20,9 +20,9 @@ declare(strict_types=1);
  *  - Orice eroare de format opreste importul intreg; scrierea se face intr-o singura tranzactie.
  */
 
-require_once __DIR__ . '/import_preturi.php';      // readXlsxSheet()
+require_once __DIR__ . '/xlsx_reader.php';         // readXlsxSheet()
 require_once __DIR__ . '/catalog_rules.php';
-require_once __DIR__ . '/../includes/catalog_text.php';
+require_once __DIR__ . '/catalog_text.php';
 
 const CATALOG_COLUMNS = [
     'barcode' => 'cod de bare', 'sku' => 'sku', 'original' => 'denumire originala', 'name' => 'denumire site',
@@ -399,7 +399,7 @@ function importCatalogMain(array $argv): int
         else { $file = $arg; }
     }
     if ($file === null || !is_file($file)) {
-        fwrite(STDERR, "Folosire: php db/import_catalog.php <fisier.xlsx> [--apply] [--replace-old]\n");
+        fwrite(STDERR, "Folosire: php includes/catalog_import.php <fisier.xlsx> [--apply] [--replace-old]\n");
         return 2;
     }
 

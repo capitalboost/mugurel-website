@@ -1,7 +1,7 @@
 <?php
-// Teste pentru db/import_catalog.php (catalogul nou, pasul N2). Partea cu baza lucreaza intr-o baza de test separata
+// Teste pentru includes/catalog_import.php (catalogul nou, pasul N2). Partea cu baza lucreaza intr-o baza de test separata
 // (mugurel_import_test, creata si stearsa aici) — baza locala mugurel_cms nu e atinsa.
-require_once __DIR__ . '/../../db/import_catalog.php';
+require_once __DIR__ . '/../../includes/catalog_import.php';
 require_once __DIR__ . '/../../admin/config.php';
 
 $pass = 0; $fail = 0;

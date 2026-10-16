@@ -8,7 +8,7 @@ $metaRobots      = 'index, follow';
 $ogTitle         = 'Mugurel — Materiale Constructii, Mobilier, Electrocasnice';
 $ogDescription   = 'Oferta completa pentru casa ta. Comanda pe WhatsApp la 0749 130 565.';
 $extraHead = <<<'HTML'
-<link rel="preload" as="image" href="/img/hero.avif" type="image/avif">
+<link rel="preload" as="image" href="/img/hero.avif" type="image/avif" media="(min-width: 769px)">
 <script type="application/ld+json">
 {
   "@context": "https://schema.org",
@@ -79,10 +79,10 @@ require __DIR__ . '/templates/header.php';
   </aside>
 
   <!-- MAIN CONTENT -->
-  <main class="main-content">
+  <main class="main-content home-main">
 
     <!-- HERO -->
-    <section class="hero">
+    <section class="hero home-hide-mobile">
       <div class="hero-inner">
         <div class="hero-text">
           <p class="hero-eyebrow">Constructii · Mobilier · Electrocasnice</p>
@@ -105,14 +105,14 @@ require __DIR__ . '/templates/header.php';
           </div>
         </div>
         <div class="hero-img-area">
-          <img class="hero-illustration" src="img/hero.avif" alt="Casa in renovare — materiale constructii Mugurel Dabuleni" width="360" height="240" fetchpriority="high">
+          <picture><source media="(max-width: 768px)" srcset="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7"><img class="hero-illustration" src="img/hero.avif" alt="Casa in renovare — materiale constructii Mugurel Dabuleni" width="360" height="240" fetchpriority="high"></picture>
           
         </div>
       </div>
     </section>
 
     <!-- TRUST BAR -->
-    <div class="trust-bar">
+    <div class="trust-bar home-hide-mobile">
       <div class="trust-item">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
         <div><div class="t-title">Comanda pe WhatsApp</div><div class="t-sub">Simplu, rapid, direct</div></div>

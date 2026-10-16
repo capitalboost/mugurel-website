@@ -1,6 +1,6 @@
 <?php
 /**
- * Regulile importului de catalog (db/import_catalog.php): in ce grupa intra fiecare tag din Excel.
+ * Regulile importului de catalog (includes/catalog_import.php): in ce grupa intra fiecare tag din Excel.
  *
  * Grupele (coloana tags.grp):
  *   filtre pe pagina de categorie — brand, tip, material, culoare, dimensiune, grosime, diametru, lungime,

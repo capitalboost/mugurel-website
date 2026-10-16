@@ -873,18 +873,23 @@ img { max-width: 100%; }
 .cat-tree-root > details > summary::after { content: '▾'; font-size: 14px; line-height: 1; color: var(--verde-mid); transition: transform 150ms; flex: none; }
 .cat-tree-root > details[open] > summary::after { transform: rotate(180deg); }
 .cat-tree-all > a { font-style: italic; color: var(--verde-mid); }
-/* blocul „Categorii produse" — sa sara in ochi: titlu rosu cu iconita, ramura principala ca buton evidentiat */
-.cat-tree-head { background: var(--rosu); gap: 10px; }
-.cat-tree-head svg { width: 18px; height: 18px; flex: none; }
-.cat-tree-head span { font-size: 16px; text-transform: uppercase; letter-spacing: .05em; }
-.cat-tree-root > details > summary { margin: 10px; padding: 12px 14px; border: 2px solid var(--verde); border-radius: var(--radius); background: var(--verde-light); font-size: 15px; box-shadow: 0 2px 6px rgba(6,54,58,.12); }
-.cat-tree-root > details > summary:hover { background: var(--verde); color: #fff; }
-.cat-tree-root > details > summary:hover .cat-tree-n, .cat-tree-root > details > summary:hover::after { color: #fff; }
-.cat-tree-root > details[open] > summary { background: var(--verde); color: #fff; }
-.cat-tree-root > details[open] > summary .cat-tree-n, .cat-tree-root > details[open] > summary::after { color: #fff; }
-.cat-tree-root > details > summary .cat-tree-n { background: rgba(6,54,58,.1); padding: 1px 7px; border-radius: 10px; font-weight: 700; }
-.cat-tree-root > details[open] > summary .cat-tree-n, .cat-tree-root > details > summary:hover .cat-tree-n { background: rgba(255,255,255,.2); }
-.cat-tree-root > details > summary::after { font-size: 18px; }
-.cat-tree-root > details > ul { margin-bottom: 6px; }
-.cat-tree-head span { font-size: 14px; letter-spacing: .03em; white-space: nowrap; }
+/* blocul „Categorii produse": vizibil, dar in culorile site-ului — titlu cu iconita, ramura principala cu bara de accent */
+.cat-tree-head { gap: 10px; }
+.cat-tree-head svg { width: 17px; height: 17px; flex: none; opacity: .9; }
+.cat-tree-head span { font-size: 15px; letter-spacing: .03em; white-space: nowrap; }
+.cat-tree-root > details > summary { padding: 13px 14px 13px 11px; font-size: 15px; background: #f6faf9; box-shadow: inset 3px 0 0 var(--verde-mid); }
+.cat-tree-root > details > summary:hover { background: var(--verde-light); }
+.cat-tree-root > details[open] > summary { background: var(--verde-light); }
+.cat-tree-root > details > summary::after { font-size: 16px; }
 .cat-tree-root > details[open] > summary::after { content: '▴'; transform: none; }
+.cat-tree-root > details > ul { margin-bottom: 4px; }
+
+/* Prima pagina pe telefon: fara hero si fara cardurile de avantaje — produsele apar imediat (cerinta 16 oct);
+   produsele recomandate urca inaintea grilei de categorii. Imaginea hero nici nu se descarca (<picture> in index.php). */
+@media (max-width: 768px) {
+  .home-hide-mobile { display: none !important; }
+  .home-main { display: flex; flex-direction: column; }
+  .home-main .prod-section { order: 1; }
+  .home-main .cat-section { order: 2; }
+  .home-main .about-banner { order: 3; }
+}
