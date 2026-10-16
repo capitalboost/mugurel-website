@@ -33,6 +33,8 @@ $t = splitTags('RAL 9005, 100 x 50 mm', 'capac RAL 9005 100 x 50');
 ok($t['tags'] === ['RAL 9005', '100 x 50 mm'],                                                  'tag: nu lipeste cand numarul refacut nu exista in text');
 $t = splitTags('grosime 2, 5 mm', 'grosime 2 mm si 5 mm');
 ok(count($t['tags']) === 2,                                                                     'tag: fara „2,5" in context => nu lipeste');
+$t = splitTags('grosime 0, 4 mm, 312 mm', 'Bordura 312 mm, 0,40 mm, rosu');
+ok($t['tags'] === ['grosime 0,4 mm', '312 mm'],                                                'tag: „0,4" se potriveste cu „0,40" din denumire (valoare, nu text)');
 ok(splitTags('alb, Alb, alb', '')['tags'] === ['alb'],                                          'tag: dubluri eliminate');
 
 // ── clasificare ──
@@ -42,10 +44,15 @@ foreach ([
     ['platbandă', 'tip'], ['oțel', 'material'], ['RAL 9005', 'culoare'], ['negru', 'culoare'], ['40 x 20 mm', 'dimensiune'],
     ['grosime 1,5 mm', 'grosime'], ['Ø 26,9 mm', 'diametru'], ['6 m', 'lungime'], ['27,5 kg', 'cantitate'],
     ['0–1 mm', 'granulatie'], ['C1T', 'clasa'], ['42,5R', 'clasa'], ['CEM II', 'clasa'], ['interior/exterior', 'utilizare'],
-    ['fier forjat', 'aplicatie'], ['fațadă', 'aplicatie'],
+    ['fier forjat', 'aplicatie'], ['fațadă', 'aplicatie'], ['gri antracit', 'culoare'], ['RR29', 'culoare'],
+    ['mat', 'finisaj'], ['7 module', 'module'], ['100 × 60 mm', 'dimensiune'], ['60°', 'dimensiune'],
+    ['120 g/m²', 'cantitate'], ['75 m²', 'cantitate'], ['3 straturi', 'caracteristica'],
 ] as [$tag, $grp]) {
     ok(classifyTag($tag, $brands, $types) === $grp, "clasificare: „{$tag}\" => $grp");
 }
+
+$cg = classifyCatalogTags([['manufacturer' => null, 'product_type' => null, 'path' => ['Materiale construcții', 'Acoperiș'], 'tags' => ['acoperiș', 'mat']]]);
+ok($cg === ['acoperiș' => 'ignorat', 'mat' => 'finisaj'],                                      'clasificare: tag = numele categoriei => ignorat');
 
 // ── parseCatalogRows ──
 $hdr = ['A' => 'Cod de bare', 'B' => 'SKU', 'C' => 'Denumire originală', 'D' => 'Denumire site', 'E' => 'Preț', 'F' => 'Monedă',
@@ -156,6 +163,14 @@ if (is_file($real)) {
     $g = classifyCatalogTags($p['products']);
     ok(!array_filter(array_keys($g), fn ($t) => preg_match('/^\d+$/u', $t)), 'fisier real: niciun tag ramas doar cu cifre');
     ok(count($p['fixedTags']) === 17,                                  'fisier real: 17 tag-uri reparate');
+}
+$real2 = __DIR__ . '/../../../Fisiere de lucru/Prouse Dunlite client/tabla_complet_MU.xlsx';
+if (is_file($real2)) {
+    $p = parseCatalogRows(readXlsxSheet($real2, null));
+    ok($p['errors'] === [] && count($p['products']) === 164,           'fisier real 2 (tabla): 164 produse, 0 erori');
+    $g = classifyCatalogTags($p['products']);
+    ok(!isset($g['grosime 0']) && ($g['grosime 0,4 mm'] ?? '') === 'grosime', 'fisier real 2: grosimile refacute (0,40 => 0,4)');
+    ok(array_keys(array_filter($g, fn ($x) => $x === 'aplicatie')) === ['evacuare', 'evacuare fum'], 'fisier real 2: la colectii raman doar aplicatiile reale');
 }
 
 echo "\nRezultat: $pass passed, $fail failed\n";

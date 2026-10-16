@@ -56,6 +56,34 @@ if ($collection !== null) {
     exit;
 }
 
+// ── adresele vechi ale catalogului (pana la 16 oct 2026) ──
+// Unde exista o categorie noua cu acelasi slug (ex. /acoperis.html, /incalzire.html), ea a raspuns deja mai sus.
+// Restul duc permanent (301) la cea mai apropiata pagina noua, ca Google sa mute pozitiile, nu sa le piarda.
+const LEGACY_REDIRECTS = [
+    'izolatie'         => '/termoizolatii.html',
+    'gips-carton'      => '/gleturi-si-chituri.html',
+    'zidarie-bca'      => '/mortare-si-tencuieli.html',
+    'gard-imprejmuiri' => '/fier-forjat.html',
+    'electrice'        => '/instalatii-electrice.html',
+    'apa-canal'        => '/catalog.html',
+    'sanitare'         => '/catalog.html',
+    'gradina'          => '/catalog.html',
+    'mobilier'         => '/catalog.html',
+    'electrocasnice'   => '/catalog.html',
+    'scule-unelte'     => '/catalog.html',
+    'acoperis'         => '/catalog.html',
+    'incalzire'        => '/catalog.html',
+    'constructii'      => '/materiale-constructii.html',
+];
+if (isset(LEGACY_REDIRECTS[$slug])) {
+    $to = LEGACY_REDIRECTS[$slug];
+    // tinta poate fi la randul ei o categorie/colectie disparuta — atunci catalogul
+    $toSlug = basename($to, '.html');
+    if ($to !== '/catalog.html' && catCategoryBySlug($toSlug) === null && catCollectionBySlug($toSlug) === null) { $to = '/catalog.html'; }
+    header('Location: ' . $to, true, 301);
+    exit;
+}
+
 // ── pagina statica ──
 $db = Database::get();
 $stmt = $db->prepare('SELECT * FROM pages WHERE slug = ? AND is_published = 1');

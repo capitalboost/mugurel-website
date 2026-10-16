@@ -22,7 +22,9 @@ const TAG_LISTS = [
     'utilizare'      => ['interior', 'exterior', 'interior/exterior'],
     'material'       => ['oțel', 'plastic', 'zincat', 'amprentat', 'aluminiu', 'cupru', 'pvc', 'lemn', 'inox', 'fontă'],
     'compozitie'     => ['var-ciment', 'pe bază de ipsos', 'pe bază de ciment', 'ciment alb', 'pe bază de var'],
-    'caracteristica' => ['flexibil', 'aplicare mecanizată', 'trafic greu', 'rapid', 'hidrofob'],
+    'caracteristica' => ['flexibil', 'aplicare mecanizată', 'trafic greu', 'rapid', 'hidrofob', 'perforat', 'cu capac',
+                         'colțar exterior', 'colțar interior', 'cocoș de vânt'],
+    'finisaj'        => ['mat', 'lucios', 'emailat', 'satinat', 'texturat', 'lăcuit', 'vopsit'],
 ];
 
 /** [grupa, expresie regulata] — aplicate pe tag-ul deja reparat (virgula zecimala refacuta). */
@@ -30,7 +32,13 @@ const TAG_PATTERNS = [
     ['grosime',    '/^grosime\b/iu'],
     ['diametru',   '/^Ø/u'],
     ['culoare',    '/^RAL\s*\d{4}$/iu'],
-    ['dimensiune', '/^\d+(?:[.,]\d+)?\s*x\s*\d+/u'],
+    ['culoare',    '/^RR\s*\d{2,4}$/u'],                                   // coduri de culoare Ruukki (RR29, RR887)
+    ['culoare',    '/^(?:alb|negru|gri|maro|roșu|verde|galben|albastru|bej|crem|antracit)\s+\p{L}+$/iu'], // „gri antracit"
+    ['module',     '/^\d+\s*module?$/iu'],                                  // tabla tip tigla: lungimea in module
+    ['dimensiune', '/^\d+(?:[.,]\d+)?\s*[x×]\s*\d+/u'],
+    ['dimensiune', '/^\d+(?:[.,]\d+)?\s*°$/u'],                            // unghi (ex. cot 60°)
+    ['cantitate',  '/^\d+(?:[.,]\d+)?\s*(?:g\/m²|g\/m2|m²|m2)$/u'],
+    ['caracteristica', '/^\d+\s*straturi$/u'],
     ['granulatie', '/^\d+(?:[.,]\d+)?\s*[–-]\s*\d+(?:[.,]\d+)?\s*mm$/u'],
     ['lungime',    '/^\d+(?:[.,]\d+)?\s*m$/u'],
     ['cantitate',  '/^\d+(?:[.,]\d+)?\s*(?:kg|g|l|ml)$/u'],

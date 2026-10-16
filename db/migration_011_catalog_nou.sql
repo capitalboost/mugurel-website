@@ -72,7 +72,8 @@ CREATE TABLE IF NOT EXISTS product_documents (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- grp: brand | tip | material | culoare | dimensiune | grosime | diametru | lungime | cantitate | granulatie
---      | clasa | utilizare (interior/exterior) | compozitie | aplicatie (=> pagina-colectie) | ignorat
+--      | clasa | utilizare (interior/exterior) | compozitie | finisaj | module | caracteristica
+--      | aplicatie (=> pagina-colectie) | ignorat
 CREATE TABLE IF NOT EXISTS tags (
     id         INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
     slug       VARCHAR(120) NOT NULL,

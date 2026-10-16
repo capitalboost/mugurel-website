@@ -15,9 +15,11 @@ function siteNavItems(): array
     if ($cache !== null) { return $cache; }
     $roots = catRoots();
     usort($roots, fn ($a, $b) => $b['count'] <=> $a['count']);
+    // Numele ramane al categoriei din meniu („Incalzire"), adresa duce direct la singura ei subcategorie, daca e cazul.
     $item = function (array $c): array {
+        $name = $c['name'];
         $c = catSkipSingleChild($c);
-        return ['id' => $c['id'], 'name' => $c['name'], 'url' => '/' . $c['slug'] . '.html', 'count' => $c['count'],
+        return ['id' => $c['id'], 'name' => $name, 'url' => '/' . $c['slug'] . '.html', 'count' => $c['count'],
                 'children' => array_map(fn ($ch) => ['id' => catSkipSingleChild($ch)['id'], 'name' => catSkipSingleChild($ch)['name'],
                     'url' => '/' . catSkipSingleChild($ch)['slug'] . '.html', 'count' => $ch['count']], catChildren($c['id']))];
     };

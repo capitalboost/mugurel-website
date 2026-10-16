@@ -1,6 +1,6 @@
 <?php
 // Teste pentru catalogul nou (pasii N3–N6): categorii, filtre, colectii, pagini. Necesita baza LOCALA cu importul
-// din constructii_complet_MU.xlsx (147 produse) si serverul local pornit (bash dev/start_local.sh). Nu scrie nimic.
+// din constructii_complet_MU.xlsx (147 produse) + tabla_complet_MU.xlsx (164) si serverul local pornit (bash dev/start_local.sh). Nu scrie nimic.
 require_once __DIR__ . '/../../admin/config.php';
 require_once __DIR__ . '/../../includes/catalog_page.php';
 require_once __DIR__ . '/../../includes/site_nav.php';
@@ -10,17 +10,20 @@ function ok(bool $c, string $m): void { global $pass,$fail; if($c){$pass++;echo"
 
 // ── categorii ──
 $root = catCategoryBySlug('materiale-constructii');
-ok($root !== null && $root['count'] === 147,                         'radacina: 147 produse (inclusiv subcategoriile)');
+ok($root !== null && $root['count'] === 296,                         'radacina: 296 produse (147 + 149 acoperis, inclusiv subcategoriile)');
 $metal = catCategoryBySlug('metal-si-profile');
 ok($metal['count'] === 97 && count(catChildren($metal['id'])) === 7, 'Metal si profile: 97 produse, 7 subcategorii');
-ok(count(catDescendantIds($root['id'])) === 26,                      'descendentii radacinii: 26 de categorii');
+ok(count(catDescendantIds($root['id'])) === 33,                      'descendentii radacinii: 33 de categorii');
 $ciment = catCategoryBySlug('ciment-si-var');
 ok(catIsPassThrough($ciment) && catSkipSingleChild($ciment)['slug'] === 'ciment', '„Ciment si var" e de trecere => „Ciment"');
 ok(!catIsPassThrough($metal),                                        'Metal si profile nu e de trecere');
 $bc = array_column(catBreadcrumbs(catCategoryBySlug('ciment')), 0);
 ok($bc === ['Materiale construcții', 'Ciment'],                      'breadcrumb fara categoria de trecere');
-ok(array_column(siteNavItems(), 'name') === ['Adezivi', 'Mortare și tencuieli', 'Metal și profile', 'Gleturi și chituri', 'Ciment', 'Nisip', 'Șape și nivelare'],
-                                                                     'meniul: grupele ramurii principale, cu trecerile sarite');
+$nav = siteNavItems();
+ok(array_column($nav, 'name') === ['Acoperiș', 'Adezivi', 'Mortare și tencuieli', 'Metal și profile', 'Gleturi și chituri', 'Ciment și var', 'Agregate', 'Șape și nivelare', 'Încălzire', 'Instalații electrice'],
+                                                                     'meniul: grupele ramurii principale, apoi celelalte ramuri');
+$inc = array_values(array_filter($nav, fn ($i) => $i['name'] === 'Încălzire'))[0];
+ok($inc['url'] === '/burlane-si-accesorii-pentru-evacuare-fum.html',  'meniul: ramura de trecere pastreaza numele, duce direct la subcategorie');
 
 // ── filtre ──
 $tevi = catCategoryBySlug('tevi-patrate-si-rectangulare');
@@ -93,7 +96,13 @@ ok($c === 301 && str_ends_with($loc, '/tevi-rotunde.html'),           'adresa ve
 [$c, $b] = http("$base/catalog.html?q=" . rawurlencode('<script>alert(1)</script>'));
 ok($c === 200 && !str_contains($b, '<script>alert(1)</script>'),      'cautarea escapeaza textul cautat');
 [$c, $b] = http("$base/");
-ok($c === 200 && substr_count($b, 'class="prod-card cat-card"') === 6 && !str_contains($b, 'acoperis.html'), 'prima pagina: 6 produse noi, niciun link spre paginile vechi');
+ok($c === 200 && substr_count($b, 'class="prod-card cat-card"') === 6 && !preg_match('#href="/?(electrice|sanitare|mobilier|gradina|izolatie)\.html#', $b), 'prima pagina: 6 produse noi, niciun link spre paginile vechi');
+[$c, $b] = http("$base/acoperis.html");
+ok($c === 200 && str_contains($b, '<h1>Acoperiș</h1>'),               'adresa veche /acoperis.html = categoria noua Acoperis');
+[$c, , $loc] = http("$base/izolatie.html");
+ok($c === 301 && str_ends_with($loc, '/termoizolatii.html'),          'adresa veche /izolatie.html => 301 spre colectia Termoizolatii');
+[$c, , $loc] = http("$base/mobilier.html");
+ok($c === 301 && str_ends_with($loc, '/catalog.html'),               'pagina veche fara echivalent => 301 spre catalog');
 
 echo "\nRezultat: $pass passed, $fail failed\n";
 exit($fail > 0 ? 1 : 0);

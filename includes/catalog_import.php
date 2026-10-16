@@ -84,8 +84,12 @@ function splitTags(string $raw, string $context): array
     foreach ($parts as $part) {
         $n = count($tags);
         if ($n > 0 && preg_match('/^(\d+)(.*)$/u', $part, $m) && preg_match('/(\d+)$/u', $tags[$n - 1], $p)) {
-            $number = $p[1] . ',' . $m[1];
-            if (preg_match('/(?<![\d,])' . preg_quote($number, '/') . '(?![\d,])/u', $context)) {
+            $number = (float) ($p[1] . '.' . $m[1]);
+            // numarul refacut trebuie sa existe in text ca valoare: „0,4" se potriveste si cu „0,40 mm" din denumire
+            preg_match_all('/(?<![\d,.])(\d+),(\d+)(?![\d,])/u', $context, $nums, PREG_SET_ORDER);
+            $found = false;
+            foreach ($nums as $num) { if (abs((float) ($num[1] . '.' . $num[2]) - $number) < 1e-9) { $found = true; break; } }
+            if ($found) {
                 $tags[$n - 1] .= ',' . $part;
                 $fixed[] = $tags[$n - 1];
                 continue;
@@ -195,9 +199,16 @@ function classifyCatalogTags(array $products): array
 {
     $brands = array_values(array_unique(array_filter(array_map(fn ($p) => mb_strtolower((string) $p['manufacturer']), $products))));
     $types = array_values(array_unique(array_filter(array_map(fn ($p) => mb_strtolower((string) $p['product_type']), $products))));
+    // un tag care repeta doar numele unei categorii (ex. „acoperiș") nu adauga nimic — categoria exista deja
+    $categoryNames = [];
+    foreach ($products as $p) { foreach ($p['path'] as $c) { $categoryNames[mb_strtolower($c)] = true; } }
     $groups = [];
     foreach ($products as $p) {
-        foreach ($p['tags'] as $t) { $groups[$t] ??= classifyTag($t, $brands, $types); }
+        foreach ($p['tags'] as $t) {
+            if (isset($groups[$t])) { continue; }
+            $g = classifyTag($t, $brands, $types);
+            $groups[$t] = $g === 'aplicatie' && isset($categoryNames[mb_strtolower(trim($t))]) ? 'ignorat' : $g;
+        }
     }
     return $groups;
 }
