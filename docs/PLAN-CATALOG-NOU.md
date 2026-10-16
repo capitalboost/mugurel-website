@@ -48,3 +48,23 @@ dupa `PLAN-LANSARE-COS.md` actualizat.
 - **Stocul real** (A2): implicit „In stoc” la toate — ramane asa la lansare?
 - Formatul celor 2 fisiere urmatoare — se verifica la sosire; importul accepta orice ramura noua (ex. Electrocasnice).
 - `Status` „De verificat” la 117 produse: descrierile/specificatiile pot avea erori pana sunt verificate.
+
+---
+
+## Progres
+
+### N1 — structura bazei: GATA (16 oct)
+`db/migration_011_catalog_nou.sql`, adaugata in `deploy_db.php`. Testata: baza goala (`dev/test_fresh_deploy.sh`, 2 rulari)
+si copia bazei de productie `mugurel_live_20261016` (migrarile 002–011 prin `deploy_db.php`, 2 rulari) — 0 erori.
+
+### N2 — importul din Excel: GATA (16 oct), asteapta verificarea raportului 🛑
+- `db/import_catalog.php` (+ `db/catalog_rules.php` cu regulile tag-urilor, `includes/catalog_text.php` cu slug-uri,
+  HTML pe lista alba si rezumatul pentru card). `readXlsxSheet()` citeste acum si „prima foaie".
+- Teste: `admin/tests/test_import_catalog.php` — 71 asertiuni (format, tag-uri reparate, clasificare, HTML periculos,
+  reimport fara dubluri, poza/stocul pastrate la reimport, al doilea fisier nu atinge primul, rollback la eroare,
+  fisierul real: 147 produse / 0 erori / 17 tag-uri reparate).
+- **Baza LOCALA are acum catalogul nou** (147 produse, 26 categorii, 145 tag-uri; cele 534 vechi sterse — copie in
+  `Backup/2026-10-16/baza-locala-mugurel_cms.sql`). Reimportul aceluiasi fisier: 0 noi, 147 actualizate.
+- **Asteptat, se repara in N3/N9:** testele legate de catalogul vechi pica (`test_products_repo`, `test_db`, `test_cart`,
+  `test_orders`, `test_order_mail`, `test_order_security` — folosesc ID-uri si pagini vechi). Paginile vechi de
+  categorie sunt goale local pana la N3.

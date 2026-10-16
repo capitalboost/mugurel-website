@@ -20,9 +20,9 @@ const PRET_SHEET = 'Preturi';
 
 /**
  * Citeste o foaie dintr-un .xlsx ca lista de randuri [litera coloana => valoare].
- * Fara biblioteci: un .xlsx e o arhiva zip cu XML.
+ * Fara biblioteci: un .xlsx e o arhiva zip cu XML. $sheetName = null => prima foaie din fisier.
  */
-function readXlsxSheet(string $path, string $sheetName): array
+function readXlsxSheet(string $path, ?string $sheetName): array
 {
     $zip = new ZipArchive();
     if ($zip->open($path) !== true) {
@@ -40,7 +40,7 @@ function readXlsxSheet(string $path, string $sheetName): array
 
         $target = null;
         foreach ($workbook->children($ns)->sheets->sheet as $sheet) {
-            if ((string) $sheet->attributes()['name'] === $sheetName) {
+            if ($target === null && ($sheetName === null || (string) $sheet->attributes()['name'] === $sheetName)) {
                 $rid = (string) $sheet->attributes($relNs)['id'];
                 foreach ($rels->Relationship as $rel) {
                     if ((string) $rel['Id'] === $rid) {
