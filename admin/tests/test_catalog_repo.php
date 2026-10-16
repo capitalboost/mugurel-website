@@ -1,6 +1,6 @@
 <?php
 // Teste pentru catalogul nou (pasii N3–N6): categorii, filtre, colectii, pagini. Necesita baza LOCALA cu importul
-// din constructii_complet_MU.xlsx (147 produse) + tabla_complet_MU.xlsx (164) si serverul local pornit (bash dev/start_local.sh). Nu scrie nimic.
+// din constructii_complet_MU.xlsx (147 produse) + tabla_complet_MU.xlsx (164) + electrocasnice_MU.xlsx (200) si serverul local pornit (bash dev/start_local.sh). Nu scrie nimic.
 require_once __DIR__ . '/../../admin/config.php';
 require_once __DIR__ . '/../../includes/catalog_page.php';
 require_once __DIR__ . '/../../includes/site_nav.php';
@@ -20,8 +20,11 @@ ok(!catIsPassThrough($metal),                                        'Metal si p
 $bc = array_column(catBreadcrumbs(catCategoryBySlug('ciment')), 0);
 ok($bc === ['Materiale construcții', 'Ciment'],                      'breadcrumb fara categoria de trecere');
 $nav = siteNavItems();
-ok(array_column($nav, 'name') === ['Acoperiș', 'Adezivi', 'Mortare și tencuieli', 'Metal și profile', 'Gleturi și chituri', 'Ciment și var', 'Agregate', 'Șape și nivelare', 'Încălzire', 'Instalații electrice'],
-                                                                     'meniul: grupele ramurii principale, apoi celelalte ramuri');
+ok(array_column($nav, 'name') === ['Materiale construcții', 'Electrocasnice', 'Încălzire', 'Instalații electrice'],
+                                                                     'meniul: ramurile principale, cele mai mari primele');
+ok(array_column($nav[0]['children'], 'name') === ['Acoperiș', 'Adezivi', 'Mortare și tencuieli', 'Metal și profile', 'Gleturi și chituri', 'Ciment și var', 'Agregate', 'Șape și nivelare'],
+                                                                     'panoul Materiale constructii: grupele, cu numele lor');
+ok(count(siteNavGroups()) === 14,                                    'grupele tuturor ramurilor (prima pagina): 8 + 4 + 2');
 $inc = array_values(array_filter($nav, fn ($i) => $i['name'] === 'Încălzire'))[0];
 ok($inc['url'] === '/burlane-si-accesorii-pentru-evacuare-fum.html',  'meniul: ramura de trecere pastreaza numele, duce direct la subcategorie');
 

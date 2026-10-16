@@ -47,6 +47,8 @@ foreach ([
     ['fier forjat', 'aplicatie'], ['fațadă', 'aplicatie'], ['gri antracit', 'culoare'], ['RR29', 'culoare'],
     ['mat', 'finisaj'], ['7 module', 'module'], ['100 × 60 mm', 'dimensiune'], ['60°', 'dimensiune'],
     ['120 g/m²', 'cantitate'], ['75 m²', 'cantitate'], ['3 straturi', 'caracteristica'],
+    ['700 W', 'putere'], ['clasa E', 'energie'], ['clasa A++', 'energie'], ['GPL', 'alimentare'], ['gaz natural', 'alimentare'],
+    ['argintiu', 'culoare'], ['no frost', 'caracteristica'], ['Wi-Fi', 'caracteristica'], ['IPX5', 'caracteristica'], ['1,5 l', 'cantitate'],
 ] as [$tag, $grp]) {
     ok(classifyTag($tag, $brands, $types) === $grp, "clasificare: „{$tag}\" => $grp");
 }
@@ -171,6 +173,14 @@ if (is_file($real2)) {
     $g = classifyCatalogTags($p['products']);
     ok(!isset($g['grosime 0']) && ($g['grosime 0,4 mm'] ?? '') === 'grosime', 'fisier real 2: grosimile refacute (0,40 => 0,4)');
     ok(array_keys(array_filter($g, fn ($x) => $x === 'aplicatie')) === ['evacuare', 'evacuare fum'], 'fisier real 2: la colectii raman doar aplicatiile reale');
+}
+$real3 = __DIR__ . '/../../../Fisiere de lucru/Prouse Dunlite client/electrocasnice_MU.xlsx';
+if (is_file($real3)) {
+    $p = parseCatalogRows(readXlsxSheet($real3, null));
+    ok($p['errors'] === [] && count($p['products']) === 200,           'fisier real 3 (electrocasnice): 200 produse, 0 erori');
+    $g = classifyCatalogTags($p['products']);
+    ok(!in_array('aplicatie', $g, true),                               'fisier real 3: niciun atribut ajuns la colectii');
+    ok(($g['700 W'] ?? '') === 'putere' && ($g['clasa E'] ?? '') === 'energie' && ($g['electrocasnice'] ?? '') === 'ignorat', 'fisier real 3: putere, clasa energetica, numele categoriei ignorat');
 }
 
 echo "\nRezultat: $pass passed, $fail failed\n";

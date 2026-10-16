@@ -15,7 +15,17 @@ function homeFeatured(int $limit = 6): array
     try {
         $pdo = Database::get();
         $picked = [];
-        foreach (siteNavItems() as $it) {
+        // grupele, luate pe rand din fiecare ramura (Acoperis, Aragazuri, Adezivi, Aspiratoare...)
+        $byRoot = [];
+        // doar ramurile mari (de la 20 de produse); o ramura cu 1–2 produse nu e „reprezentativa"
+        $big = array_column(array_filter(siteNavItems(), fn ($r) => $r['count'] >= 20), 'id');
+        foreach (siteNavGroups() as $g) { if (!$big || in_array($g['root'], $big, true)) { $byRoot[$g['root']][] = $g; } }
+        $groups = [];
+        for ($i = 0; $byRoot && $i < 50; $i++) {
+            foreach ($byRoot as $r => $list) { if (isset($list[$i])) { $groups[] = $list[$i]; } }
+            if (!array_filter($byRoot, fn ($l) => isset($l[$i + 1]))) { break; }
+        }
+        foreach ($groups as $it) {
             $ids = catDescendantIds($it['id']);
             $id = $pdo->query('SELECT id FROM products WHERE is_visible = 1 AND barcode IS NOT NULL AND price > 0
                                AND stock_status <> \'indisponibil\' AND category_id IN (' . implode(',', array_map('intval', $ids)) . ")
@@ -40,7 +50,7 @@ function homeFeatured(int $limit = 6): array
 function renderHomeCategoryCards(): string
 {
     $out = '';
-    foreach (siteNavItems() as $it) {
+    foreach (siteNavGroups() as $it) {
         $sub = implode(', ', array_map(fn ($c) => $c['name'], array_slice($it['children'], 0, 3)));
         $out .= '<a href="' . e($it['url']) . '" class="cat-card">'
               . '<div class="cat-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg></div>'

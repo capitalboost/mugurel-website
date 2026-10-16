@@ -898,3 +898,26 @@ img { max-width: 100%; }
 .f-col--cats ul { columns: 2; column-gap: 24px; }
 .f-col--cats ul li { break-inside: avoid; margin: 0 0 8px; }
 .f-col--cats ul li + li { margin-top: 0; }
+
+/* Meniul de sus: ramurile principale cu panou derulant (fara JS: :hover si :focus-within) */
+@media (min-width: 769px) {
+  .nav-inner { overflow: visible; flex-wrap: nowrap; }
+  .nav-dd { position: relative; display: flex; }
+  .nav-dd-caret { width: 12px; height: 12px; margin-left: 2px; opacity: .8; transition: transform 150ms; }
+  .nav-dd:hover .nav-dd-caret, .nav-dd:focus-within .nav-dd-caret { transform: rotate(180deg); }
+  .nav-dd-menu { display: none; position: absolute; top: 100%; left: 0; z-index: 300; min-width: 280px; max-width: min(920px, calc(100vw - 48px)); background: #fff; border: 1px solid var(--border); border-top: 3px solid var(--verde-mid); border-radius: 0 0 var(--radius) var(--radius); box-shadow: 0 12px 32px rgba(0,0,0,.16); padding: 16px 18px 12px; }
+  .nav-dd:hover .nav-dd-menu, .nav-dd:focus-within .nav-dd-menu { display: block; }
+  .nav-dd-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(190px, 1fr)); gap: 14px 22px; width: max-content; max-width: 100%; }
+  .nav-dd-menu:has(.nav-dd-group:nth-child(4)) .nav-dd-grid { grid-template-columns: repeat(3, minmax(190px, 1fr)); }
+  .nav-dd-menu:has(.nav-dd-group:nth-child(7)) .nav-dd-grid { grid-template-columns: repeat(4, minmax(180px, 1fr)); }
+  .nav-dd-group { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+  .nav-dd-title { font-weight: 700; color: var(--verde); font-size: 14px; padding: 3px 0; display: flex; justify-content: space-between; gap: 8px; }
+  .nav-dd-title span { color: #999; font-weight: 400; font-size: 12px; }
+  .nav-dd-title:hover { color: var(--verde-mid); text-decoration: underline; }
+  .nav-dd-link { color: #444; font-size: 13px; padding: 2px 0; }
+  .nav-dd-link:hover { color: var(--verde-mid); text-decoration: underline; }
+  .nav-dd-all { display: inline-block; margin-top: 12px; padding-top: 10px; border-top: 1px solid #eef0f0; width: 100%; font-size: 13px; font-weight: 600; color: var(--verde-mid); }
+  .nav-dd-all:hover { text-decoration: underline; }
+  /* panoul ultimei ramuri mari nu iese din ecran in dreapta */
+  .nav-dd:nth-child(n+2) .nav-dd-menu { left: auto; right: auto; }
+}

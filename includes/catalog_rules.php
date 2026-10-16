@@ -18,12 +18,19 @@ const TAG_IGNORED = ['construcții', 'constructii'];
 const SPEC_INTERNAL_KEYS = ['Sursă date tehnice'];
 
 const TAG_LISTS = [
-    'culoare'        => ['alb', 'negru', 'gri', 'maro', 'roșu', 'verde', 'galben', 'albastru', 'antracit', 'transparent'],
+    'culoare'        => ['alb', 'negru', 'gri', 'maro', 'roșu', 'verde', 'galben', 'albastru', 'antracit', 'transparent',
+                         'argintiu', 'bej', 'bordo', 'crem', 'portocaliu', 'mov', 'roz', 'auriu', 'violet', 'turcoaz'],
+    'alimentare'     => ['gaz', 'gpl', 'gaz natural', 'mixt', 'electric', 'acumulator', 'baterii', 'rețea', 'retea'],
     'utilizare'      => ['interior', 'exterior', 'interior/exterior'],
     'material'       => ['oțel', 'plastic', 'zincat', 'amprentat', 'aluminiu', 'cupru', 'pvc', 'lemn', 'inox', 'fontă'],
     'compozitie'     => ['var-ciment', 'pe bază de ipsos', 'pe bază de ciment', 'ciment alb', 'pe bază de var'],
     'caracteristica' => ['flexibil', 'aplicare mecanizată', 'trafic greu', 'rapid', 'hidrofob', 'perforat', 'cu capac',
-                         'colțar exterior', 'colțar interior', 'cocoș de vânt'],
+                         'colțar exterior', 'colțar interior', 'cocoș de vânt',
+                         // electrocasnice
+                         'bluetooth', 'wi-fi', 'wifi', 'no frost', 'less frost', 'static', 'de mână', 'de masă', 'vertical', 'robot',
+                         'fără fir', 'cu sac', 'fără sac', 'umed și uscat', 'pentru cenușă', 'filtru hepa', 'dozator apă', 'grill',
+                         'rotisor', 'tocător', 'smoothie', 'karaoke', 'lanternă', 'aprindere automată', 'inverter', 'retro',
+                         'metal look', 'cuptor electric', 'display', 'telecomandă', 'touch'],
     'finisaj'        => ['mat', 'lucios', 'emailat', 'satinat', 'texturat', 'lăcuit', 'vopsit'],
 ];
 
@@ -39,6 +46,10 @@ const TAG_PATTERNS = [
     ['dimensiune', '/^\d+(?:[.,]\d+)?\s*°$/u'],                            // unghi (ex. cot 60°)
     ['cantitate',  '/^\d+(?:[.,]\d+)?\s*(?:g\/m²|g\/m2|m²|m2)$/u'],
     ['caracteristica', '/^\d+\s*straturi$/u'],
+    ['putere',     '/^\d+(?:[.,]\d+)?\s*k?W$/u'],                          // 700 W, 1,2 kW
+    ['energie',    '/^clasa\s+[A-G]\+{0,3}$/iu'],                            // clasa energetica: clasa E, clasa A++
+    ['caracteristica', '/^IP[X\d]\d$/u'],                                    // protectie la apa (IPX5, IP44)
+    ['caracteristica', '/^\d+\s*ochiuri$/u'],                                // aragaz: 2 ochiuri
     ['granulatie', '/^\d+(?:[.,]\d+)?\s*[–-]\s*\d+(?:[.,]\d+)?\s*mm$/u'],
     ['lungime',    '/^\d+(?:[.,]\d+)?\s*m$/u'],
     ['cantitate',  '/^\d+(?:[.,]\d+)?\s*(?:kg|g|l|ml)$/u'],

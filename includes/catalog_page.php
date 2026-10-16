@@ -73,12 +73,15 @@ function catTreeForSidebar(): array
 {
     $cats = catCategories();
     $build = function (array $c) use (&$build, $cats): array {
+        $name = $c['name'];   // „Incalzire" ramane „Incalzire", chiar daca duce direct la singura ei subcategorie
         $c = catSkipSingleChild($c);
         $kids = [];
         foreach ($c['children'] as $ch) { if ($cats[$ch]['count'] > 0) { $kids[] = $build($cats[$ch]); } }
-        return ['id' => $c['id'], 'slug' => $c['slug'], 'name' => $c['name'], 'count' => $c['count'], 'children' => $kids];
+        return ['id' => $c['id'], 'slug' => $c['slug'], 'name' => $name, 'count' => $c['count'], 'children' => $kids];
     };
-    return array_map($build, catRoots());
+    $roots = catRoots();
+    usort($roots, fn ($a, $b) => $b['count'] <=> $a['count']); // ca in meniul de sus: ramurile mari primele
+    return array_map($build, $roots);
 }
 
 /** Breadcrumb-ul unei categorii, fara categoriile „de trecere". @return list<array{0:string,1:?string}> */

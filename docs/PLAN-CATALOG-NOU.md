@@ -117,3 +117,16 @@ la singura subcategorie.
 - Teste: `dev/e2e/tests/admin-catalog.spec.js` (5 teste: acces fara login, cautare/filtre, produs nou cu validare + pagina
   pe site + colectie dupa tag + stergere, stoc/vizibilitate pe site, import gresit respins + import real fara dubluri).
   `admin-stoc.spec.js` (catalogul vechi) sters.
+
+### Al treilea fisier — `electrocasnice_MU.xlsx`: IMPORTAT local (16 oct)
+200 produse, ramura noua **Electrocasnice**: Gatit (aragazuri 48 + portabile 4), Electrocasnice mici (aspiratoare 36,
+blendere 28, fierbator 1), Audio (boxe portabile 31), Aparate frigorifice (combine 52). **Total local: 511 produse.**
+Calitatea datelor: 78 OK, 83 „De verificat", **39 „Negasit"**; **55 fara descriere**, 20 fara specificatii.
+Reguli noi: grupe **Putere** (700 W), **Clasa energetica** (clasa E), **Alimentare** (gaz, GPL, acumulator), culori
+(argintiu, bej, bordo…) si caracteristici (no frost, cu/fara sac, Bluetooth, IPX5…). Niciun atribut nu mai ajunge la colectii.
+`/electrocasnice.html` (adresa veche) = acum categoria noua.
+
+**Meniul de sus refacut:** cu 4 ramuri si 14 grupe nu mai incapea (1675 px pe 1280). Acum: ramurile principale
+(Materiale constructii ▾, Electrocasnice ▾, Incalzire, Instalatii electrice) cu **panou derulant** (grupe + subcategorii,
+CSS :hover/:focus-within, fara JS), apoi Toate produsele, Contact, UE. Sidebar-ul si prima pagina: ramurile mari primele;
+produsele recomandate alternativ din ramurile cu 20+ produse.

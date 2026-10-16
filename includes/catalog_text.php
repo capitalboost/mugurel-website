@@ -10,7 +10,8 @@
 /** Grupele de tag-uri (tags.grp), in ordinea in care apar filtrele pe pagina; numele afisat. */
 const TAG_GROUP_LABELS = [
     'tip' => 'Tip produs', 'brand' => 'Brand', 'dimensiune' => 'Dimensiune', 'grosime' => 'Grosime',
-    'diametru' => 'Diametru', 'lungime' => 'Lungime', 'module' => 'Lungime (module)', 'cantitate' => 'Cantitate', 'culoare' => 'Culoare',
+    'diametru' => 'Diametru', 'lungime' => 'Lungime', 'module' => 'Lungime (module)', 'cantitate' => 'Cantitate / capacitate', 'putere' => 'Putere', 'energie' => 'Clasă energetică',
+    'alimentare' => 'Alimentare', 'culoare' => 'Culoare',
     'finisaj' => 'Finisaj',
     'material' => 'Material', 'utilizare' => 'Utilizare', 'clasa' => 'Clasă / standard', 'compozitie' => 'Compoziție',
     'caracteristica' => 'Caracteristici', 'granulatie' => 'Granulație', 'aplicatie' => 'Aplicații',

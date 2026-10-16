@@ -93,8 +93,27 @@ $hs = fn ($v) => htmlspecialchars((string) $v, ENT_QUOTES, 'UTF-8');
 <!-- NAV -->
 <nav class="nav">
   <div class="nav-inner">
-    <?php foreach ($navItems as $it): ?>
-    <a href="<?= $hs($it['url']) ?>" class="nav-item<?= in_array($it['id'], $navActive, true) ? ' nav-item--active' : '' ?>"<?= in_array($it['id'], $navActive, true) ? ' aria-current="true"' : '' ?>><?= $hs($it['name']) ?></a>
+    <?php foreach ($navItems as $it): $act = in_array($it['id'], $navActive, true); ?>
+    <?php if ($it['children']): ?>
+    <div class="nav-dd">
+      <a href="<?= $hs($it['url']) ?>" class="nav-item nav-dd-toggle<?= $act ? ' nav-item--active' : '' ?>" aria-haspopup="true"<?= $act ? ' aria-current="true"' : '' ?>><?= $hs($it['name']) ?><svg class="nav-dd-caret" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polyline points="6 9 12 15 18 9"/></svg></a>
+      <div class="nav-dd-menu">
+        <div class="nav-dd-grid">
+          <?php foreach ($it['children'] as $g): ?>
+          <div class="nav-dd-group">
+            <a href="<?= $hs($g['url']) ?>" class="nav-dd-title"><?= $hs($g['name']) ?> <span><?= (int) $g['count'] ?></span></a>
+            <?php foreach ($g['children'] as $sub): ?>
+            <a href="<?= $hs($sub['url']) ?>" class="nav-dd-link"><?= $hs($sub['name']) ?></a>
+            <?php endforeach; ?>
+          </div>
+          <?php endforeach; ?>
+        </div>
+        <a href="<?= $hs($it['url']) ?>" class="nav-dd-all">Toate produsele din <?= $hs($it['name']) ?> (<?= (int) $it['count'] ?>) &rarr;</a>
+      </div>
+    </div>
+    <?php else: ?>
+    <a href="<?= $hs($it['url']) ?>" class="nav-item<?= $act ? ' nav-item--active' : '' ?>"<?= $act ? ' aria-current="true"' : '' ?>><?= $hs($it['name']) ?></a>
+    <?php endif; ?>
     <?php endforeach; ?>
     <a href="/catalog.html" class="nav-item<?= ($navCatalog ?? false) ? ' nav-item--active' : '' ?>">Toate produsele</a>
     <a href="/contact.html" class="nav-item<?= ($pageData['slug'] ?? $pageSlugActive ?? '') === 'contact' ? ' nav-item--active' : '' ?>">Contact</a>
