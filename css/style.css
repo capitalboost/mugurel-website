@@ -893,3 +893,8 @@ img { max-width: 100%; }
   .home-main .cat-section { order: 2; }
   .home-main .about-banner { order: 3; }
 }
+/* Footer: categoriile pe doua coloane, ca lista sa nu fie mai lunga decat celelalte coloane */
+@media (min-width: 1025px) { .footer-top { grid-template-columns: 1.3fr 1.9fr 1fr 1.2fr; } }
+.f-col--cats ul { columns: 2; column-gap: 24px; }
+.f-col--cats ul li { break-inside: avoid; margin: 0 0 8px; }
+.f-col--cats ul li + li { margin-top: 0; }
