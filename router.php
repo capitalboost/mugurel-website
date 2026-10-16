@@ -85,10 +85,18 @@ if (isset(LEGACY_REDIRECTS[$slug])) {
 }
 
 // ── pagina statica ──
-$db = Database::get();
-$stmt = $db->prepare('SELECT * FROM pages WHERE slug = ? AND is_published = 1');
-$stmt->execute([$slug]);
-$pageData = $stmt->fetch();
+try {
+    $stmt = Database::get()->prepare('SELECT * FROM pages WHERE slug = ? AND is_published = 1');
+    $stmt->execute([$slug]);
+    $pageData = $stmt->fetch();
+} catch (Throwable $e) {
+    // baza indisponibila: raspuns scurt, fara detalii (mesajul de conectare poate contine utilizatorul bazei)
+    error_log('router.php: ' . $e->getMessage());
+    http_response_code(503);
+    header('Retry-After: 300');
+    echo '<h1>Site-ul este temporar indisponibil</h1><p>Revino in cateva minute sau suna la 0749 130 565.</p>';
+    exit;
+}
 if (!$pageData) {
     http_response_code(404);
     if (file_exists(__DIR__ . '/404.html')) {

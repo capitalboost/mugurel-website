@@ -15,16 +15,19 @@ deployment:
     - /bin/cp -R uploads $DEPLOYPATH
     - /bin/cp router.php $DEPLOYPATH
     - /bin/cp .htaccess $DEPLOYPATH
-    - /bin/cp *.html $DEPLOYPATH
     - /bin/cp *.txt $DEPLOYPATH
     # sitemap.xml se genereaza din catalog (sitemap.php); nu mai exista fisiere .xml de copiat
+    # Fiecare tipar de mai jos TREBUIE sa gaseasca macar un fisier: un tipar fara potrivire opreste deploy-ul
+    # la jumatate (16 oct 2026: „cp *.html" dupa ce paginile .html au devenit .php). Verificat de
+    # Website-dezvoltare/dev/test_fresh_deploy.sh, care ruleaza toti pasii acestui fisier.
     - /bin/cp *.svg $DEPLOYPATH
+    - /bin/cp *.png $DEPLOYPATH
     - /bin/cp *.php $DEPLOYPATH
     - cd $DEPLOYPATH && for f in *.php; do [ -f "${f%.php}.html" ] && rm -f "${f%.php}.html"; done; true
     - /bin/rm -f $DEPLOYPATH/__diag.php
     # Catalogul vechi (pana la 16 oct 2026): paginile fixe de categorie ar avea prioritate fata de categoriile noi
     # (/acoperis.html ar deschide acoperis.php, nu categoria noua). Deploy-ul doar copiaza, deci le stergem explicit.
-    - cd $DEPLOYPATH && /bin/rm -f acoperis.php izolatie.php gips-carton.php zidarie-bca.php gard-imprejmuiri.php electrice.php incalzire.php sanitare.php apa-canal.php gradina.php mobilier.php electrocasnice.php scule-unelte.php includes/page_bootstrap.php templates/category.php js/produse-acasa.js sitemap.xml && /bin/rm -rf admin/tests
+    - cd $DEPLOYPATH && /bin/rm -f acoperis.php izolatie.php gips-carton.php zidarie-bca.php gard-imprejmuiri.php electrice.php incalzire.php sanitare.php apa-canal.php gradina.php mobilier.php electrocasnice.php scule-unelte.php includes/page_bootstrap.php templates/category.php js/produse-acasa.js sitemap.xml includes/products_repo.php includes/product_icons.php admin/models/Product.php admin/models/ProductProperty.php && /bin/rm -rf admin/tests
     # PHP din linia de comanda pe cPanel e adesea alta versiune decat handlerul web.
     # Incercam intai binarul ea-php81 explicit, apoi alternativele, si scriem tot
     # output-ul intr-un log ca sa nu mai esueze in tacere.

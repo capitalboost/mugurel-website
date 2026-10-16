@@ -5,11 +5,22 @@
 </IfModule>
 # php -- END cPanel-generated handler, do not edit
 
+# Fara listarea continutului folderelor (img/produse/, includes/lib/ ...)
+Options -Indexes
+
 # ============================================================
 # URL Routing — categorii si pagini statice catre router.php
 # ============================================================
 <IfModule mod_rewrite.c>
     RewriteEngine On
+
+    # Cod PHP inclus de pagini (nu se ruleaza direct) si jurnalul deploy-ului: interzise din browser
+    RewriteRule ^(includes|templates|db)(/|$) - [F,L]
+    RewriteRule ^__deploy_[^/]*\.log$ - [F,L]
+
+    # css/js cerute cu versiune (?v=<data fisierului>, puse de sabloane): se pot tine in cache un an
+    RewriteCond %{QUERY_STRING} (^|&)v=[0-9]+
+    RewriteRule \.(css|js)$ - [E=ASSET_VERSIONED:1]
 
     # Admin — nu atinge
     RewriteRule ^admin/ - [L]
@@ -34,7 +45,7 @@
     RewriteRule ^([a-z0-9][a-z0-9-]*)\.html?$ /router.php?slug=$1 [L,QSA]
 
     # /slug/ sau /slug → router.php
-    RewriteRule ^([a-z0-9][a-z0-9-]*)/? /router.php?slug=$1 [L,QSA]
+    RewriteRule ^([a-z0-9][a-z0-9-]*)/?$ /router.php?slug=$1 [L,QSA]
 </IfModule>
 
 # ============================================================
@@ -55,6 +66,12 @@
 
     # Permissions Policy
     Header always set Permissions-Policy "camera=(), microphone=(), geolocation=(), payment=()"
+
+    # Cache: css/js versionate — un an (versiunea se schimba la fiecare deploy); pozele — 30 de zile
+    Header set Cache-Control "public, max-age=31536000, immutable" env=ASSET_VERSIONED
+    <FilesMatch "\.(webp|png|jpe?g|gif|svg|ico|woff2?)$">
+        Header set Cache-Control "public, max-age=2592000"
+    </FilesMatch>
 
     # Content Security Policy
     Header always set Content-Security-Policy "default-src 'self'; script-src 'self' 'unsafe-inline' https://www.googletagmanager.com https://www.google-analytics.com https://www.clarity.ms https://*.clarity.ms; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https:; frame-src https://maps.google.com https://www.google.com; connect-src 'self' https://www.google-analytics.com https://www.googletagmanager.com https://*.clarity.ms https://c.bing.com; frame-ancestors 'none'"

@@ -48,44 +48,65 @@ CALL mig002_add_index('categories', 'idx_parent', 'KEY idx_parent (parent_id)');
 CALL mig002_add_fk('categories', 'fk_cat_parent',
     'CONSTRAINT fk_cat_parent FOREIGN KEY (parent_id) REFERENCES categories(id) ON UPDATE CASCADE ON DELETE RESTRICT');
 
--- ── 2. Nume fara diacritice (conventia site-ului) ─────────────────────
-UPDATE categories SET name='Acoperis'           WHERE slug='acoperis';
-UPDATE categories SET name='Izolatie'           WHERE slug='izolatie';
-UPDATE categories SET name='Gips Carton'        WHERE slug='gips-carton';
-UPDATE categories SET name='Zidarie BCA'        WHERE slug='zidarie-bca';
-UPDATE categories SET name='Gard & Imprejmuiri' WHERE slug='gard-imprejmuiri';
-UPDATE categories SET name='Incalzire'          WHERE slug='incalzire';
-UPDATE categories SET name='Gradina'            WHERE slug='gradina';
-UPDATE categories SET name='Apa & Canal'        WHERE slug='apa-canal';
+-- ── 2–4. Date pentru catalogul VECHI (pana la 16 oct 2026) ─────────────
+-- Ruleaza doar cat timp catalogul nou nu exista (niciun produs cu cod de bare). Dupa importul catalogului nou,
+-- aceste instructiuni ar muta „Acoperis" sub o categorie noua „Constructii", i-ar scoate diacriticele si ar crea
+-- subcategorii vechi goale — la FIECARE deploy (deploy_db.php ruleaza toate migrarile de fiecare data).
+DROP PROCEDURE IF EXISTS mig002_legacy_data;
+DELIMITER //
+CREATE PROCEDURE mig002_legacy_data()
+BEGIN
+    SET @mig002_new = 0;
+    IF EXISTS (SELECT 1 FROM information_schema.COLUMNS
+               WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = 'products' AND COLUMN_NAME = 'barcode') THEN
+        -- coloana apare abia cu migrarea 011, deci interogarea se construieste dinamic
+        PREPARE st FROM 'SELECT COUNT(*) INTO @mig002_new FROM products WHERE barcode IS NOT NULL';
+        EXECUTE st; DEALLOCATE PREPARE st;
+    END IF;
+    IF @mig002_new = 0 THEN
+    -- ── 2. Nume fara diacritice (conventia site-ului) ─────────────────────
+    UPDATE categories SET name='Acoperis'           WHERE slug='acoperis';
+    UPDATE categories SET name='Izolatie'           WHERE slug='izolatie';
+    UPDATE categories SET name='Gips Carton'        WHERE slug='gips-carton';
+    UPDATE categories SET name='Zidarie BCA'        WHERE slug='zidarie-bca';
+    UPDATE categories SET name='Gard & Imprejmuiri' WHERE slug='gard-imprejmuiri';
+    UPDATE categories SET name='Incalzire'          WHERE slug='incalzire';
+    UPDATE categories SET name='Gradina'            WHERE slug='gradina';
+    UPDATE categories SET name='Apa & Canal'        WHERE slug='apa-canal';
 
--- ── 3. Constructii ca parinte al celor 5 pagini de materiale ──────────
-INSERT IGNORE INTO categories (slug, name, sort_order) VALUES ('constructii','Constructii',0);
+    -- ── 3. Constructii ca parinte al celor 5 pagini de materiale ──────────
+    INSERT IGNORE INTO categories (slug, name, sort_order) VALUES ('constructii','Constructii',0);
 
-UPDATE categories SET parent_id = (SELECT id FROM (SELECT id FROM categories WHERE slug='constructii') AS c)
-WHERE slug IN ('acoperis','izolatie','gips-carton','zidarie-bca','gard-imprejmuiri');
+    UPDATE categories SET parent_id = (SELECT id FROM (SELECT id FROM categories WHERE slug='constructii') AS c)
+    WHERE slug IN ('acoperis','izolatie','gips-carton','zidarie-bca','gard-imprejmuiri');
 
--- ── 4. Cele 17 subcategorii din sidebar ───────────────────────────────
-INSERT IGNORE INTO categories (slug, name, parent_id, sort_order)
-SELECT v.slug, v.name, p.id, v.so FROM (
-    SELECT 'cabluri'         AS slug, 'Cabluri & Conductori' AS name, 'electrice' AS parent, 1 AS so UNION ALL
-    SELECT 'becuri',         'Becuri LED',           'electrice', 2 UNION ALL
-    SELECT 'aparataj',       'Aparataj Electric',    'electrice', 3 UNION ALL
-    SELECT 'iluminat',       'Corpuri Iluminat',     'electrice', 4 UNION ALL
-    SELECT 'centrale',       'Centrale termice',     'incalzire', 1 UNION ALL
-    SELECT 'radiatoare',     'Radiatoare',           'incalzire', 2 UNION ALL
-    SELECT 'aer-conditionat','Aer conditionat',      'incalzire', 3 UNION ALL
-    SELECT 'sobe',           'Sobe & Seminee',       'incalzire', 4 UNION ALL
-    SELECT 'baterii',        'Baterii de apa',       'sanitare',  1 UNION ALL
-    SELECT 'mobilier-baie',  'Mobilier baie',        'sanitare',  2 UNION ALL
-    SELECT 'accesorii-baie', 'Accesorii baie',       'sanitare',  3 UNION ALL
-    SELECT 'tevi',           'Tevi & Fitting',       'apa-canal', 1 UNION ALL
-    SELECT 'canalizare',     'Canalizare PVC',       'apa-canal', 2 UNION ALL
-    SELECT 'pompe',          'Pompe de apa',         'apa-canal', 3 UNION ALL
-    SELECT 'living',         'Living',               'mobilier',  1 UNION ALL
-    SELECT 'dormitor',       'Dormitor',             'mobilier',  2 UNION ALL
-    SELECT 'bucatarie',      'Bucatarie',            'mobilier',  3
-) AS v
-JOIN (SELECT id, slug FROM categories) AS p ON p.slug = v.parent;
+    -- ── 4. Cele 17 subcategorii din sidebar ───────────────────────────────
+    INSERT IGNORE INTO categories (slug, name, parent_id, sort_order)
+    SELECT v.slug, v.name, p.id, v.so FROM (
+        SELECT 'cabluri'         AS slug, 'Cabluri & Conductori' AS name, 'electrice' AS parent, 1 AS so UNION ALL
+        SELECT 'becuri',         'Becuri LED',           'electrice', 2 UNION ALL
+        SELECT 'aparataj',       'Aparataj Electric',    'electrice', 3 UNION ALL
+        SELECT 'iluminat',       'Corpuri Iluminat',     'electrice', 4 UNION ALL
+        SELECT 'centrale',       'Centrale termice',     'incalzire', 1 UNION ALL
+        SELECT 'radiatoare',     'Radiatoare',           'incalzire', 2 UNION ALL
+        SELECT 'aer-conditionat','Aer conditionat',      'incalzire', 3 UNION ALL
+        SELECT 'sobe',           'Sobe & Seminee',       'incalzire', 4 UNION ALL
+        SELECT 'baterii',        'Baterii de apa',       'sanitare',  1 UNION ALL
+        SELECT 'mobilier-baie',  'Mobilier baie',        'sanitare',  2 UNION ALL
+        SELECT 'accesorii-baie', 'Accesorii baie',       'sanitare',  3 UNION ALL
+        SELECT 'tevi',           'Tevi & Fitting',       'apa-canal', 1 UNION ALL
+        SELECT 'canalizare',     'Canalizare PVC',       'apa-canal', 2 UNION ALL
+        SELECT 'pompe',          'Pompe de apa',         'apa-canal', 3 UNION ALL
+        SELECT 'living',         'Living',               'mobilier',  1 UNION ALL
+        SELECT 'dormitor',       'Dormitor',             'mobilier',  2 UNION ALL
+        SELECT 'bucatarie',      'Bucatarie',            'mobilier',  3
+    ) AS v
+    JOIN (SELECT id, slug FROM categories) AS p ON p.slug = v.parent;
+    END IF;
+END//
+DELIMITER ;
+CALL mig002_legacy_data();
+DROP PROCEDURE IF EXISTS mig002_legacy_data;
 
 -- ── 5. Plasare editoriala + iconita pe produse ────────────────────────
 CALL mig002_add_column('products', 'page_slug',   'page_slug   VARCHAR(80)  NOT NULL DEFAULT '''' AFTER category_id');

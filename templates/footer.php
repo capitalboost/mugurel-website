@@ -82,7 +82,7 @@
   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="18 15 12 9 6 15"/></svg>
 </button>
 
-<script src="/js/main.js"></script>
+<script src="<?= '/js/main.js?v=' . @filemtime(__DIR__ . '/../js/main.js') ?>"></script>
 
 <script src="<?= '/js/cos.js?v=' . @filemtime(__DIR__ . '/../js/cos.js') ?>" defer></script>
 <?php foreach (($pageScripts ?? []) as $script): /* scripturi proprii paginii, din js/, cu versiune */ ?>

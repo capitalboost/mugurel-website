@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 class Upload {
     private const ALLOWED = [
         'jpg'  => 'image/jpeg',
