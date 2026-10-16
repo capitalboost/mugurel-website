@@ -81,10 +81,21 @@ if ($old === null && $priceVal !== '' && $priceVal !== null) { $priceVal = numbe
         <label>Unitate de vanzare
           <input type="text" name="price_unit" maxlength="40" value="<?= $h($v('price_unit')) ?>" placeholder="bucata, sac, kg, m²">
         </label>
+        <?php
+          // stoc numarat (stock_qty) => optiunea „Numar pe stoc"; altfel starea aleasa de mana
+          $stockMode = $old !== null ? (string) ($old['stock_status'] ?? 'in_stoc')
+              : (($product['stock_qty'] ?? null) !== null ? 'cantitate' : (string) ($product['stock_status'] ?? 'in_stoc'));
+          $stockQtyVal = $old !== null ? (string) ($old['stock_qty'] ?? '')
+              : (($product['stock_qty'] ?? null) !== null ? formatQty((float) $product['stock_qty']) : '');
+        ?>
         <label>Stoc
-          <select name="stock_status">
-            <?php foreach (CatalogProduct::STOCK as $k => $l): ?><option value="<?= $k ?>"<?= $v('stock_status', 'in_stoc') === $k ? ' selected' : '' ?>><?= $l ?></option><?php endforeach; ?>
+          <select name="stock_status" data-stock-mode>
+            <?php foreach (CatalogProduct::STOCK as $k => $l): ?><option value="<?= $k ?>"<?= $stockMode === $k ? ' selected' : '' ?>><?= $l ?><?= $k === 'indisponibil' ? ' (fara stoc)' : '' ?></option><?php endforeach; ?>
+            <option value="cantitate"<?= $stockMode === 'cantitate' ? ' selected' : '' ?>>Numar pe stoc…</option>
           </select>
+        </label>
+        <label data-stock-qty<?= $stockMode === 'cantitate' ? '' : ' hidden' ?>>Cantitate pe stoc <span class="adm-muted">— in unitatea de vanzare; scade la fiecare comanda, la 0 devine „Indisponibil"</span>
+          <input type="text" name="stock_qty" inputmode="decimal" value="<?= $h($stockQtyVal) ?>" placeholder="ex. 12">
         </label>
       </div>
       <div class="form-row">
@@ -198,6 +209,12 @@ if ($old === null && $priceVal !== '' && $priceVal !== null) { $priceVal = numbe
     } else if (e.target.hasAttribute('data-spec-up') && row.previousElementSibling) {
       body.insertBefore(row, row.previousElementSibling);
     }
+  });
+  // „Numar pe stoc…" => apare campul de cantitate
+  var mode = document.querySelector('[data-stock-mode]'), qty = document.querySelector('[data-stock-qty]');
+  mode.addEventListener('change', function () {
+    qty.hidden = mode.value !== 'cantitate';
+    if (!qty.hidden) { qty.querySelector('input').focus(); }
   });
 })();
 </script>

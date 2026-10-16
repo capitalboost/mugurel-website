@@ -289,7 +289,7 @@ function catProductsPage(array $ids, string $sort, int $page, int $perPage = CAT
             default     => 'FIELD(p.id, ' . implode(',', $ids) . ')',
         };
         $sql = 'SELECT p.id, p.slug, p.name, p.short_description, p.image_path, p.image_alt, p.price, p.price_unit,
-                       p.price_is_from, p.stock_status, p.manufacturer, p.wa_text, c.name AS category_name, c.slug AS category_slug
+                       p.price_is_from, p.stock_status, p.stock_qty, p.manufacturer, p.wa_text, c.name AS category_name, c.slug AS category_slug
                 FROM products p JOIN categories c ON c.id = p.category_id
                 WHERE p.id IN (' . implode(',', array_map('intval', $ids)) . ")
                 ORDER BY $order

@@ -80,6 +80,9 @@ if (($_SERVER['REQUEST_METHOD'] ?? 'GET') === 'POST') {
                 // Redirect dupa POST: un refresh pe pagina de confirmare nu mai retrimite formularul.
                 header('Location: /comanda-trimisa.html?t=' . $order['token'], true, 303);
                 exit;
+            } catch (OrderStockException $e) {
+                http_response_code(409);
+                $cartError = 'Intre timp s-a schimbat stocul — ' . $e->getMessage();
             } catch (Throwable $e) {
                 error_log('orderCreate: ' . $e->getMessage());
                 http_response_code(503);

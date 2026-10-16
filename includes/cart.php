@@ -65,7 +65,7 @@ function cartProducts(array $ids): ?array
     try {
         $in = implode(',', array_fill(0, count($ids), '?'));
         $stmt = Database::get()->prepare(
-            "SELECT id, slug, name, price, price_unit, price_is_from, stock_status, image_path, image_alt, page_slug
+            "SELECT id, slug, name, price, price_unit, price_is_from, stock_status, stock_qty, image_path, image_alt, page_slug
              FROM products WHERE is_visible = 1 AND id IN ($in)"
         );
         $stmt->execute($ids);
@@ -104,7 +104,7 @@ function priceCart(array $items, array $products): array
         // Fiecare rand are aceleasi chei, oricare ar fi situatia lui.
         $line = [
             'id' => $it['id'], 'qty' => $it['qty'], 'orderable' => false, 'problem' => null,
-            'name' => null, 'unit' => null, 'decimals' => false, 'stock' => null, 'stock_label' => null,
+            'name' => null, 'unit' => null, 'decimals' => false, 'stock' => null, 'stock_label' => null, 'max' => null, 'over_stock' => false,
             'image' => null, 'url' => null, 'price_bani' => null, 'line_bani' => null,
         ];
 
@@ -119,7 +119,8 @@ function priceCart(array $items, array $products): array
             'unit'        => $p['price_unit'] ?: null,
             'decimals'    => cartAllowsDecimals($p['price_unit'] ?? null),
             'stock'       => $p['stock_status'] ?? 'in_stoc',
-            'stock_label' => STOCK_LABELS[$p['stock_status'] ?? ''] ?? null,
+            'stock_label' => stockText($p),
+            'max'         => stockQty($p), // stoc numarat: cosul nu trece peste el (null = nu se numara)
             'image'       => $p['image_path'] ?: null,
             'url'         => !empty($p['slug']) ? '/produs/' . rawurlencode($p['slug']) . '.html' : null, // pagina produsului
         ]);
@@ -130,6 +131,12 @@ function priceCart(array $items, array $products): array
                 : 'Pretul acestui produs se stabileste la cerere — te contactam pentru oferta.';
         } elseif (!$line['decimals'] && floor($it['qty']) != $it['qty']) {
             $line['problem'] = 'Cantitatea trebuie sa fie un numar intreg.';
+        } elseif ($line['max'] !== null && $it['qty'] > $line['max']) {
+            // randul ramane cu pret si cantitate, ca clientul sa poata micsora cantitatea direct din cos
+            $line['over_stock'] = true;
+            $line['price_bani'] = (int) round((float) $p['price'] * 100);
+            $line['problem'] = 'Mai avem doar ' . formatQty($line['max']) . ($line['unit'] ? ' ' . $line['unit'] : '')
+                . ' pe stoc — micsoreaza cantitatea.';
         } else {
             $priceBani = (int) round((float) $p['price'] * 100);
             $line['price_bani'] = $priceBani;

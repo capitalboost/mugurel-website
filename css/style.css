@@ -994,3 +994,4 @@ img { max-width: 100%; }
 /* Pozele reale de produs (img/produse, 16 oct): intregi pe alb, nu decupate — saci, aparate, profile lungi */
 .prod-img-wrap img.prod-img-photo { object-fit: contain; background: #fff; padding: 8px; box-sizing: border-box; }
 .cos-line-img { object-fit: contain; background: #fff; border: 1px solid var(--border); }
+.cos-line--over { background: #fffaf2; border-color: #f0d9a0; }

@@ -10,6 +10,7 @@
  * In ambele cazuri se intoarce comanda existenta, marcata 'duplicate' => true.
  */
 require_once __DIR__ . '/db.php';
+require_once __DIR__ . '/product_grid.php'; // formatQty() pentru mesajul de stoc
 
 const ORDER_DUPLICATE_WINDOW_SEC = 600;
 
@@ -71,6 +72,30 @@ function orderPurgeTechnicalData(PDO $pdo): int
     }
 }
 
+/** Stocul numarat nu mai ajunge pentru comanda (alt client a comandat intre timp). Nimic nu s-a salvat. */
+class OrderStockException extends RuntimeException {}
+
+/**
+ * Scade stocul produselor cu stoc numarat (stock_qty nu e NULL), in tranzactia comenzii. Randurile se blocheaza
+ * (FOR UPDATE), ca doua comenzi simultane sa nu vanda aceeasi bucata de doua ori. La 0 => „Indisponibil".
+ * @throws OrderStockException daca un produs nu mai are destul stoc
+ */
+function orderReserveStock(PDO $pdo, array $lines): void
+{
+    $lock = $pdo->prepare('SELECT stock_qty FROM products WHERE id = ? FOR UPDATE');
+    $take = $pdo->prepare("UPDATE products SET stock_qty = stock_qty - ?,
+                                  stock_status = IF(stock_qty <= 0, 'indisponibil', stock_status) WHERE id = ?");
+    foreach ($lines as $l) {
+        $lock->execute([$l['id']]);
+        $qty = $lock->fetchColumn();
+        if ($qty === false || $qty === null) { continue; } // stocul acestui produs nu se numara
+        if ((float) $qty + 0.0001 < (float) $l['qty']) {
+            throw new OrderStockException($l['name'] . ': mai sunt doar ' . formatQty((float) $qty) . ' pe stoc.');
+        }
+        $take->execute([$l['qty'], $l['id']]); // MySQL aplica SET in ordine: IF vede deja cantitatea noua
+    }
+}
+
 /**
  * Inregistreaza comanda. $data = orderFormValidate()['data'] (fara erori), $cart = priceCart() fara probleme.
  * @return array{id:int, number:string, token:string, duplicate:bool}
@@ -93,6 +118,7 @@ function orderCreate(PDO $pdo, array $data, array $cart, string $formToken, stri
                     'token' => $existing['public_token'], 'duplicate' => true];
         }
 
+        orderReserveStock($pdo, $lines);
         $token = bin2hex(random_bytes(24));
         $pdo->prepare(
             'INSERT INTO orders (public_token, form_token, content_hash, tip, nume, telefon, email, plata,

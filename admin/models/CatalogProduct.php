@@ -5,6 +5,7 @@
  */
 require_once __DIR__ . '/../../includes/catalog_text.php';
 require_once __DIR__ . '/../../includes/catalog_rules.php';
+require_once __DIR__ . '/../../includes/product_grid.php'; // formatQty() pentru stocul numarat
 
 class CatalogProduct {
     const PER_PAGE = 50;
@@ -42,7 +43,7 @@ class CatalogProduct {
         $pages = max(1, (int) ceil($total / self::PER_PAGE));
         $page = min($pages, max(1, (int) ($f['page'] ?? 1)));
         $stmt = $db->prepare('SELECT p.id, p.barcode, p.sku, p.slug, p.name, p.manufacturer, p.image_path, p.price, p.price_unit,
-                p.stock_status, p.verify_status, p.is_visible, c.name AS category_name
+                p.stock_status, p.stock_qty, p.verify_status, p.is_visible, c.name AS category_name
             FROM products p JOIN categories c ON c.id = p.category_id' . $sqlWhere
             . ' ORDER BY ' . self::categoryOrderSql() . ', p.sort_order, p.id LIMIT ' . self::PER_PAGE . ' OFFSET ' . (($page - 1) * self::PER_PAGE));
         $stmt->execute($params);
@@ -114,7 +115,19 @@ class CatalogProduct {
         $cat = Database::get()->prepare('SELECT COUNT(*) FROM categories WHERE id = ?');
         $cat->execute([$d['category_id']]);
         if ((int) $cat->fetchColumn() === 0) { $err[] = 'Alege o categorie.'; }
-        if (!isset(self::STOCK[$d['stock_status']])) { $err[] = 'Starea de stoc nu e valida.'; }
+        if (!isset(self::STOCK[$d['stock_status']]) && $d['stock_status'] !== 'cantitate') { $err[] = 'Starea de stoc nu e valida.'; }
+        // „Numar pe stoc": cantitatea se scade la fiecare comanda; starea afisata urmeaza cantitatea (0 => indisponibil)
+        $d['stock_qty'] = null;
+        if ($d['stock_status'] === 'cantitate') {
+            $rawQty = str_replace([' ', ','], ['', '.'], (string) ($in['stock_qty'] ?? ''));
+            if (is_numeric($rawQty) && (float) $rawQty >= 0 && (float) $rawQty < 100000000) {
+                $d['stock_qty'] = round((float) $rawQty, 2);
+                $d['stock_status'] = $d['stock_qty'] > 0 ? 'in_stoc' : 'indisponibil';
+            } else {
+                $err[] = 'Scrie cate unitati sunt pe stoc (0 sau mai mult, ex. 12 sau 7,5).';
+                $d['stock_status'] = 'in_stoc';
+            }
+        }
         if ($d['verify_status'] === '') { $d['verify_status'] = null; }
         elseif (!isset(self::VERIFY[$d['verify_status']])) { $err[] = 'Starea de verificare nu e valida.'; }
 
@@ -169,10 +182,10 @@ class CatalogProduct {
         $db->beginTransaction();
         try {
             $cols = ['barcode', 'sku', 'category_id', 'name', 'manufacturer', 'product_type', 'short_description', 'description_html',
-                     'image_path', 'image_alt', 'price', 'price_unit', 'stock_status', 'verify_status', 'internal_notes', 'is_visible', 'sort_order'];
+                     'image_path', 'image_alt', 'price', 'price_unit', 'stock_status', 'stock_qty', 'verify_status', 'internal_notes', 'is_visible', 'sort_order'];
             $vals = [$d['barcode'], $d['sku'] ?: null, $d['category_id'], $d['name'], $d['manufacturer'] ?: null, $d['product_type'] ?: null,
                      $d['short_description'] ?: (shortFromDescription($d['description_html']) ?: null), $d['description_html'] ?: null,
-                     $imagePath, $d['image_alt'] ?: null, $d['price'], $d['price_unit'] ?: null, $d['stock_status'], $d['verify_status'],
+                     $imagePath, $d['image_alt'] ?: null, $d['price'], $d['price_unit'] ?: null, $d['stock_status'], $d['stock_qty'], $d['verify_status'],
                      $d['internal_notes'] ?: null, $d['is_visible'], $d['sort_order']];
             if ($id) {
                 $db->prepare('UPDATE products SET ' . implode(', ', array_map(fn ($c) => "$c = ?", $cols)) . ', price_is_from = 0 WHERE id = ?')

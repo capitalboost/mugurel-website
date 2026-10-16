@@ -31,11 +31,37 @@ const STOCK_LABELS = [
     'indisponibil' => 'Indisponibil',
 ];
 
-/** Eticheta de stoc a unui card. Stare lipsa sau necunoscuta => nimic (nu promitem ce nu stim). */
-function stockLabel(array $p): string {
+/** Sub (sau egal cu) atatea unitati pe stoc, eticheta spune „Stoc limitat" (doar la produsele cu stoc numarat). */
+const STOCK_LOW = 5;
+
+/**
+ * Cantitatea de pe stoc, daca stocul produsului se numara (products.stock_qty); null = stare aleasa de mana.
+ * Cand se numara, stock_status e tinut in pas cu ea (0 => indisponibil) de admin si de comenzi.
+ */
+function stockQty(array $p): ?float {
+    return isset($p['stock_qty']) && $p['stock_qty'] !== '' ? (float) $p['stock_qty'] : null;
+}
+
+/** Cantitate fara zecimale inutile: 3, 2,5. */
+function formatQty(float $q): string {
+    return rtrim(rtrim(number_format($q, 2, ',', ''), '0'), ',');
+}
+
+/** Textul de stoc al unui produs (si in cos). Stare lipsa sau necunoscuta => null (nu promitem ce nu stim). */
+function stockText(array $p): ?string {
     $s = $p['stock_status'] ?? null;
-    if (!isset(STOCK_LABELS[$s])) { return ''; }
-    return '<span class="stock stock--' . $s . '">' . STOCK_LABELS[$s] . '</span>';
+    if (!isset(STOCK_LABELS[$s])) { return null; }
+    $q = stockQty($p);
+    if ($s === 'in_stoc' && $q !== null && $q > 0 && $q <= STOCK_LOW) {
+        return 'Stoc limitat: ' . formatQty($q) . (!empty($p['price_unit']) ? ' ' . $p['price_unit'] : '');
+    }
+    return STOCK_LABELS[$s];
+}
+
+/** Eticheta de stoc a unui card / a paginii de produs. */
+function stockLabel(array $p): string {
+    $t = stockText($p);
+    return $t === null ? '' : '<span class="stock stock--' . $p['stock_status'] . '">' . e($t) . '</span>';
 }
 
 /**

@@ -68,7 +68,7 @@ $sel = fn (string $k, string $v) => $filters[$k] === $v ? ' selected' : '';
       </td>
       <td class="adm-small"><?= $h($p['category_name']) ?></td>
       <td class="adm-nowrap"><?= $p['price'] !== null ? number_format((float) $p['price'], 2, ',', '.') . ' lei' . ($p['price_unit'] ? ' / ' . $h($p['price_unit']) : '') : '<span class="adm-badge adm-badge--warn">la cerere</span>' ?></td>
-      <td class="adm-small"><?= $h(CatalogProduct::STOCK[$p['stock_status']] ?? $p['stock_status']) ?></td>
+      <td class="adm-small"><?= $h(CatalogProduct::STOCK[$p['stock_status']] ?? $p['stock_status']) ?><?= $p['stock_qty'] !== null ? ' <span class="adm-muted">(' . $h(formatQty((float) $p['stock_qty'])) . ')</span>' : '' ?></td>
       <td><?php if ($p['verify_status'] === 'ok'): ?><span class="adm-badge adm-badge--ok">Verificat</span>
           <?php elseif ($p['verify_status'] === 'negasit'): ?><span class="adm-badge adm-badge--danger">Negasit</span>
           <?php elseif ($p['verify_status'] === 'de_verificat'): ?><span class="adm-badge adm-badge--warn">De verificat</span><?php endif; ?></td>

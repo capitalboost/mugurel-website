@@ -49,7 +49,7 @@
       : '<div class="cos-line-img cos-line-img--none" aria-hidden="true"></div>';
     var name = l.name ? esc(l.name) : 'Produs indisponibil (cod ' + esc(l.id) + ')';
 
-    if (!l.orderable) {
+    if (!l.orderable && !l.over_stock) {
       return '<li class="cos-line cos-line--problem" data-id="' + esc(l.id) + '">' + img +
         '<div class="cos-line-main">' +
           '<p class="cos-line-name">' + name + '</p>' +
@@ -63,11 +63,14 @@
     var inputId = 'qty-' + esc(l.id);
     // numele duce la pagina produsului (doar adrese interne /produs/..., venite de la server)
     var nameHtml = l.url && /^\/produs\/[a-z0-9%-]+\.html$/.test(l.url) ? '<a href="' + esc(l.url) + '">' + name + '</a>' : name;
-    return '<li class="cos-line" data-id="' + esc(l.id) + '" data-decimals="' + (l.decimals ? '1' : '0') + '">' + img +
+    // peste stoc: randul ramane cu cantitatea, ca sa poata fi micsorata pe loc
+    var over = l.over_stock ? '<p class="cos-line-problem" role="alert">' + esc(l.problem) + '</p>' : '';
+    return '<li class="cos-line' + (l.over_stock ? ' cos-line--over' : '') + '" data-id="' + esc(l.id) + '" data-decimals="' + (l.decimals ? '1' : '0') + '"' +
+      (l.max !== null && l.max !== undefined ? ' data-max="' + esc(l.max) + '"' : '') + '>' + img +
       '<div class="cos-line-main">' +
         '<p class="cos-line-name">' + nameHtml + '</p>' +
         '<p class="cos-line-price">' + esc(l.price_label) + unit + '</p>' +
-        stock +
+        stock + over +
       '</div>' +
       '<div class="cos-qty">' +
         '<label class="cos-qty-label" for="' + inputId + '">Cantitate' + (l.unit ? ' (' + esc(l.unit) + ')' : '') + '</label>' +
@@ -78,7 +81,7 @@
           '<button type="button" data-action="plus" aria-label="Creste cantitatea">+</button>' +
         '</div>' +
       '</div>' +
-      '<p class="cos-line-total" aria-label="Subtotal">' + esc(l.line_label) + '</p>' +
+      '<p class="cos-line-total" aria-label="Subtotal">' + esc(l.line_label || '') + '</p>' +
       '<button type="button" class="cos-remove" data-action="remove" aria-label="Scoate ' + name + ' din cos">Scoate</button>' +
     '</li>';
   }
@@ -86,6 +89,8 @@
   function render(cart) {
     if (!cart.lines.length) { showEmpty(); return; }
     var blocked = cart.problem_count > 0;
+    // doar cantitati peste stoc (nimic de scos din cos) => alt mesaj
+    var onlyOver = blocked && cart.lines.every(function (l) { return l.orderable || l.over_stock; });
     var canContinue = cart.orderable_count > 0 && !blocked;
 
     app.innerHTML =
@@ -96,7 +101,9 @@
           '<p class="cos-summary-row cos-summary-total"><span>Total (cu TVA)</span><span data-cos-total>' + esc(cart.total_label) + '</span></p>' +
           '<p class="cos-summary-note">Costul transportului nu este inclus.</p>' +
           (blocked
-            ? '<p class="cos-msg cos-msg--warn" role="alert">Unele produse nu se pot comanda online. Scoate-le din cos ca sa continui — sau suna la ' + PHONE + '.</p>'
+            ? '<p class="cos-msg cos-msg--warn" role="alert">' + (onlyOver
+                ? 'Micsoreaza cantitatea la produsele marcate (nu avem destul pe stoc) ca sa continui — sau suna la ' + PHONE + '.'
+                : 'Unele produse nu se pot comanda online. Scoate-le din cos ca sa continui — sau suna la ' + PHONE + '.') + '</p>'
             : '') +
           (canContinue
             ? '<a class="btn-cart cos-continue" href="/comanda.html">Continua comanda</a>'
@@ -139,7 +146,9 @@
 
   function lineOf(el) {
     var li = el.closest('.cos-line');
-    return li ? { li: li, id: parseInt(li.getAttribute('data-id'), 10), decimals: li.getAttribute('data-decimals') === '1' } : null;
+    var max = li && li.getAttribute('data-max');
+    return li ? { li: li, id: parseInt(li.getAttribute('data-id'), 10), decimals: li.getAttribute('data-decimals') === '1',
+                  max: max !== null && max !== '' ? parseFloat(max) : null } : null;
   }
 
   function normalizeQty(value, decimals) {
@@ -167,6 +176,7 @@
       var cur = normalizeQty(input.value, line.decimals) || 1;
       var next = action === 'plus' ? cur + 1 : cur - 1;
       if (next < (line.decimals ? 0.01 : 1)) { return; } // scoaterea se face explicit, cu „Scoate"
+      if (action === 'plus' && line.max !== null && next > line.max) { next = line.max; } // nu peste stoc
       next = normalizeQty(next, line.decimals);
       input.value = fmtQty(next);
       Cos.setQty(line.id, next);
