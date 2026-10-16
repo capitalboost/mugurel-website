@@ -96,6 +96,8 @@ if ($old === null && $priceVal !== '' && $priceVal !== null) { $priceVal = numbe
         </label>
         <label data-stock-qty<?= $stockMode === 'cantitate' ? '' : ' hidden' ?>>Cantitate pe stoc <span class="adm-muted">— in unitatea de vanzare; scade la fiecare comanda, la 0 devine „Indisponibil"</span>
           <input type="text" name="stock_qty" inputmode="decimal" value="<?= $h($stockQtyVal) ?>" placeholder="ex. 12">
+          <?php // cantitatea din baza la deschidere (la eroare de validare ramane cea initiala) ?>
+          <input type="hidden" name="stock_qty_orig" value="<?= $h($old !== null ? (string) ($old['stock_qty_orig'] ?? '') : (($product['stock_qty'] ?? null) !== null ? (string) (float) $product['stock_qty'] : '')) ?>">
         </label>
       </div>
       <div class="form-row">
@@ -115,7 +117,7 @@ if ($old === null && $priceVal !== '' && $priceVal !== null) { $priceVal = numbe
     <fieldset class="adm-fieldset">
       <legend>Poza</legend>
       <?php if ($isEdit && $product['image_path']): ?>
-      <img src="<?= $h($product['image_path']) ?>" alt="" class="adm-img-preview">
+      <img src="<?= $h('/' . ltrim($product['image_path'], '/')) ?>" alt="" class="adm-img-preview">
       <label class="adm-check"><input type="checkbox" name="remove_image" value="1"> Sterge poza</label>
       <?php endif; ?>
       <div class="form-row">

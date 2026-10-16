@@ -118,6 +118,9 @@ class CatalogProduct {
         if (!isset(self::STOCK[$d['stock_status']]) && $d['stock_status'] !== 'cantitate') { $err[] = 'Starea de stoc nu e valida.'; }
         // „Numar pe stoc": cantitatea se scade la fiecare comanda; starea afisata urmeaza cantitatea (0 => indisponibil)
         $d['stock_qty'] = null;
+        // cantitatea din baza cand s-a deschis formularul: la salvare se aplica doar diferenta (vanzarile facute intre timp raman)
+        $origQty = str_replace([' ', ','], ['', '.'], (string) ($in['stock_qty_orig'] ?? ''));
+        $d['stock_qty_orig'] = is_numeric($origQty) ? round((float) $origQty, 2) : null;
         if ($d['stock_status'] === 'cantitate') {
             $rawQty = str_replace([' ', ','], ['', '.'], (string) ($in['stock_qty'] ?? ''));
             if (is_numeric($rawQty) && (float) $rawQty >= 0 && (float) $rawQty < 100000000) {
@@ -187,9 +190,31 @@ class CatalogProduct {
                      $d['short_description'] ?: (shortFromDescription($d['description_html']) ?: null), $d['description_html'] ?: null,
                      $imagePath, $d['image_alt'] ?: null, $d['price'], $d['price_unit'] ?: null, $d['stock_status'], $d['stock_qty'], $d['verify_status'],
                      $d['internal_notes'] ?: null, $d['is_visible'], $d['sort_order']];
+            // Stoc numarat si inainte, si acum: nu rescriem cifra din formular (intre deschidere si salvare pot fi intrat
+            // comenzi), ci aplicam doar ce a schimbat adminul: 10 -> 12 in formular = +2 peste stocul de acum.
+            $delta = ($id && ($d['stock_qty'] ?? null) !== null && ($d['stock_qty_orig'] ?? null) !== null)
+                ? $d['stock_qty'] - $d['stock_qty_orig'] : null;
+            if ($delta !== null) {
+                $skip = array_keys(array_intersect($cols, ['stock_status', 'stock_qty']));
+                foreach ($skip as $k) { unset($cols[$k], $vals[$k]); }
+                $cols = array_values($cols); $vals = array_values($vals);
+            }
             if ($id) {
                 $db->prepare('UPDATE products SET ' . implode(', ', array_map(fn ($c) => "$c = ?", $cols)) . ', price_is_from = 0 WHERE id = ?')
                    ->execute(array_merge($vals, [$id]));
+                if ($delta !== null) {
+                    // (nu ne bazam pe rowCount: o diferenta 0 nu „modifica" randul, desi stocul e numarat)
+                    $cur = $db->prepare('SELECT stock_qty FROM products WHERE id = ? FOR UPDATE');
+                    $cur->execute([$id]);
+                    if ($cur->fetchColumn() !== null) {
+                        $db->prepare("UPDATE products SET stock_qty = GREATEST(0, stock_qty + ?),
+                                             stock_status = IF(stock_qty > 0, 'in_stoc', 'indisponibil') WHERE id = ?")
+                           ->execute([$delta, $id]);
+                    } else { // stocul nu mai era numarat intre timp: scriem cifra din formular
+                        $db->prepare('UPDATE products SET stock_qty = ?, stock_status = ? WHERE id = ?')
+                           ->execute([$d['stock_qty'], $d['stock_status'], $id]);
+                    }
+                }
             } else {
                 $slug = slugify($d['name']);
                 $taken = $db->prepare('SELECT COUNT(*) FROM products WHERE slug = ?');

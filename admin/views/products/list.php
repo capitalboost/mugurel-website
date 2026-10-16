@@ -61,7 +61,7 @@ $sel = fn (string $k, string $v) => $filters[$k] === $v ? ' selected' : '';
     <tbody>
     <?php foreach ($result['rows'] as $p): ?>
     <tr<?= $p['is_visible'] ? '' : ' class="is-hidden"' ?>>
-      <td><?php if ($p['image_path']): ?><img src="<?= $h($p['image_path']) ?>" alt=""><?php else: ?><span class="adm-badge adm-badge--muted">fara</span><?php endif; ?></td>
+      <td><?php if ($p['image_path']): ?><img src="<?= $h('/' . ltrim($p['image_path'], '/')) ?>" alt=""><?php else: ?><span class="adm-badge adm-badge--muted">fara</span><?php endif; ?></td>
       <td>
         <a href="/admin/?page=products&action=edit&id=<?= (int) $p['id'] ?>" class="adm-strong"><?= $h($p['name']) ?></a>
         <div class="adm-muted adm-small">Cod <?= $h($p['barcode']) ?><?= $p['manufacturer'] ? ' · ' . $h($p['manufacturer']) : '' ?><?= $p['is_visible'] ? '' : ' · <strong>ascuns pe site</strong>' ?></div>

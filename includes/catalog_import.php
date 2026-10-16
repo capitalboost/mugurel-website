@@ -401,14 +401,15 @@ function catalogReport(array $parsed, array $tagGroups): string
 
 /**
  * Pozele catalogului: img/produse/mu-<cod de bare>-<descriere>.webp (fisierele de la Dunlite). Leaga fiecare poza
- * de produsul cu acel cod de bare. Nu atinge pozele urcate din admin (uploads/products): leaga doar produsele fara
- * poza sau cu o poza tot din img/produse. Se poate rula oricand (deploy, import) — rezultatul e acelasi.
+ * de produsul cu acel cod de bare. Nu atinge pozele urcate din admin (uploads/products) si nici produsele carora
+ * adminul le-a scos poza (image_path = ''): leaga doar produsele fara poza (NULL) sau cu o poza tot din img/produse. Se poate rula oricand (deploy, import) — rezultatul e acelasi.
  * @return array{linked:int, unmatched:string[]}
  */
 function attachCatalogPhotos(PDO $pdo, string $imgDir): array
 {
+    // image_path '' = poza scoasa intentionat din admin => nu o punem la loc
     $upd = $pdo->prepare("UPDATE products SET image_path = ? WHERE UPPER(barcode) = ?
-        AND (image_path IS NULL OR image_path = '' OR (image_path LIKE 'img/produse/%' AND image_path <> ?))");
+        AND (image_path IS NULL OR (image_path LIKE 'img/produse/%' AND image_path <> ?))");
     $find = $pdo->prepare('SELECT COUNT(*) FROM products WHERE UPPER(barcode) = ?');
     $linked = 0; $unmatched = [];
     // poza scoasa din folder (ex. una gresita, mutata la „Poze de corectat") => produsul revine la panoul generat

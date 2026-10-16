@@ -43,6 +43,9 @@ function returnFormValidate(array $in): array
     if ($d['tip'] === '') { $e['tip'] = 'Alege ce dorești: retragere sau produs defect/neconform.'; }
     if ($d['order_ref'] === '') { $e['order_ref'] = 'Scrie numărul comenzii (ex. MUG-2026-000123) sau al facturii.'; }
     if (mb_strlen($d['nume']) < 3) { $e['nume'] = 'Scrie numele complet.'; }
+    // ca la comanda: doar litere — confirmarea pleaca de pe adresa magazinului spre orice email, deci fara text liber aici;
+    // punct doar urmat de spatiu („I. Popescu" da, „spam.ro" nu)
+    elseif (!preg_match("/^[\p{L}][\p{L} .'\-]*$/u", $d['nume']) || preg_match('/\.\S/u', $d['nume'])) { $e['nume'] = 'Numele poate conține doar litere, spații, cratimă și apostrof.'; }
     $tel = orderPhone($d['telefon']);
     if ($tel === null) { $e['telefon'] = 'Scrie un număr de telefon valid (ex. 0749 130 565).'; } else { $d['telefon'] = $tel; }
     if (!filter_var($d['email'], FILTER_VALIDATE_EMAIL)) { $e['email'] = 'Scrie o adresă de email validă.'; }
@@ -139,6 +142,15 @@ function returnAdminEmail(array $r): array
     return ['subject' => $subject, 'html' => $html, 'text' => "Cerere de retur {$r['request_number']}\n\n$text"];
 }
 
+/**
+ * Lista de produse, scurtata, pentru emailul catre client. Confirmarea pleaca de pe adresa magazinului spre orice adresa
+ * scrisa in formular — un text liber lung ar face din formular o unealta de spam. Magazinul primeste textul intreg.
+ */
+function returnShort(string $s, int $max = 300): string
+{
+    return mb_strlen($s) > $max ? rtrim(mb_substr($s, 0, $max)) . '… (lista completă e la magazin)' : $s;
+}
+
 /** Confirmarea pentru client. */
 function returnClientEmail(array $r): array
 {
@@ -150,12 +162,12 @@ function returnClientEmail(array $r): array
           . '<h2 style="color:#06363A;margin:0 0 8px">Am primit cererea ta de retur</h2>'
           . '<p style="margin:0 0 6px">Bună ziua, ' . mh($r['nume']) . ',</p>'
           . '<p style="margin:0 0 12px">Numărul cererii: <b>' . mh($r['request_number']) . '</b> (comanda/factura ' . mh($r['order_ref']) . '). ' . mh($next) . '</p>'
-          . '<p style="margin:0 0 4px"><b>Produse:</b><br>' . nl2br(mh($r['produse'])) . '</p>'
+          . '<p style="margin:0 0 4px"><b>Produse:</b><br>' . nl2br(mh(returnShort($r['produse']))) . '</p>'
           . '<p style="margin:12px 0 4px"><b>Ridicare de la:</b> ' . mh(trim($r['adresa'] . ', ' . $r['localitate'] . ', jud. ' . $r['judet'], ', ')) . '</p>'
           . '<p style="margin-top:16px">Ai o întrebare? Sună-ne la <a href="tel:+40749130565">' . SHOP_PHONE . '</a> (L–V 8:00–18:00) sau răspunde la acest email.</p>'
           . '<p style="margin-top:24px;font-size:12px;color:#888">' . mh(SHOP_FOOTER) . '</p></div>';
     $text = "Am primit cererea ta de retur\n\nBună ziua, {$r['nume']},\n\nNumărul cererii: {$r['request_number']} (comanda/factura {$r['order_ref']}). $next\n\n"
-          . "Produse:\n{$r['produse']}\n\nRidicare de la: " . trim($r['adresa'] . ', ' . $r['localitate'] . ', jud. ' . $r['judet'], ', ')
+          . "Produse:\n" . returnShort($r['produse']) . "\n\nRidicare de la: " . trim($r['adresa'] . ', ' . $r['localitate'] . ', jud. ' . $r['judet'], ', ')
           . "\n\nTelefon: " . SHOP_PHONE . " (L–V 8:00–18:00)\n\n" . SHOP_FOOTER . "\n";
     return ['subject' => $subject, 'html' => $html, 'text' => $text];
 }

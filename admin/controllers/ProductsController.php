@@ -47,7 +47,8 @@ switch ($action) {
 
         $imagePath = $existing['image_path'] ?? null;
         $oldImage = null;
-        if (!empty($_POST['remove_image']) && $imagePath) { $oldImage = $imagePath; $imagePath = null; }
+        // '' = poza scoasa intentionat: deploy-ul nu mai pune la loc poza din img/produse (NULL = fara poza, inca)
+        if (!empty($_POST['remove_image']) && $imagePath) { $oldImage = $imagePath; $imagePath = ''; }
         if (!empty($_FILES['image']['name']) && $_FILES['image']['error'] !== UPLOAD_ERR_NO_FILE) {
             try {
                 $newPath = Upload::image($_FILES['image']);

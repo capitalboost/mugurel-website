@@ -85,6 +85,7 @@ function orderReserveStock(PDO $pdo, array $lines): void
     $lock = $pdo->prepare('SELECT stock_qty FROM products WHERE id = ? FOR UPDATE');
     $take = $pdo->prepare("UPDATE products SET stock_qty = stock_qty - ?,
                                   stock_status = IF(stock_qty <= 0, 'indisponibil', stock_status) WHERE id = ?");
+    usort($lines, fn ($a, $b) => $a['id'] <=> $b['id']); // aceeasi ordine la toate comenzile => fara blocaj intre doua comenzi simultane
     foreach ($lines as $l) {
         $lock->execute([$l['id']]);
         $qty = $lock->fetchColumn();
