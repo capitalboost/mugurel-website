@@ -5,6 +5,7 @@ require_once __DIR__ . '/../../includes/orders.php';
 require_once __DIR__ . '/../../includes/cart.php';
 require_once __DIR__ . '/../../includes/order_form.php';
 
+require_once __DIR__ . '/catalog_fixture.php'; // fx('A') = produsele de test (dev/fixtures/cos_test.sql)
 $pass = 0; $fail = 0;
 function ok(bool $c, string $m): void { global $pass,$fail; if($c){$pass++;echo"  ✓ $m\n";}else{$fail++;echo"  ✗ $m\n";} }
 
@@ -20,8 +21,9 @@ ok(!orderFormTokenValid('abc') && !orderFormTokenValid(['x']) && !orderFormToken
 $data = orderFormValidate(['nume' => 'Test Comanda', 'telefon' => '0749130565', 'email' => 'test@exemplu.ro',
     'judet' => 'Dolj', 'localitate' => 'Dabuleni', 'adresa' => 'Str. Test 1', 'plata' => 'ramburs', 'acord' => '1',
     'mentiuni' => 'Sunati inainte'])['data'];
-$cart = priceCart(cartNormalizeItems([['id' => 3470, 'qty' => 2], ['id' => 3674, 'qty' => '2,5']]), cartProducts([3470, 3674]));
-ok($cart['problem_count'] === 0 && $cart['total_bani'] === 20123, 'pregatire: cos valid de 201,23 lei');
+// 2 × 25,24 (sac) + 2,5 × 22,43 (kg) = 50,48 + 56,08 (56,075 rotunjit) = 106,56 lei
+$cart = priceCart(cartNormalizeItems([['id' => fx('A'), 'qty' => 2], ['id' => fx('KG'), 'qty' => '2,5']]), cartProducts([fx('A'), fx('KG')]));
+ok($cart['problem_count'] === 0 && $cart['total_bani'] === 10656, 'pregatire: cos valid de 106,56 lei');
 
 $h1 = orderContentHash($data, $cart['lines']);
 ok($h1 === orderContentHash($data, array_reverse($cart['lines'])),  'amprenta: nu depinde de ordinea produselor');
@@ -36,18 +38,18 @@ try {
     ok(!$o['duplicate'] && preg_match('/^MUG-\d{4}-\d{6}$/', $o['number']) === 1, 'creare: comanda noua cu numar ' . $o['number']);
     ok(preg_match('/^[0-9a-f]{48}$/', $o['token']) === 1,              'creare: token public de 48 hex');
     $row = orderByToken($pdo, $o['token']);
-    ok($row !== null && (int) $row['total_bani'] === 20123,          'creare: total salvat 201,23 lei');
+    ok($row !== null && (int) $row['total_bani'] === 10656,          'creare: total salvat 106,56 lei');
     ok($row['telefon'] === '+40749130565' && $row['status'] === 'noua' && $row['mentiuni'] === 'Sunati inainte', 'creare: datele clientului salvate');
     ok(count($row['items']) === 2,                                     'creare: 2 produse salvate');
     $it = $row['items'][1];
-    ok($it['name'] === 'Tablou electric metalic/plastic 4–8 module' && $it['unit'] === 'ml' && (float) $it['qty'] === 2.5
-       && (int) $it['price_bani'] === 1249 && (int) $it['line_bani'] === 3123, 'creare: copie exacta a produsului (nume, unitate, pret, subtotal)');
+    ok($it['name'] === 'Platbandă zincată, oțel, 25 x 4 mm' && $it['unit'] === 'kg' && (float) $it['qty'] === 2.5
+       && (int) $it['price_bani'] === 2243 && (int) $it['line_bani'] === 5608, 'creare: copie exacta a produsului (nume, unitate, pret, subtotal)');
 
     // ── copia nu se schimba cand se schimba pretul produsului ──
-    $orig = $pdo->query('SELECT price FROM products WHERE id = 3470')->fetchColumn();
-    $pdo->exec('UPDATE products SET price = 999.00 WHERE id = 3470');
-    ok((int) orderByToken($pdo, $o['token'])['items'][0]['price_bani'] === 8500, 'copie: pretul din comanda ramane 85,00 dupa scumpire');
-    $pdo->prepare('UPDATE products SET price = ? WHERE id = 3470')->execute([$orig]);
+    $orig = $pdo->query('SELECT price FROM products WHERE id = ' . fx('A'))->fetchColumn();
+    $pdo->exec('UPDATE products SET price = 999.00 WHERE id = ' . fx('A'));
+    ok((int) orderByToken($pdo, $o['token'])['items'][0]['price_bani'] === 2524, 'copie: pretul din comanda ramane 25,24 dupa scumpire');
+    $pdo->prepare('UPDATE products SET price = ? WHERE id = ' . fx('A'))->execute([$orig]);
 
     // ── dubluri ──
     $again = orderCreate($pdo, $data, $cart, $t1);
@@ -58,7 +60,7 @@ try {
     ok($count('SELECT COUNT(*) FROM orders WHERE content_hash = ?', [$h1]) === 1, 'dublura: o singura comanda in baza');
 
     $t3 = orderNewFormToken(); $created[] = $t3;
-    $other = orderCreate($pdo, $data, priceCart([['id' => 3470, 'qty' => 5.0]], cartProducts([3470])), $t3);
+    $other = orderCreate($pdo, $data, priceCart([['id' => fx('A'), 'qty' => 5.0]], cartProducts([fx('A')])), $t3);
     ok(!$other['duplicate'] && $other['id'] !== $o['id'],            'comanda diferita (alt cos) => comanda noua');
 
     $pdo->prepare('UPDATE orders SET created_at = DATE_SUB(NOW(), INTERVAL 11 MINUTE) WHERE id = ?')->execute([$o['id']]);
@@ -79,7 +81,7 @@ try {
     ok(!$pdo->inTransaction(),                                         'rollback: tranzactia e inchisa');
 
     $threw = false;
-    try { orderCreate($pdo, $data, priceCart([['id' => 3686, 'qty' => 1.0]], cartProducts([3686])), orderNewFormToken()); } catch (InvalidArgumentException $e) { $threw = true; }
+    try { orderCreate($pdo, $data, priceCart([['id' => fx('IND'), 'qty' => 1.0]], cartProducts([fx('IND')])), orderNewFormToken()); } catch (InvalidArgumentException $e) { $threw = true; }
     ok($threw,                                                         'cos cu produs indisponibil => refuzat, nu se salveaza');
 
     ok(orderByToken($pdo, str_repeat('0', 48)) === null && orderByToken($pdo, "' OR 1=1 --") === null, 'cautare: token inexistent sau malformat => null');
@@ -108,14 +110,14 @@ try {
         $created[] = $m2[1];
         $post = ['csrf' => $m1[1], 'idem' => $m2[1], 'nume' => 'Client HTTP', 'telefon' => '0749 130 565',
                  'email' => 'http@exemplu.ro', 'judet' => 'Dolj', 'localitate' => 'Dabuleni', 'adresa' => 'Str. HTTP 9',
-                 'plata' => 'transfer', 'acord' => '1', 'cos' => json_encode([['id' => 3471, 'qty' => 3]])];
+                 'plata' => 'transfer', 'acord' => '1', 'cos' => json_encode([['id' => fx('B'), 'qty' => 3]])];
         [$c1, $loc1] = $req($base . '/comanda.html', $post, $jar);
         [$c2, $loc2] = $req($base . '/comanda.html', $post, $jar); // al doilea click / retrimitere
         ok($c1 === 303 && str_starts_with($loc1, '/comanda-trimisa.html?t='), 'http: comanda valida => 303 spre confirmare');
         ok($c2 === 303 && $loc2 === $loc1,                              'http: a doua trimitere => aceeasi confirmare');
         ok($count('SELECT COUNT(*) FROM orders WHERE form_token = ?', [$m2[1]]) === 1, 'http: o singura comanda in baza');
         $saved = orderByToken($pdo, substr($loc1, strlen('/comanda-trimisa.html?t=')));
-        ok($saved !== null && (int) $saved['total_bani'] === 22500 && $saved['plata'] === 'transfer', 'http: total recalculat pe server (3 × 75,00 = 225,00 lei)');
+        ok($saved !== null && (int) $saved['total_bani'] === 17049 && $saved['plata'] === 'transfer', 'http: total recalculat pe server (3 × 56,83 = 170,49 lei)');
     }
 } finally {
     if ($created) {

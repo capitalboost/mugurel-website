@@ -61,9 +61,11 @@
 
     var stock = l.stock_label ? '<span class="stock stock--' + esc(l.stock) + '">' + esc(l.stock_label) + '</span>' : '';
     var inputId = 'qty-' + esc(l.id);
+    // numele duce la pagina produsului (doar adrese interne /produs/..., venite de la server)
+    var nameHtml = l.url && /^\/produs\/[a-z0-9%-]+\.html$/.test(l.url) ? '<a href="' + esc(l.url) + '">' + name + '</a>' : name;
     return '<li class="cos-line" data-id="' + esc(l.id) + '" data-decimals="' + (l.decimals ? '1' : '0') + '">' + img +
       '<div class="cos-line-main">' +
-        '<p class="cos-line-name">' + name + '</p>' +
+        '<p class="cos-line-name">' + nameHtml + '</p>' +
         '<p class="cos-line-price">' + esc(l.price_label) + unit + '</p>' +
         stock +
       '</div>' +

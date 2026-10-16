@@ -2,6 +2,7 @@
 // Teste pentru includes/cart.php (T6). Partea cu baza foloseste baza LOCALA si restaureaza ce modifica.
 require_once __DIR__ . '/../../includes/cart.php';
 
+require_once __DIR__ . '/catalog_fixture.php'; // fx('A') = produsele de test (dev/fixtures/cos_test.sql)
 $pass = 0; $fail = 0;
 function ok(bool $c, string $m): void { global $pass,$fail; if($c){$pass++;echo"  ✓ $m\n";}else{$fail++;echo"  ✗ $m\n";} }
 
@@ -77,21 +78,22 @@ ok(priceCart([], [])['total_bani'] === 0,                             'calcul: c
 
 // ── cartProducts pe baza locala ──
 $db = Database::get();
-$rows = cartProducts([3470, 3674, 999999999, -1]);
+$rows = cartProducts([fx('A'), fx('KG'), 999999999, -1]);
 $ids = is_array($rows) ? array_keys($rows) : [];
 sort($ids);
-ok($ids === [3470, 3674],                                             'db: doar produsele existente');
-ok(isset($rows[3470]['price'], $rows[3470]['stock_status'], $rows[3470]['price_is_from']), 'db: campurile necesare pentru calcul');
+$expect = [fx('A'), fx('KG')]; sort($expect);
+ok($ids === $expect,                                             'db: doar produsele existente');
+ok(isset($rows[fx('A')]['price'], $rows[fx('A')]['stock_status'], $rows[fx('A')]['price_is_from']), 'db: campurile necesare pentru calcul');
 ok(cartProducts([]) === [],                                           'db: lista goala => [] fara interogare');
 
-$vis = $db->query('SELECT is_visible FROM products WHERE id = 3471')->fetchColumn();
+$vis = $db->query('SELECT is_visible FROM products WHERE id = ' . fx('B'))->fetchColumn();
 try {
-    $db->exec('UPDATE products SET is_visible = 0 WHERE id = 3471');
-    ok(!isset(cartProducts([3471])[3471]),                           'db: produs ascuns => tratat ca inexistent');
+    $db->exec('UPDATE products SET is_visible = 0 WHERE id = ' . fx('B'));
+    ok(!isset(cartProducts([fx('B')])[fx('B')]),                           'db: produs ascuns => tratat ca inexistent');
 } finally {
-    $db->prepare('UPDATE products SET is_visible = ? WHERE id = 3471')->execute([$vis]);
+    $db->prepare('UPDATE products SET is_visible = ? WHERE id = ' . fx('B'))->execute([$vis]);
 }
-ok((int) $db->query('SELECT is_visible FROM products WHERE id = 3471')->fetchColumn() === (int) $vis, 'db: vizibilitatea restaurata');
+ok((int) $db->query('SELECT is_visible FROM products WHERE id = ' . fx('B'))->fetchColumn() === (int) $vis, 'db: vizibilitatea restaurata');
 
 echo "\nRezultat: $pass passed, $fail failed\n";
 exit($fail > 0 ? 1 : 0);

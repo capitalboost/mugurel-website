@@ -149,3 +149,22 @@ produsele recomandate alternativ din ramurile cu 20+ produse.
   contact, despre noi, 46 de categorii (fara cele „de trecere"), 5 colectii, 511 produse, cu `lastmod`. `robots.txt`:
   `Disallow: /admin/`. Redirecturile 301 ale paginilor vechi erau deja facute (vezi al doilea fisier).
 - Teste: `test_catalog_repo.php` 48 (inclusiv sitemap).
+
+### N9 — cosul si comenzile pe catalogul nou: GATA (16 oct)
+- Cosul si comenzile (`includes/cart.php`, `orders.php`, emailurile) mergeau deja pe produsele noi; s-au refacut testele.
+  Nou: fiecare rand din cos stie adresa produsului (`url`), iar numele din cos duce la pagina produsului.
+- **Produse de test dupa cod de bare** (id-urile se schimba la reimport): `dev/fixtures/cos_test.sql` le fixeaza pretul si
+  starea (A 25,24/sac, B 56,83/sac, KG 22,43/kg cu zecimale, EL 373,31/buc, LA „la comanda", IND „indisponibil",
+  NP fara pret); aceleasi roluri in `admin/tests/catalog_fixture.php` (`fx('A')`) si `dev/e2e/tests/fixtures.js`.
+- Codul catalogului vechi sters: `includes/products_repo.php`, `product_icons.php`, `page_bootstrap.php`, randarile
+  `.material-card`/`.accessory-card`, `admin/models/Product.php`/`ProductProperty.php`, `db/extract_icons.php`,
+  `test_products_repo.php`. `test_product_grid.php` rescris pe `renderCatalogCards()`.
+- `dev/run_tests.sh`: regresia pe pagini citeste acum sitemap-ul (49 de liste: 200 + carduri + JSON-LD), totalul din
+  catalog = baza, 25 de pagini de produs la intamplare, adresele vechi (pastrate sau 301).
+- Teste in browser rescrise: cos (buton, pagina, stocare), comanda (PF, PJ, plata, securitate, confirmare), flux complet
+  (3 scenarii cu emailuri in Mailpit, la 3 latimi), prima pagina (6 produse, meniul derulant, telefonul fara hero),
+  regresie (13 pagini fara erori JS/CSP si fara scroll orizontal). Fluxul complet nu mai depinde de starea Mailpit.
+- **Rezultat: 497 asertiuni PHP + 217 teste in browser, toate trec**; `dev/test_fresh_deploy.sh` trece.
+- **De decis (design):** textul alb pe verdele WhatsApp `#25D366` are contrast 1,98:1 (minim recomandat 4,5:1) pe toate
+  butoanele WhatsApp — exista si pe live. Exclus temporar din verificarea axe. Propunere: text inchis (#06363A) pe verde,
+  sau verde mai inchis (#128C7E) cu text alb + font mai mare.

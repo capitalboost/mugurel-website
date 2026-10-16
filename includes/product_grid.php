@@ -1,13 +1,8 @@
 <?php
 /**
- * Randarea cardurilor de produs. Doar HTML — fara SQL.
- *
- * Site-ul are doua carduri vizual distincte, fara clase comune:
- *   .material-card  in paginile de categorie   -> renderMaterialCards()
- *   .prod-card      in catalog                 -> renderProdCards()
- * Sunt tinute separate intentionat; unificarea lor ar fi o schimbare de design.
+ * Randarea produselor: pret, stoc, buton de cos, link WhatsApp, panoul generat si cardurile catalogului.
+ * Doar HTML — fara SQL. (Cardurile catalogului vechi — .material-card / .accessory-card — au disparut pe 16 oct.)
  */
-require_once __DIR__ . '/product_icons.php';
 
 const WA_PHONE = '40749130565';
 
@@ -73,34 +68,6 @@ function waLink(string $productName, ?string $custom = null): string {
 }
 
 /**
- * Blocurile de proprietati ale unui card, in ordinea din DB.
- * Un bloc e fie text, fie o lista — `body` cu is_list = 1 are un element pe linie.
- * Produsele fara proprietati cad pe short_description, ca sa nu ramana cardul gol.
- */
-function renderProps(array $p): string {
-    $props = $p['properties'] ?? [];
-    if (!$props) {
-        if (($p['short_description'] ?? '') === '') { return ''; }
-        $props = [['label' => 'Descriere', 'body' => $p['short_description'], 'is_list' => 0]];
-    }
-    $out = '<div class="material-props">';
-    foreach ($props as $pr) {
-        $out .= '<div class="material-prop"><span class="prop-label">' . e($pr['label']) . '</span>';
-        if ((int)$pr['is_list'] === 1) {
-            $out .= '<ul class="prop-list">';
-            foreach (explode("\n", $pr['body']) as $item) {
-                if (trim($item) !== '') { $out .= '<li>' . e(trim($item)) . '</li>'; }
-            }
-            $out .= '</ul>';
-        } else {
-            $out .= '<span class="prop-val">' . e($pr['body']) . '</span>';
-        }
-        $out .= '</div>';
-    }
-    return $out . '</div>';
-}
-
-/**
  * Panou generat determinist din numele produsului: fundal si forme calculate
  * din md5(nume), mereu identice pentru acelasi produs, practic niciodata la
  * fel intre produse. Randat ca strat de baza in toate zonele de imagine —
@@ -124,122 +91,6 @@ function panouGenerat(string $name): string {
     return '<div class="v-gen" style="background:' . $bg . '">'
          . '<svg viewBox="0 0 100 100" preserveAspectRatio="xMidYMid slice" aria-hidden="true">' . implode('', $o) . '</svg>'
          . '</div>';
-}
-
-/** Continutul lui .material-img-wrap: panou generat (strat de baza), fotografie (daca exista), badge. */
-function renderImgWrap(array $p): string {
-    $hasImg = !empty($p['image_path']);
-    $out = '<div class="material-img-wrap">' . panouGenerat($p['name']);
-    if ($hasImg) {
-        $out .= '<img src="' . e($p['image_path']) . '" alt="' . e($p['image_alt'] ?? $p['name'])
-              . '" class="material-img" width="280" height="160" loading="lazy" decoding="async"'
-              . ' onerror="this.style.display=\'none\'">';
-    }
-    if (!empty($p['badge_label'])) {
-        $cls = 'material-badge' . (!empty($p['badge_kind']) ? ' material-badge--' . e($p['badge_kind']) : '');
-        $out .= '<div class="' . $cls . '">' . e($p['badge_label']) . '</div>';
-    }
-    return $out . '</div>';
-}
-
-/** Varianta din paginile de categorie. */
-function renderMaterialCards(array $products): string {
-    $out = '';
-    foreach ($products as $p) {
-        $out .= '<div class="material-card">'
-              . renderImgWrap($p)
-              . '<div class="material-body">'
-              . '<h3 class="material-name">' . e($p['name']) . '</h3>'
-              . renderProps($p)
-              . stockLabel($p)
-              . '<div class="material-footer">'
-              . '<span class="material-price">' . priceLabel($p) . '</span>'
-              . '<a href="' . e(waLink($p['name'], $p['wa_text'] ?? null)) . '" class="btn-wa-material" target="_blank" rel="noopener">'
-              . WA_ICON . 'Afla disponibilitate</a>'
-              . '</div>'
-              . cartButton($p)
-              . '</div></div>';
-    }
-    return $out;
-}
-
-/**
- * Varianta din catalog. Filtrele JS existente citesc data-cat / data-subcat.
- *
- * NOTA: badge-ul de categorie sta in interiorul .prod-body, inaintea .prod-name —
- * asa e structurat in catalog.html azi (nu ca sibling inaintea lui .prod-body).
- * A se vedea raportul Task 4 pentru detalii si diferente ramase deschise
- * (iconita si clasa modificatoare a badge-ului, ex. prod-badge--electric).
- */
-function renderProdCards(array $products): string {
-    $out = '';
-    foreach ($products as $p) {
-        $subcat = $p['subcat_slug'] ? ' data-subcat="' . e($p['subcat_slug']) . '"' : '';
-        $waText = !empty($p['wa_text']) ? ' data-wa-text="' . e($p['wa_text']) . '"' : '';
-        $hasImg = !empty($p['image_path']);
-        $imgWrap = '<div class="prod-img-wrap">' . panouGenerat($p['name']);
-        if ($hasImg) {
-            $imgWrap .= '<img src="' . e($p['image_path']) . '" alt="' . e($p['image_alt'] ?? $p['name'])
-                      . '" class="prod-img-photo" width="220" height="150" loading="lazy" decoding="async"'
-                      . ' onerror="this.style.display=\'none\'">';
-        }
-        $imgWrap .= '</div>';
-        $out .= '<div class="prod-card" data-cat="' . e($p['cat_slugs']) . '"' . $subcat . '>'
-              . $imgWrap
-              . '<div class="prod-body">'
-              . '<div class="' . badgeClass($p) . '">' . e($p['cat_label']) . '</div>'
-              . '<h3 class="prod-name">' . e($p['name']) . '</h3>'
-              . '<div class="prod-desc">' . e($p['short_description']) . '</div>'
-              . stockLabel($p)
-              . '<div class="prod-footer">'
-              . '<div class="prod-price">' . priceLabel($p) . '</div>'
-              . '<button class="btn-wa-prod" data-wa-product="' . e($p['name']) . '"' . $waText . '>'
-              . WA_ICON . 'Afla disponibilitate</button>'
-              . '</div>'
-              . cartButton($p)
-              . '</div></div>';
-    }
-    return $out;
-}
-
-/**
- * Varianta accesoriilor. Card simplu: titlu, descriere, pret, buton WhatsApp.
- *
- * Wrap-ul de imagine (.accessory-img-wrap) se randeaza doar daca produsul are
- * fotografie SAU iconita — marea majoritate (223 din 264) n-au niciuna. Cand
- * se randeaza, panoul generat e stratul de baza; fotografia (cand exista) sta
- * deasupra lui (acelasi tipar ca la .material-img-wrap / renderImgWrap()).
- */
-function renderAccessoryCards(array $products): string {
-    $out = '';
-    foreach ($products as $p) {
-        $cls = 'accessory-card' . (!empty($p['card_modifier'])
-             ? ' accessory-card--' . e($p['card_modifier']) : '');
-        $out .= '<div class="' . $cls . '">';
-
-        $hasImg  = !empty($p['image_path']);
-        $hasIcon = !empty($p['icon_key']);
-        if ($hasImg || $hasIcon) {
-            $out .= '<div class="accessory-img-wrap">' . panouGenerat($p['name']);
-            if ($hasImg) {
-                $out .= '<img src="' . e($p['image_path']) . '" alt="' . e($p['image_alt'] ?? $p['name'])
-                      . '" class="accessory-img" width="160" height="100" loading="lazy" decoding="async"'
-                      . ' onerror="this.style.display=\'none\'">';
-            }
-            $out .= '</div>';
-        }
-
-        $out .= '<div class="accessory-body">'
-              . '<h4>' . e($p['name']) . '</h4>'
-              . '<p>' . e($p['short_description']) . '</p>'
-              . stockLabel($p)
-              . '<span class="accessory-price">' . priceLabel($p) . '</span>'
-              . '<a href="' . e(waLink($p['name'], $p['wa_text'] ?? null)) . '" class="btn-wa-acc" target="_blank" rel="noopener">'
-              . 'Afla disponibilitate</a>'
-              . cartButton($p)
-              . '</div></div>';
-    }
-    return $out;
 }
 
 /** Adresa paginii unui produs din catalogul nou. */
@@ -277,26 +128,6 @@ function renderCatalogCards(array $products): string {
               . '</div></div>';
     }
     return $out;
-}
-
-/** Modificatorul de badge al unei categorii de nivel 1. Null = culoarea implicita. */
-const BADGE_KIND = [
-    'electrice'      => 'electric',
-    'incalzire'      => 'incalzire',
-    'sanitare'       => 'sanitare',
-    'scule-unelte'   => 'scule',
-    'constructii'    => 'constructii',
-    'apa-canal'      => 'apa-canal',
-    'gradina'        => 'gradina',
-    'mobilier'       => 'mobilier',
-    'electrocasnice' => 'electrocasnice',
-];
-
-/** Prima categorie de nivel 1 a produsului determina culoarea badge-ului. */
-function badgeClass(array $p): string {
-    $first = explode(' ', trim((string)$p['cat_slugs']))[0] ?? '';
-    $kind  = BADGE_KIND[$first] ?? null;
-    return 'prod-badge' . ($kind !== null ? ' prod-badge--' . $kind : '');
 }
 
 /** Afisat cand o sectiune nu are produse — inclusiv cand DB-ul e cazut. */

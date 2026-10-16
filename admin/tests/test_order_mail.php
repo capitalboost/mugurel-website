@@ -4,6 +4,7 @@
 require_once __DIR__ . '/../../includes/order_mail.php';
 require_once __DIR__ . '/../../includes/orders.php';
 
+require_once __DIR__ . '/catalog_fixture.php'; // fx('A') = produsele de test (dev/fixtures/cos_test.sql)
 $pass = 0; $fail = 0;
 function ok(bool $c, string $m): void { global $pass,$fail; if($c){$pass++;echo"  ✓ $m\n";}else{$fail++;echo"  ✗ $m\n";} }
 
@@ -58,7 +59,7 @@ ok(str_contains($pf['html'], 'Ridicare din magazin') && !str_contains($pf['html'
 $pdo = Database::get();
 $data = orderFormValidate(['nume' => 'Mail Test', 'telefon' => '0749130565', 'email' => 'mailtest@exemplu.ro',
     'judet' => 'Dolj', 'localitate' => 'Dabuleni', 'adresa' => 'Str. Mail 1', 'plata' => 'ramburs', 'acord' => '1'])['data'];
-$cart = priceCart([['id' => 3470, 'qty' => 1.0]], cartProducts([3470]));
+$cart = priceCart([['id' => fx('A'), 'qty' => 1.0]], cartProducts([fx('A')]));
 try {
     mailpit('DELETE', '/messages');
     $o = orderCreate($pdo, $data, $cart, orderNewFormToken());
@@ -72,7 +73,7 @@ try {
     $full = mailpit('GET', '/message/' . ($msgs[0]['ID'] ?? ''));
     ok(array_column($full['ReplyTo'] ?? [], 'Address') === ['mailtest@exemplu.ro'], 'Mailpit: „Raspunde" merge direct la client');
     ok(($full['From']['Address'] ?? '') === MAIL_FROM,                   'Mailpit: expeditor ' . MAIL_FROM);
-    ok(str_contains($full['HTML'] ?? '', '85,00 lei') && str_contains($full['Text'] ?? '', 'TOTAL (cu TVA): 85,00 lei'), 'Mailpit: HTML si text complete');
+    ok(str_contains($full['HTML'] ?? '', '25,24 lei') && str_contains($full['Text'] ?? '', 'TOTAL (cu TVA): 25,24 lei'), 'Mailpit: HTML si text complete');
     $at = $pdo->prepare('SELECT email_admin_at FROM orders WHERE id = ?'); $at->execute([$o['id']]);
     ok($at->fetchColumn() !== null,                                       'comanda: momentul notificarii salvat');
 
@@ -97,7 +98,7 @@ try {
     preg_match('/name="idem" value="([0-9a-f]{32})"/', $page, $c2);
     $post = ['csrf' => $c1[1] ?? '', 'idem' => $c2[1] ?? '', 'nume' => 'Mail HTTP', 'telefon' => '0749 130 565',
              'email' => 'mailtest@exemplu.ro', 'judet' => 'Dolj', 'localitate' => 'Dabuleni', 'adresa' => 'Str. HTTP 2',
-             'plata' => 'ramburs', 'acord' => '1', 'cos' => json_encode([['id' => 3678, 'qty' => 2]])];
+             'plata' => 'ramburs', 'acord' => '1', 'cos' => json_encode([['id' => fx('EL'), 'qty' => 2]])];
     for ($i = 0; $i < 2; $i++) {
         $ch = curl_init($base . '/comanda.html');
         curl_setopt_array($ch, [CURLOPT_RETURNTRANSFER => true, CURLOPT_COOKIEJAR => $jar, CURLOPT_COOKIEFILE => $jar,
@@ -113,14 +114,14 @@ try {
     ok(count($msgs) === 2 && $all === ['lucian@capitalboost.ro', 'mailtest@exemplu.ro'], 'http: exact doua emailuri — notificarea interna + confirmarea clientului, nu patru');
     ok(!array_filter($all, fn ($a) => str_ends_with(strtolower($a), 'mugurel-bricolaj.ro')), 'http: niciun email catre @mugurel-bricolaj.ro');
     $admin = array_values(array_filter($msgs, fn ($x) => ($x['To'][0]['Address'] ?? '') === 'lucian@capitalboost.ro'));
-    ok(str_contains($admin[0]['Subject'] ?? '', '48,00 lei'),             'http: notificarea interna are totalul 48,00 lei');
+    ok(str_contains($admin[0]['Subject'] ?? '', '746,62 lei'),           'http: notificarea interna are totalul 746,62 lei (2 × 373,31)');
 
     // ── T13: confirmarea pentru client ──
     $client = array_values(array_filter($msgs, fn ($x) => ($x['To'][0]['Address'] ?? '') === 'mailtest@exemplu.ro'));
     $cm = mailpit('GET', '/message/' . ($client[0]['ID'] ?? ''));
     ok(str_starts_with($cm['Subject'] ?? '', 'Am primit comanda ta MUG-'),  'client: subiect „Am primit comanda ta MUG-…"');
     ok(array_column($cm['ReplyTo'] ?? [], 'Address') === [ORDER_NOTIFY_TO], 'client: „Raspunde" merge la magazin (in test: ' . ORDER_NOTIFY_TO . ')');
-    ok(str_contains($cm['HTML'] ?? '', '48,00 lei') && str_contains($cm['HTML'] ?? '', 'Ramburs la livrare'), 'client: produse, total si metoda de plata');
+    ok(str_contains($cm['HTML'] ?? '', '746,62 lei') && str_contains($cm['HTML'] ?? '', 'Ramburs la livrare'), 'client: produse, total si metoda de plata');
     ok(preg_match('#/comanda-trimisa\.html\?t=[0-9a-f]{48}#', $cm['HTML'] ?? '') === 1, 'client: legatura spre pagina comenzii, cu token');
     ok(!str_contains($cm['HTML'] ?? '', '127.0.0.1') && !str_contains($cm['HTML'] ?? '', '::1') && !str_contains($cm['HTML'] ?? '', 'curl'), 'client: fara date interne (IP, browser)');
     ok(str_contains($cm['Text'] ?? '', 'DUNLITE COM SRL') && str_contains($cm['Text'] ?? '', '0749 130 565'), 'client: varianta text cu datele firmei si telefonul');

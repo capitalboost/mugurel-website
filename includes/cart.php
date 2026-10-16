@@ -65,7 +65,7 @@ function cartProducts(array $ids): ?array
     try {
         $in = implode(',', array_fill(0, count($ids), '?'));
         $stmt = Database::get()->prepare(
-            "SELECT id, name, price, price_unit, price_is_from, stock_status, image_path, image_alt, page_slug
+            "SELECT id, slug, name, price, price_unit, price_is_from, stock_status, image_path, image_alt, page_slug
              FROM products WHERE is_visible = 1 AND id IN ($in)"
         );
         $stmt->execute($ids);
@@ -105,7 +105,7 @@ function priceCart(array $items, array $products): array
         $line = [
             'id' => $it['id'], 'qty' => $it['qty'], 'orderable' => false, 'problem' => null,
             'name' => null, 'unit' => null, 'decimals' => false, 'stock' => null, 'stock_label' => null,
-            'image' => null, 'price_bani' => null, 'line_bani' => null,
+            'image' => null, 'url' => null, 'price_bani' => null, 'line_bani' => null,
         ];
 
         if ($p === null) {
@@ -121,6 +121,7 @@ function priceCart(array $items, array $products): array
             'stock'       => $p['stock_status'] ?? 'in_stoc',
             'stock_label' => STOCK_LABELS[$p['stock_status'] ?? ''] ?? null,
             'image'       => $p['image_path'] ?: null,
+            'url'         => !empty($p['slug']) ? '/produs/' . rawurlencode($p['slug']) . '.html' : null, // pagina produsului
         ]);
 
         if (!canAddToCart($p)) {

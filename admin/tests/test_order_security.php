@@ -6,6 +6,7 @@ require_once __DIR__ . '/../../includes/db.php';
 
 orderSessionStart(); // inainte de orice afisare (trimite cookie)
 
+require_once __DIR__ . '/catalog_fixture.php'; // fx('A') = produsele de test (dev/fixtures/cos_test.sql)
 $pass = 0; $fail = 0;
 function ok(bool $c, string $m): void { global $pass,$fail; if($c){$pass++;echo"  ✓ $m\n";}else{$fail++;echo"  ✗ $m\n";} }
 
@@ -97,7 +98,7 @@ if ($code !== 200) {
     ok($token !== '',                                        'http: formularul contine tokenul CSRF');
     $form = ['nume' => 'Ion Popescu', 'telefon' => '0749130565', 'email' => 'ion@exemplu.ro', 'judet' => 'Dolj',
              'localitate' => 'Dabuleni', 'adresa' => 'Str. Caracal 52', 'plata' => 'ramburs', 'acord' => '1',
-             'cos' => json_encode([['id' => 3470, 'qty' => 1]]), 'idem' => bin2hex(random_bytes(16))];
+             'cos' => json_encode([['id' => fx('A'), 'qty' => 1]]), 'idem' => bin2hex(random_bytes(16))];
 
     [$c, $b] = http($base . '/comanda.html', $form, $jar);
     ok($c === 400 && str_contains($b, 'Sesiunea a expirat'),  'http: fara token CSRF => 400');
@@ -114,7 +115,7 @@ if ($code !== 200) {
     [$c, $b] = http($base . '/comanda.html', ['acord' => ''] + $form + ['csrf' => $token], $jar);
     ok($c === 422 && str_contains($b, 'id="err-acord"'),     'http: fara acord GDPR => eroare pe bifa');
 
-    [$c, $b] = http($base . '/comanda.html', ['cos' => json_encode([['id' => 3686, 'qty' => 1]])] + $form + ['csrf' => $token], $jar);
+    [$c, $b] = http($base . '/comanda.html', ['cos' => json_encode([['id' => fx('IND'), 'qty' => 1]])] + $form + ['csrf' => $token], $jar);
     ok($c === 422 && str_contains($b, 'data-cart-error'),    'http: cos cu produs indisponibil (ocolind browserul) => respins');
     [$c, $b] = http($base . '/comanda.html', ['cos' => '{nu e json'] + $form + ['csrf' => $token], $jar);
     ok($c === 422 && str_contains($b, 'Cosul tau este gol'),  'http: cos corupt => respins');

@@ -1,5 +1,7 @@
 // T7: formularul de comanda pentru persoana fizica. Necesita fixturile din dev/fixtures/cos_test.sql.
 const { test, expect } = require('@playwright/test');
+const { P, ids, addFromProductPage } = require('./fixtures');
+let I; // id-urile produselor de test (dev/fixtures/cos_test.sql)
 
 const THIRD_PARTY = /googletagmanager|google-analytics|clarity\.ms|fonts\.(googleapis|gstatic)/;
 const KEY = 'mugurel_cos';
@@ -7,6 +9,8 @@ const KEY = 'mugurel_cos';
 test.beforeEach(async ({ context }) => {
   await context.route(THIRD_PARTY, (r) => r.abort());
 });
+
+test.beforeEach(async ({ request }) => { I = await ids(request); });
 
 async function openOrder(page, items) {
   await page.goto('/index.html');
@@ -36,16 +40,16 @@ test('cos gol: fara formular, cu legatura spre catalog', async ({ page }) => {
 });
 
 test('sumarul comenzii vine de la server si cosul ajunge in campul ascuns', async ({ page }) => {
-  await openOrder(page, [{ id: 3470, qty: 2 }, { id: 3674, qty: 2.5 }]);
-  await expect(page.locator('[data-cos-total]')).toHaveText('201,23 lei');
+  await openOrder(page, [{ id: I.A, qty: 2 }, { id: I.KG, qty: 2.5 }]);
+  await expect(page.locator('[data-cos-total]')).toHaveText('106,56 lei'); // 2 × 25,24 + 2,5 × 22,43
   await expect(page.locator('.comanda-sum-line')).toHaveCount(2);
-  await expect(page.locator('.comanda-sum-line').first()).toContainText('× 2 buc');
-  expect(JSON.parse(await page.locator('[data-cos-field]').inputValue())).toEqual([{ id: 3470, qty: 2 }, { id: 3674, qty: 2.5 }]);
+  await expect(page.locator('.comanda-sum-line').first()).toContainText('× 2 sac');
+  expect(JSON.parse(await page.locator('[data-cos-field]').inputValue())).toEqual([{ id: I.A, qty: 2 }, { id: I.KG, qty: 2.5 }]);
   await expect(page.locator('[data-comanda-submit]')).toBeEnabled();
 });
 
 test('trimis gol: erori langa fiecare camp, focus pe primul, ramane pe pagina', async ({ page }) => {
-  await openOrder(page, [{ id: 3470, qty: 1 }]);
+  await openOrder(page, [{ id: I.A, qty: 1 }]);
   await expect(page.locator('[data-cos-total]')).toBeVisible();
   await page.click('[data-comanda-submit]');
   await expect(page.locator('.form-error')).toHaveCount(8); // 6 campuri + metoda de plata + acordul GDPR
@@ -56,7 +60,7 @@ test('trimis gol: erori langa fiecare camp, focus pe primul, ramane pe pagina', 
 });
 
 test('eroarea dispare dupa corectare', async ({ page }) => {
-  await openOrder(page, [{ id: 3470, qty: 1 }]);
+  await openOrder(page, [{ id: I.A, qty: 1 }]);
   await fillValid(page);
   await page.fill('#f-email', 'ion@exemplu');
   await page.click('[data-comanda-submit]');
@@ -67,7 +71,7 @@ test('eroarea dispare dupa corectare', async ({ page }) => {
 });
 
 test('formular valid: comanda e salvata si clientul ajunge la confirmare (redirect dupa POST)', async ({ page }) => {
-  await openOrder(page, [{ id: 3470, qty: 1 }]);
+  await openOrder(page, [{ id: I.A, qty: 1 }]);
   await expect(page.locator('[data-cos-total]')).toBeVisible();
   await fillValid(page);
   await page.fill('#f-mentiuni', 'Sunati inainte de livrare.');
@@ -80,13 +84,13 @@ test('formular valid: comanda e salvata si clientul ajunge la confirmare (redire
 });
 
 test('produse care nu se mai pot comanda => butonul de trimitere e blocat', async ({ page }) => {
-  await openOrder(page, [{ id: 3470, qty: 1 }, { id: 3686, qty: 1 }]);
+  await openOrder(page, [{ id: I.A, qty: 1 }, { id: I.IND, qty: 1 }]);
   await expect(page.locator('.comanda-summary .cos-msg--warn')).toBeVisible();
   await expect(page.locator('[data-comanda-submit]')).toBeDisabled();
 });
 
 test('pagina incape pe ecran; pe mobil sumarul e deasupra formularului', async ({ page }, info) => {
-  await openOrder(page, [{ id: 3470, qty: 1 }]);
+  await openOrder(page, [{ id: I.A, qty: 1 }]);
   await expect(page.locator('[data-cos-total]')).toBeVisible();
   const overflow = await page.evaluate(() => document.documentElement.scrollWidth - window.innerWidth);
   expect(overflow).toBeLessThanOrEqual(0);

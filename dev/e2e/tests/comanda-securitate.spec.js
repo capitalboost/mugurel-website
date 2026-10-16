@@ -1,12 +1,16 @@
 // T10: protectiile formularului vazute din browser. Necesita fixturile din dev/fixtures/cos_test.sql.
 const { test, expect } = require('@playwright/test');
+const { P, ids, addFromProductPage } = require('./fixtures');
+let I; // id-urile produselor de test (dev/fixtures/cos_test.sql)
+
+test.beforeEach(async ({ request }) => { I = await ids(request); });
 
 const THIRD_PARTY = /googletagmanager|google-analytics|clarity\.ms|fonts\.(googleapis|gstatic)/;
 
 test.beforeEach(async ({ context, page }) => {
   await context.route(THIRD_PARTY, (r) => r.abort());
   await page.goto('/index.html');
-  await page.evaluate(() => localStorage.setItem('mugurel_cos', JSON.stringify({ v: 1, items: [{ id: 3470, qty: 1 }] })));
+  await page.evaluate((id) => localStorage.setItem('mugurel_cos', JSON.stringify({ v: 1, items: [{ id, qty: 1 }] })), I.A);
   await page.goto('/comanda.html');
   await expect(page.locator('[data-cos-total]')).toBeVisible();
 });
@@ -63,7 +67,7 @@ test('sesiune expirata: mesaj clar, datele raman, a doua trimitere trece', async
 test('cos modificat ocolind interfata: serverul il reverifica si refuza', async ({ page }) => {
   await fillAll(page);
   await page.check('input[name="acord"]');
-  await page.evaluate(() => { document.querySelector('[data-cos-field]').value = JSON.stringify([{ id: 3686, qty: 1 }]); });
+  await page.evaluate((id) => { document.querySelector('[data-cos-field]').value = JSON.stringify([{ id, qty: 1 }]); }, I.IND);
   expect(await submit(page)).toBe(422);
   await expect(page.locator('[data-cart-error]')).toContainText('nu se mai pot comanda');
   await expect(page.locator('[data-cart-error] a')).toHaveAttribute('href', '/cos.html');

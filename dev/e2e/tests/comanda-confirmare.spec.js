@@ -1,5 +1,7 @@
 // T14: pagina de confirmare si fluxul complet din browser. Necesita fixturile din dev/fixtures/cos_test.sql.
 const { test, expect } = require('@playwright/test');
+const { P, ids, addFromProductPage } = require('./fixtures');
+let I; // id-urile produselor de test (dev/fixtures/cos_test.sql)
 
 const THIRD_PARTY = /googletagmanager|google-analytics|clarity\.ms|fonts\.(googleapis|gstatic)/;
 
@@ -7,14 +9,14 @@ test.beforeEach(async ({ context }) => {
   await context.route(THIRD_PARTY, (r) => r.abort());
 });
 
+test.beforeEach(async ({ request }) => { I = await ids(request); });
+
 async function placeOrder(page, { email = 'ion@exemplu.ro', plata = 'ramburs' } = {}) {
-  await page.goto('/acoperis.html');
-  await page.locator('.btn-cart[data-cart-id="3470"]').click();
-  await page.goto('/electrice.html');
-  await page.locator('.btn-cart[data-cart-id="3678"]').click();
+  await addFromProductPage(page, 'A');
+  await addFromProductPage(page, 'EL');
   await page.locator('.hdr-cart').click();
   await page.locator('a.cos-continue').click();
-  await expect(page.locator('[data-cos-total]')).toHaveText('109,00 lei');
+  await expect(page.locator('[data-cos-total]')).toHaveText('398,55 lei');
   await page.fill('#f-nume', 'Ion Popescu');
   await page.fill('#f-telefon', '0749 130 565');
   await page.fill('#f-email', email);
@@ -35,7 +37,7 @@ test('flux complet: produs → cos → comanda → confirmare, cosul golit', asy
   await placeOrder(page);
   await expect(page.locator('h1')).toHaveText('Multumim! Comanda a fost trimisa');
   await expect(page.locator('[data-order-number]')).toHaveText(/^MUG-\d{4}-\d{6}$/);
-  await expect(page.locator('[data-order-total]')).toHaveText('109,00 lei');
+  await expect(page.locator('[data-order-total]')).toHaveText('398,55 lei');
   await expect(page.locator('.comanda-sum-line')).toHaveCount(2);
   await expect(page.locator('.confirmare-wrap')).toContainText('ion@exemplu.ro');
   await expect(page.locator('.confirmare-pasi')).toContainText('+40749130565');
@@ -62,8 +64,7 @@ test('„Inapoi" dupa confirmare: cosul e gol, comanda nu se poate retrimite', a
 test('legatura redeschisa mai tarziu nu goleste un cos nou', async ({ page, context }) => {
   await placeOrder(page);
   const url = page.url();
-  await page.goto('/acoperis.html');
-  await page.locator('.btn-cart[data-cart-id="3471"]').click();
+  await addFromProductPage(page, 'B');
   await expect(page.locator('.hdr-cart-count')).toHaveText('1');
   const later = await context.newPage(); // ca din email, in alt tab
   await later.goto(url);

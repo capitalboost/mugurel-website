@@ -87,7 +87,7 @@ require __DIR__ . '/templates/header.php';
 </div>
 
 <main class="produs-wrap" id="continut">
-  <article class="produs">
+  <article class="produs" data-product-id="<?= (int) $p['id'] ?>">
     <div class="produs-top">
       <div class="produs-media">
         <div class="produs-img"><?= panouGenerat($p['name']) ?>

@@ -921,3 +921,5 @@ img { max-width: 100%; }
   /* panoul ultimei ramuri mari nu iese din ecran in dreapta */
   .nav-dd:nth-child(n+2) .nav-dd-menu { left: auto; right: auto; }
 }
+.cos-line-name a { color: inherit; text-decoration: none; }
+.cos-line-name a:hover { color: var(--verde-mid); text-decoration: underline; }

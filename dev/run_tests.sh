@@ -35,21 +35,33 @@ done < <(git ls-files '*.php'; git ls-files --others --exclude-standard '*.php')
 
 [ "${1:-}" = "--php" ] && exit $fail
 
-# Regresie pe pagini: cifrele din jurnal (231 materiale + 264 accesorii, catalog 534)
-tm=0; ta=0
-for p in acoperis izolatie gips-carton zidarie-bca gard-imprejmuiri electrice incalzire \
-         sanitare apa-canal gradina mobilier electrocasnice scule-unelte; do
-    code=$(curl -s -o /tmp/pg.html -w '%{http_code}' "$BASE/$p.html")
-    m=$(grep -o 'class="material-card"' /tmp/pg.html | wc -l); a=$(grep -o 'class="accessory-card' /tmp/pg.html | wc -l)
+# Regresie pe pagini (catalogul nou, 16 oct): fiecare categorie si colectie din sitemap raspunde 200, are carduri
+# si date structurate; totalul din catalog = produsele vizibile din baza.
+MYSQL_N="/c/Users/lucia/AppData/Local/mugurel-dev/mariadb/bin/mysql.exe -u root -h 127.0.0.1 -N mugurel_cms"
+expected=$($MYSQL_N -e "SELECT COUNT(*) FROM products WHERE is_visible = 1 AND barcode IS NOT NULL")
+pages=0; bad=0
+for u in $(curl -s "$BASE/sitemap.xml" | grep -o '<loc>[^<]*' | sed 's#<loc>https://mugurel-bricolaj.ro##' | grep -v '^/produs/' | grep -v '^/$\|contact\|despre-noi'); do
+    code=$(curl -s -o /tmp/pg.html -w '%{http_code}' "$BASE$u")
+    cards=$(grep -o 'class="prod-card cat-card"' /tmp/pg.html | wc -l)
     j=$(grep -c 'application/ld+json' /tmp/pg.html)
-    tm=$((tm + m)); ta=$((ta + a))
-    if [ "$code" != 200 ] || [ "$j" -lt 1 ]; then echo "FAIL pagina $p: http=$code jsonld=$j"; fail=1; fi
+    pages=$((pages + 1))
+    if [ "$code" != 200 ] || [ "$cards" -lt 1 ] || [ "$j" -lt 1 ]; then echo "FAIL $u: http=$code carduri=$cards jsonld=$j"; bad=1; fi
 done
-[ $tm -eq 231 ] && [ $ta -eq 264 ] && echo "ok   13 pagini: $tm materiale + $ta accesorii" \
-    || { echo "FAIL carduri: $tm materiale + $ta accesorii (asteptat 231 + 264)"; fail=1; }
-cat_n=$(curl -s "$BASE/catalog.html" | grep -o 'din [0-9]* produse' | head -1)
-[ "$cat_n" = "din 534 produse" ] && echo "ok   catalog: $cat_n" || { echo "FAIL catalog: '$cat_n'"; fail=1; }
-for u in / /index.html /contact.html /catalog.html; do
+[ $bad -eq 0 ] && echo "ok   $pages liste (catalog, categorii, colectii): 200, cu produse si JSON-LD" || fail=1
+cat_n=$(curl -s "$BASE/catalog.html" | grep -o '<strong>[0-9]*</strong> produse' | grep -o '[0-9]*' | head -1)
+[ "$cat_n" = "$expected" ] && echo "ok   catalog: $cat_n produse (= baza)" || { echo "FAIL catalog: '$cat_n' (asteptat $expected)"; fail=1; }
+for slug in $($MYSQL_N -e "SELECT slug FROM products WHERE is_visible = 1 AND barcode IS NOT NULL ORDER BY RAND() LIMIT 25"); do
+    c=$(curl -s -o /dev/null -w '%{http_code}' "$BASE/produs/$slug.html"); [ "$c" = 200 ] || { echo "FAIL /produs/$slug.html -> $c"; fail=1; }
+done
+echo "ok   25 pagini de produs luate la intamplare: 200"
+for u in /acoperis.html /electrocasnice.html; do
+    c=$(curl -s -o /dev/null -w '%{http_code}' "$BASE$u"); [ "$c" = 200 ] || { echo "FAIL adresa veche $u -> $c (trebuia categoria noua)"; fail=1; }
+done
+for u in /izolatie.html /mobilier.html /electrice.html; do
+    c=$(curl -s -o /dev/null -w '%{http_code}' "$BASE$u"); [ "$c" = 301 ] || { echo "FAIL adresa veche $u -> $c (trebuia 301)"; fail=1; }
+done
+echo "ok   adresele vechi: categorii pastrate sau 301"
+for u in / /index.html /contact.html /despre-noi.html /catalog.html /cos.html /comanda.html /sitemap.xml; do
     c=$(curl -s -o /dev/null -w '%{http_code}' "$BASE$u"); [ "$c" = 200 ] || { echo "FAIL $u -> $c"; fail=1; }
 done
 c=$(curl -s -o /dev/null -w '%{http_code}' "$BASE/admin/helpers/Csrf.php"); [ "$c" = 403 ] || { echo "FAIL admin/helpers accesibil ($c)"; fail=1; }

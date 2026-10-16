@@ -17,12 +17,12 @@ try {
     ok(false, 'Conexiune DB: ' . $e->getMessage());
 }
 
-// Test: ierarhia de categorii dupa migrarea 002
+// Test: ierarhia de categorii a catalogului nou (cele 3 fisiere Dunlite, 16 oct)
 $count = (int)Database::get()->query('SELECT COUNT(*) FROM categories')->fetchColumn();
-ok($count === 31, "31 categorii în DB (got $count)");
+ok($count === 51, "51 categorii în DB (got $count)");
 
 $l1 = (int)Database::get()->query('SELECT COUNT(*) FROM categories WHERE parent_id IS NULL')->fetchColumn();
-ok($l1 === 9, "9 categorii de nivel 1 (got $l1)");
+ok($l1 === 4, "4 ramuri principale (got $l1)");
 
 $orfane = (int)Database::get()->query(
     'SELECT COUNT(*) FROM categories c WHERE c.parent_id IS NOT NULL
