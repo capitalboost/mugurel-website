@@ -149,7 +149,7 @@ require __DIR__ . '/templates/header.php';
         <h2 id="h-docs">Documente</h2>
         <ul class="produs-docs">
           <?php foreach ($p['documents'] as $i => $d): ?>
-          <li><a href="<?= e($d['url']) ?>" target="_blank" rel="noopener nofollow"><?= e($d['label']) ?><?= count($p['documents']) > 1 ? ' ' . ($i + 1) : '' ?> (PDF, site-ul producatorului)</a></li>
+          <li><a href="<?= e($d['url']) ?>" target="_blank" rel="noopener nofollow"><?= e($d['label']) ?><?= count($p['documents']) > 1 ? ' ' . ($i + 1) : '' ?> (PDF<?= str_starts_with($d['url'], '/') ? '' : ', site-ul producatorului' ?>)</a></li>
           <?php endforeach; ?>
         </ul>
       </section>

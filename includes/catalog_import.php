@@ -429,6 +429,35 @@ function attachCatalogPhotos(PDO $pdo, string $imgDir): array
     return ['linked' => $linked, 'unmatched' => $unmatched];
 }
 
+/**
+ * Fisele tehnice gazduite pe site: fise-tehnice/mu-<cod de bare>-<descriere>.pdf (cand link-ul producatorului nu mai
+ * merge — ex. Sika a scos fisa Adeplast AFI). Fisierul INLOCUIESTE documentele produsului (link-urile vechi, rupte).
+ * Se poate rula oricand (deploy, import) — rezultatul e acelasi.
+ * @return array{linked:int, unmatched:string[]}
+ */
+function attachCatalogDocuments(PDO $pdo, string $docDir): array
+{
+    $find = $pdo->prepare('SELECT id FROM products WHERE UPPER(barcode) = ?');
+    $same = $pdo->prepare('SELECT COUNT(*) FROM product_documents WHERE product_id = ? AND url = ?');
+    $del = $pdo->prepare('DELETE FROM product_documents WHERE product_id = ?');
+    $ins = $pdo->prepare("INSERT INTO product_documents (product_id, sort_order, url, label) VALUES (?, 1, ?, 'Fisa tehnica')");
+    $linked = 0; $unmatched = [];
+    foreach (glob(rtrim($docDir, '/\\') . '/mu-*.pdf') ?: [] as $file) {
+        $name = basename($file);
+        if (!preg_match('/^mu-([a-z0-9]+)-/i', $name, $m)) { continue; }
+        $find->execute([strtoupper($m[1])]);
+        $id = $find->fetchColumn();
+        if ($id === false) { $unmatched[] = $name; continue; }
+        $url = '/fise-tehnice/' . $name;
+        $same->execute([$id, $url]);
+        if ((int) $same->fetchColumn() === 1) { continue; }
+        $del->execute([$id]);
+        $ins->execute([$id, $url]);
+        $linked++;
+    }
+    return ['linked' => $linked, 'unmatched' => $unmatched];
+}
+
 function importCatalogMain(array $argv): int
 {
     $file = null; $apply = false; $replaceOld = false;
@@ -477,6 +506,7 @@ function importCatalogMain(array $argv): int
     echo "Produse vechi (fara cod de bare) ramase: {$st['old_remaining']}; produse noi din alte fisiere, neatinse: {$st['untouched']}.\n";
     if (!$apply) { echo "Nimic scris. Ruleaza cu --apply ca sa aplici.\n"; return 0; }
     $ph = attachCatalogPhotos($pdo, __DIR__ . '/../img/produse');
+    attachCatalogDocuments($pdo, __DIR__ . '/../fise-tehnice');
     echo "Poze legate: {$ph['linked']}" . ($ph['unmatched'] ? '; fara produs: ' . implode(', ', $ph['unmatched']) : '') . "\n";
     return 0;
 }

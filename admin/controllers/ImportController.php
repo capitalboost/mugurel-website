@@ -84,6 +84,7 @@ switch ($action) {
             if ($parsed['errors']) { throw new RuntimeException('fisierul are erori'); }
             $st = applyCatalog(Database::get(), $parsed['products'], classifyCatalogTags($parsed['products']), true, false);
             attachCatalogPhotos(Database::get(), __DIR__ . '/../../img/produse'); // produsele noi primesc poza, daca exista
+            attachCatalogDocuments(Database::get(), __DIR__ . '/../../fise-tehnice'); // fisele gazduite pe site raman
         } catch (Throwable $e) {
             error_log('ImportController apply: ' . $e->getMessage());
             Flash::error('Importul NU s-a aplicat (nimic nu s-a schimbat): ' . $e->getMessage());

@@ -7,6 +7,7 @@ deployment:
     - export REPOPATH=$PWD
     - /bin/cp -R css $DEPLOYPATH
     - /bin/cp -R img $DEPLOYPATH
+    - /bin/cp -R fise-tehnice $DEPLOYPATH
     - /bin/cp -R finantari-europene $DEPLOYPATH
     - /bin/cp -R js $DEPLOYPATH
     - /bin/cp -R admin $DEPLOYPATH

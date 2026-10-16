@@ -158,12 +158,12 @@ class CatalogProduct {
             $v = mb_substr(trim(strip_tags((string) (($in['spec_value'] ?? [])[$i] ?? ''))), 0, 2000);
             if ($k !== '' && $v !== '') { $d['specs'][] = ['key' => $k, 'value' => $v]; }
         }
-        // documente: un link pe rand, doar http(s)
+        // documente: un link pe rand, doar http(s) — sau o fisa gazduita pe site (/fise-tehnice/...pdf)
         $d['documents'] = [];
         foreach (preg_split('/\r\n|\r|\n/', (string) ($in['documents'] ?? '')) ?: [] as $line) {
             $u = trim($line);
             if ($u === '') { continue; }
-            if (!preg_match('#^https?://[^\s<>"\']+$#i', $u) || strlen($u) > 1000) { $err[] = "Link de document invalid: " . mb_substr($u, 0, 80); continue; }
+            if (!preg_match('#^(https?://[^\s<>"\']+|/fise-tehnice/[A-Za-z0-9._-]+\.pdf)$#i', $u) || strlen($u) > 1000) { $err[] = "Link de document invalid: " . mb_substr($u, 0, 80); continue; }
             $d['documents'][] = $u;
         }
         // tag-uri: separate prin „;" (virgula ramane pentru zecimale: „grosime 1,5 mm")

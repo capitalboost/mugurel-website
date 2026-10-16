@@ -226,6 +226,8 @@ function main(array $argv): int
         try {
             require_once $dbDir . '/../includes/catalog_import.php';
             $ph = attachCatalogPhotos($pdo, $dbDir . '/../img/produse');
+            $fd = attachCatalogDocuments($pdo, $dbDir . '/../fise-tehnice');
+            out("Fise tehnice de pe site legate acum: {$fd['linked']}" . ($fd['unmatched'] ? '; fara produs: ' . implode(', ', $fd['unmatched']) : ''));
             out("Poze catalog legate acum: {$ph['linked']}" . ($ph['unmatched'] ? '; fara produs: ' . implode(', ', $ph['unmatched']) : ''));
         } catch (Throwable $e) {
             out('EROARE la legarea pozelor (catalogul nu e afectat): ' . $e->getMessage());
