@@ -15,7 +15,7 @@ require __DIR__ . '/templates/header.php';
     <p class="updated">Ultima actualizare: 16 octombrie 2026</p>
 
     <h2>1. Cine suntem</h2>
-    <p>Site-ul <strong>mugurel-bricolaj.ro</strong> este administrat de <strong>DUNLITE COM SRL</strong>, cu sediul în Strada Caracal nr. 52, 207220 Dăbuleni, județul Dolj, CIF RO9027530, nr. de înregistrare la Registrul Comerțului J16/1357/1996 („Mugurel”, „noi”).</p>
+    <p>Site-ul <strong>mugurel-bricolaj.ro</strong> este administrat de <strong>DUNLITE COM SRL</strong>, cu sediul în Strada Caracal nr. 66, 207220 Dăbuleni, județul Dolj, CIF RO9027530, nr. de înregistrare la Registrul Comerțului J16/1357/1996 („Mugurel”, „noi”).</p>
     <p>Contact: telefon și WhatsApp <a href="tel:+40749130565">0749 130 565</a>, email <a href="mailto:office@mugurel-bricolaj.ro">office@mugurel-bricolaj.ro</a>. Program: Luni–Vineri, 08:00–18:00.</p>
     <p>Folosind site-ul sau trimițând o comandă, accepți acești termeni. Îi poți salva sau tipări oricând de pe această pagină.</p>
 
@@ -37,7 +37,7 @@ require __DIR__ . '/templates/header.php';
     <ul>
       <li><strong>Ramburs</strong> — plătești numerar la primirea mărfii;</li>
       <li><strong>Transfer bancar</strong> — după confirmare îți trimitem pe email factura proformă cu datele de plată; livrăm după încasarea sumei;</li>
-      <li><strong>Ridicare din magazin</strong> — plătești numerar sau cu cardul când ridici marfa, pe Strada Caracal 52, Dăbuleni.</li>
+      <li><strong>Ridicare din magazin</strong> — plătești numerar sau cu cardul când ridici marfa, pe Strada Caracal 66, Dăbuleni.</li>
     </ul>
     <p>Pentru fiecare comandă livrată emitem factură fiscală.</p>
 

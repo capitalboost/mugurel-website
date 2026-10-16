@@ -113,3 +113,35 @@ test('cererea de retur: validare, trimitere, confirmare, 2 emailuri, apoi in adm
   await page.goto('/admin/?page=returns&status=finalizata');
   await expect(page.locator('details.adm-return', { hasText: nr })).toHaveCount(1);
 });
+
+test('„Setari cookie" din footer: alegerea se poate schimba si retrage oricand', async ({ page }) => {
+  const hits = [];
+  page.on('request', (r) => { if (ANALYTICS.test(r.url())) { hits.push(r.url()); } });
+  await page.route(ANALYTICS, (r) => r.abort());
+  await page.route(/fonts\.(googleapis|gstatic)/, (r) => r.abort());
+  await page.goto('/contact.html');
+  await page.click('#gdpr-decline');
+  await expect(page.locator('#gdpr-banner')).toHaveCount(0);
+
+  // redeschid din footer: bannerul arata alegerea curenta; „Accept" porneste analiza fara reincarcare
+  const settings = page.locator('footer [data-cookie-settings]');
+  // pe telefon/tableta (<= 768 px) coloanele din footer sunt stranse: vizitatorul deschide intai „Informatii"
+  if (page.viewportSize().width <= 768) { await page.locator('footer .f-col h4', { hasText: 'Informatii' }).click(); }
+  await settings.click();
+  await expect(page.locator('#gdpr-banner')).toBeVisible();
+  await expect(page.locator('.gdpr-current')).toContainText('refuzi');
+  await page.click('#gdpr-accept');
+  await expect.poll(() => hits.length).toBeGreaterThan(0);
+  expect(await page.evaluate(() => localStorage.getItem('gdpr_consent'))).toBe('accepted');
+
+  // retrag acordul: cookie-urile de analiza se sterg, pagina se reincarca si analiza nu mai porneste
+  await page.evaluate(() => { document.cookie = '_ga=GA1.1.test; path=/'; });
+  await settings.click();
+  await expect(page.locator('.gdpr-current')).toContainText('accepți');
+  hits.length = 0;
+  await Promise.all([page.waitForEvent('load'), page.click('#gdpr-decline')]);
+  await page.waitForLoadState('networkidle');
+  expect(await page.evaluate(() => localStorage.getItem('gdpr_consent'))).toBe('declined');
+  expect(await page.evaluate(() => document.cookie)).not.toContain('_ga=');
+  expect(hits, 'dupa retragere nu se mai incarca nimic').toEqual([]);
+});

@@ -30,6 +30,7 @@
           <li><a href="/cerere-retur.html">Cerere de retur</a></li>
           <li><a href="/termeni-conditii.html">Termeni si conditii</a></li>
           <li><a href="/politica-confidentialitate.html">Confidentialitate</a></li>
+          <li><a href="#cookie" data-cookie-settings>Setări cookie</a></li>
         </ul>
       </div>
       <div class="f-col">
@@ -43,7 +44,7 @@
       <a href="https://anpc.ro/ce-este-sal/" target="_blank" rel="noopener nofollow" title="Soluționarea alternativă a litigiilor (ANPC)"><img src="/img/anpc-sal.svg" alt="ANPC — Soluționarea alternativă a litigiilor" width="250" height="62" loading="lazy" decoding="async"></a>
     </div>
     <div class="f-bottom">
-      <span>© 2026 DUNLITE COM SRL — CIF: RO9027530 | J16/1357/1996 | Strada Caracal Nr.52, 207220 Dabuleni, Jud. Dolj</span>
+      <span>© 2026 DUNLITE COM SRL — CIF: RO9027530 | J16/1357/1996 | Strada Caracal Nr.66, 207220 Dabuleni, Jud. Dolj</span>
       <span>Built by <a href="https://capitalboost.ro/" style="color:rgba(255,255,255,0.4);">CapitalBoost.ro</a></span>
     </div>
   </div>

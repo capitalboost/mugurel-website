@@ -936,3 +936,57 @@ img { max-width: 100%; }
 .legal-form p { margin-bottom: 8px; }
 .legal-content a { color: var(--verde-mid); text-decoration: underline; }
 .legal-content .btn-cart { color: #fff; text-decoration: none; }
+
+/* ═══ Prima pagina: „Despre Mugurel" + „Intrebari frecvente" (refacute 16 oct) ═══ */
+.home-kicker { font-size: 12px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: var(--verde-mid); margin-bottom: 6px; }
+.home-faq { background: var(--bg); padding: 48px 24px 56px; }
+.home-faq-inner { max-width: 860px; margin: 0 auto; text-align: center; }
+.home-faq-list { display: flex; flex-direction: column; gap: 10px; margin-top: 22px; text-align: left; }
+.home-faq-item { background: #fff; border: 1px solid var(--border); border-radius: 10px; transition: border-color 150ms, box-shadow 150ms; }
+.home-faq-item[open] { border-color: var(--verde-mid); box-shadow: 0 4px 14px rgba(6,54,58,.07); }
+.home-faq-item summary { list-style: none; cursor: pointer; display: flex; align-items: center; justify-content: space-between; gap: 16px; padding: 16px 20px; font-weight: 700; font-size: 15px; color: var(--text); }
+.home-faq-item summary::-webkit-details-marker { display: none; }
+.home-faq-item summary::after { content: '+'; flex: none; width: 26px; height: 26px; border-radius: 50%; background: var(--verde-light); color: var(--verde); display: flex; align-items: center; justify-content: center; font-size: 18px; font-weight: 400; line-height: 1; }
+.home-faq-item[open] summary::after { content: '−'; background: var(--verde); color: #fff; }
+.home-faq-item summary:focus-visible { outline: 2px solid var(--verde-mid); outline-offset: 2px; border-radius: 10px; }
+.home-faq-item p { padding: 0 20px 18px; font-size: 14px; line-height: 1.75; color: #555; }
+.home-faq-more { margin-top: 20px; font-size: 14px; color: #555; }
+.home-faq-more a { color: var(--verde-mid); font-weight: 700; }
+@media (max-width: 600px) {
+  .home-faq { padding: 32px 16px 40px; }
+  .home-faq h2 { font-size: 22px; }
+  .home-faq-item summary { padding: 14px 16px; font-size: 14px; }
+  .home-faq-item p { padding: 0 16px 16px; }
+}
+
+
+/* „Despre Mugurel" pe prima pagina — banda centrata (varianta aleasa pe 16 oct) */
+.home-about { background: #fff; border-top: 1px solid var(--border); padding: 64px 24px; }
+.home-about-inner { max-width: 1080px; margin: 0 auto; text-align: center; }
+.home-about h2 { font-family: 'Roboto Condensed', sans-serif; font-size: 32px; line-height: 1.2; color: var(--verde); margin-bottom: 16px; }
+.home-about-lead { max-width: 680px; margin: 0 auto 36px; font-size: 16.5px; line-height: 1.75; color: #444; }
+.home-facts { list-style: none; margin: 0 0 36px; padding: 0; display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; }
+.home-facts li { display: flex; flex-direction: column; align-items: center; gap: 6px; padding: 28px 18px; background: #f6faf9; border: 1px solid #e3ecec; border-radius: 12px; }
+.home-fact-icon { width: 56px; height: 56px; border-radius: 50%; background: var(--verde-light); color: var(--verde); display: flex; align-items: center; justify-content: center; margin-bottom: 8px; }
+.home-fact-icon svg { width: 26px; height: 26px; }
+.home-facts strong { font-family: 'Roboto Condensed', sans-serif; font-size: 19px; color: var(--verde); }
+.home-facts li > span:last-child { font-size: 14px; line-height: 1.5; color: #666; }
+.home-about-actions { display: flex; justify-content: center; gap: 12px; flex-wrap: wrap; }
+.home-btn { display: inline-flex; align-items: center; justify-content: center; padding: 13px 26px; border-radius: var(--radius); font-weight: 700; font-size: 15px; transition: background 150ms, color 150ms; }
+.home-btn--primary { background: var(--verde); color: #fff; }
+.home-btn--primary:hover { background: var(--verde-mid); }
+.home-btn--ghost { border: 2px solid var(--verde); color: var(--verde); }
+.home-btn--ghost:hover { background: var(--verde-light); }
+@media (max-width: 900px) { .home-facts { grid-template-columns: repeat(2, 1fr); } }
+@media (max-width: 600px) {
+  .home-about { padding: 40px 16px; }
+  .home-about h2 { font-size: 25px; }
+  .home-about-lead { font-size: 15px; margin-bottom: 24px; }
+  .home-facts { gap: 10px; margin-bottom: 24px; }
+  .home-facts li { padding: 18px 10px; }
+  .home-fact-icon { width: 46px; height: 46px; }
+  .home-facts strong { font-size: 16px; }
+  .home-facts li > span:last-child { font-size: 12.5px; }
+  .home-btn { flex: 1 1 100%; }
+}
+.gdpr-current { display: inline-block; margin-top: 6px; color: #e8e8e8; }

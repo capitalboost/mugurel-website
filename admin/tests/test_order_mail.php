@@ -130,7 +130,7 @@ try {
 
     // continutul pentru ridicare din magazin si escaparea
     $rid = orderClientEmail(['plata' => 'ridicare', 'public_token' => str_repeat('a', 48), 'nume' => 'Ana <b>X</b>'] + $fake);
-    ok(str_contains($rid['html'], 'Strada Caracal 52') && !str_contains($rid['html'], 'Transportul nu este inclus'), 'client ridicare: adresa magazinului, fara mesaj de transport');
+    ok(str_contains($rid['html'], 'Strada Caracal 66') && !str_contains($rid['html'], 'Transportul nu este inclus'), 'client ridicare: adresa magazinului, fara mesaj de transport');
     ok(str_contains($rid['html'], 'Ana &lt;b&gt;X&lt;/b&gt;') && !str_contains($rid['html'], '<b>X</b>'), 'client: numele escapat');
     $tr = orderClientEmail(['plata' => 'transfer', 'public_token' => str_repeat('a', 48)] + $fake);
     ok(str_contains($tr['html'], 'factura proforma') && str_contains($tr['html'], 'Transportul nu este inclus'), 'client transfer: proforma + mesaj de transport');

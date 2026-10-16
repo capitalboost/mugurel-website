@@ -56,7 +56,7 @@ require __DIR__ . '/templates/header.php';
     <h2 id="formular-retragere">8. Formularul-tip de retragere</h2>
     <p>(Anexa nr. 1 la OUG nr. 34/2014 — se completează și se trimite doar dacă dorești să te retragi din contract. Mai simplu: <a href="/cerere-retur.html">formularul de retur online</a>.)</p>
     <div class="legal-form">
-      <p>Către: <strong>DUNLITE COM SRL</strong> (Mugurel), Strada Caracal nr. 52, 207220 Dăbuleni, județul Dolj, email <a href="mailto:office@mugurel-bricolaj.ro">office@mugurel-bricolaj.ro</a>, telefon 0749 130 565</p>
+      <p>Către: <strong>DUNLITE COM SRL</strong> (Mugurel), Strada Caracal nr. 66, 207220 Dăbuleni, județul Dolj, email <a href="mailto:office@mugurel-bricolaj.ro">office@mugurel-bricolaj.ro</a>, telefon 0749 130 565</p>
       <p>Vă informez prin prezenta cu privire la retragerea mea din contractul referitor la vânzarea următoarelor produse: ____________________________________________</p>
       <p>Comandate la data: ______________ / primite la data: ______________</p>
       <p>Numărul comenzii: ______________</p>

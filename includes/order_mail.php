@@ -108,7 +108,7 @@ function orderNotifyAdmin(PDO $pdo, array $order, array $smtp = []): bool
 }
 
 /** Datele firmei din subsolul emailului catre client (aceleasi ca in subsolul site-ului). */
-const SHOP_FOOTER = 'DUNLITE COM SRL — CIF RO9027530 — J16/1357/1996 — Strada Caracal 52, Dabuleni, jud. Dolj';
+const SHOP_FOOTER = 'DUNLITE COM SRL — CIF RO9027530 — J16/1357/1996 — Strada Caracal 66, Dabuleni, jud. Dolj';
 const SHOP_PHONE  = '0749 130 565';
 
 /** Confirmarea pentru client (T13): ce a comandat, ce urmeaza, cum plateste. Fara date interne (IP etc.). */
@@ -120,7 +120,7 @@ function orderClientEmail(array $order): array
            . ($order['plata'] === 'ridicare' ? ' si momentul in care poti ridica marfa.' : ', costul si termenul de livrare.')
            . ' Comanda devine ferma dupa ce o confirmam telefonic.';
     $where = $order['plata'] === 'ridicare'
-           ? 'Ridicare din magazin: Strada Caracal 52, Dabuleni (L–V 8:00–18:00).'
+           ? 'Ridicare din magazin: Strada Caracal 66, Dabuleni (L–V 8:00–18:00).'
            : 'Livrare la: ' . trim($order['adresa'] . ', ' . $order['localitate'] . ', jud. ' . $order['judet'], ', ') . '.';
 
     $subject = 'Am primit comanda ta ' . $order['order_number'] . ' — Mugurel';

@@ -74,7 +74,7 @@ test('legatura redeschisa mai tarziu nu goleste un cos nou', async ({ page, cont
 
 test('ridicare din magazin: confirmarea arata adresa magazinului, fara transport', async ({ page }) => {
   await placeOrder(page, { email: 'achizitii@firma.ro', plata: 'ridicare' });
-  await expect(page.locator('.confirmare-pasi')).toContainText('Ridici marfa din magazin: Strada Caracal 52, Dabuleni.');
+  await expect(page.locator('.confirmare-pasi')).toContainText('Ridici marfa din magazin: Strada Caracal 66, Dabuleni.');
   await expect(page.locator('.confirmare-wrap')).not.toContainText('Transportul nu este inclus');
 });
 

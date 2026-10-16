@@ -2,7 +2,7 @@
 /** Pagina statica, trecuta pe sabloanele comune (header/meniu/footer generate din catalog). */
 require_once __DIR__ . '/admin/config.php';
 $pageTitle       = 'Contact — Mugurel | Materiale Constructii';
-$metaDescription = 'Contactează-ne la 0749 130 565 (telefon și WhatsApp) sau la office@mugurel-bricolaj.ro. Program: Luni–Vineri 8:00–18:00, Strada Caracal 52, Dăbuleni.';
+$metaDescription = 'Contactează-ne la 0749 130 565 (telefon și WhatsApp) sau la office@mugurel-bricolaj.ro. Program: Luni–Vineri 8:00–18:00, Strada Caracal 66, Dăbuleni.';
 $canonicalUrl    = 'https://mugurel-bricolaj.ro/contact.html';
 $metaRobots      = 'index, follow';
 $ogTitle         = 'Contact — Mugurel Materiale Constructii';
@@ -17,7 +17,7 @@ $extraHead = <<<'HTML'
   "url": "https://mugurel-bricolaj.ro",
   "address": {
     "@type": "PostalAddress",
-    "streetAddress": "Strada Caracal Nr.52",
+    "streetAddress": "Strada Caracal Nr.66",
     "postalCode": "207220",
     "addressLocality": "Dăbuleni",
     "addressRegion": "Dolj",
@@ -98,7 +98,7 @@ require __DIR__ . '/templates/header.php';
         </div>
         <div class="contact-row-info">
           <div class="label">Adresa</div>
-          <div class="value">Strada Caracal Nr.52, 207220 Dăbuleni, Jud. Dolj</div>
+          <div class="value">Strada Caracal Nr.66, 207220 Dăbuleni, Jud. Dolj</div>
         </div>
       </div>
       <div class="contact-row">
@@ -112,7 +112,7 @@ require __DIR__ . '/templates/header.php';
       </div>
 
       <div class="map-container">
-        <iframe src="https://maps.google.com/maps?q=Strada+Caracal+52+Dabuleani+Dolj+Romania&output=embed" width="100%" height="100%" style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade" title="Locatie Mugurel Dabuleni"></iframe>
+        <iframe src="https://maps.google.com/maps?q=Strada+Caracal+66,+D%C4%83buleni,+Dolj,+Romania&z=16&output=embed" width="100%" height="100%" style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade" title="Locatie Mugurel Dabuleni"></iframe>
       </div>
     </div>
 
@@ -128,7 +128,7 @@ require __DIR__ . '/templates/header.php';
       </div>
       <div style="margin-bottom:20px;">
         <p style="font-weight:700;color:#222;margin-bottom:6px;font-size:14px;">Pot vedea produsele fizic?</p>
-        <p style="font-size:13px;color:#666;line-height:1.6;">Da, ne găsești în magazin, pe Strada Caracal 52, Dăbuleni, de Luni până Vineri între 8:00 și 18:00.</p>
+        <p style="font-size:13px;color:#666;line-height:1.6;">Da, ne găsești în magazin, pe Strada Caracal 66, Dăbuleni, de Luni până Vineri între 8:00 și 18:00.</p>
       </div>
       <div style="margin-bottom:20px;">
         <p style="font-weight:700;color:#222;margin-bottom:6px;font-size:14px;">Ce metode de plata acceptati?</p>

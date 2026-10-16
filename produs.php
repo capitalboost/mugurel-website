@@ -110,7 +110,7 @@ require __DIR__ . '/templates/header.php';
           <a href="<?= e(waLink($p['name'], 'Buna ziua! Am o intrebare despre: ' . $p['name'] . ' (cod ' . ($p['sku'] ?: $p['barcode']) . ').')) ?>" class="btn-wa-prod produs-wa" target="_blank" rel="noopener"><?= WA_ICON ?><?= $hasPrice ? 'Intreaba pe WhatsApp' : 'Cere oferta pe WhatsApp' ?></a>
           <ul class="produs-benefits">
             <li>Livrare in Dabuleni si in judetul Dolj</li>
-            <li>Ridicare din magazin: Strada Caracal 52, Dabuleni</li>
+            <li>Ridicare din magazin: Strada Caracal 66, Dabuleni</li>
             <li>Te sunam sa confirmam comanda (L–V 8:00–18:00)</li>
           </ul>
         </div>

@@ -22,7 +22,7 @@ $extraHead = <<<'HTML'
   "foundingDate": "2017",
   "address": {
     "@type": "PostalAddress",
-    "streetAddress": "Strada Caracal 52",
+    "streetAddress": "Strada Caracal 66",
     "addressLocality": "Dăbuleni",
     "addressRegion": "Dolj",
     "postalCode": "207220",
@@ -93,7 +93,7 @@ $extraHead = <<<'HTML'
       "name": "Care este programul magazinului?",
       "acceptedAnswer": {
         "@type": "Answer",
-        "text": "Luni–Vineri, 08:00–18:00, pe Strada Caracal 52, Dăbuleni. Comenzile online le poți trimite oricând; le confirmăm în programul de lucru."
+        "text": "Luni–Vineri, 08:00–18:00, pe Strada Caracal 66, Dăbuleni. Comenzile online le poți trimite oricând; le confirmăm în programul de lucru."
       }
     },
     {
@@ -177,7 +177,7 @@ require __DIR__ . '/templates/header.php';
       </div>
       <div class="trust-item">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
-        <div><div class="t-title">Program L–V 8–18</div><div class="t-sub">Strada Caracal 52, Dăbuleni</div></div>
+        <div><div class="t-title">Program L–V 8–18</div><div class="t-sub">Strada Caracal 66, Dăbuleni</div></div>
       </div>
     </div>
 
@@ -232,55 +232,52 @@ require __DIR__ . '/templates/header.php';
 <!-- FOOTER -->
 
 <!-- DESPRE MUGUREL -->
-<section style="background:#fff;padding:44px 0;">
-  <div class="container" style="max-width:1000px;">
-    <h2 style="font-family:'Roboto Condensed',sans-serif;font-size:24px;color:#06363A;margin-bottom:20px;">Despre Mugurel — magazinul tău de materiale din Dăbuleni</h2>
-    <div class="despre-grid" style="display:grid;grid-template-columns:1fr 1fr;gap:32px;max-width:960px;margin:0 auto;">
-      <div>
-        <p style="font-size:14px;line-height:1.8;color:#444;margin-bottom:12px;">
-          Mugurel este magazinul de materiale de construcții și electrocasnice din Dăbuleni, județul Dolj, deschis din 2017. Găsești la noi materiale pentru construcție, renovare și acoperiș — și electrocasnice pentru casă.
-        </p>
-        <p style="font-size:14px;line-height:1.8;color:#444;margin-bottom:12px;">
-          Lucrăm cu constructori, meșteri și clienți din Dăbuleni și din tot județul Dolj. Toate produsele au prețul afișat cu TVA: le pui în coș și trimiți comanda, sau ne scrii pe WhatsApp la <strong>0749 130 565</strong>. Te sunăm noi să confirmăm disponibilitatea și livrarea.
-        </p>
-        <p style="font-size:14px;line-height:1.8;color:#444;">
-          Stocul este actualizat săptămânal. Livrăm în județul Dolj, de obicei în aceeași zi sau a doua zi în zona Dăbuleni. Ne găsiți pe Strada Caracal 52, Dăbuleni — sau direct pe WhatsApp.
-        </p>
-      </div>
-      <div>
-        <h3 style="font-size:16px;font-weight:700;color:#06363A;margin-bottom:12px;">Ce găsești la Mugurel:</h3>
-        <ul style="font-size:14px;line-height:2.1;color:#444;padding-left:18px;">
-          <?= renderHomeOfferList() /* generata din catalog — nu ramane in urma cand apar categorii noi */ ?>
-        </ul>
-      </div>
+<section class="home-about" aria-labelledby="h-despre">
+  <div class="home-about-inner">
+    <p class="home-kicker">Despre noi</p>
+    <h2 id="h-despre">Magazinul tău de materiale din Dăbuleni</h2>
+    <p class="home-about-lead">Mugurel este magazinul de materiale de construcții și electrocasnice din Dăbuleni, județul Dolj. Prețurile sunt afișate cu TVA: comanzi online sau pe WhatsApp, iar noi te sunăm să confirmăm stocul și livrarea.</p>
+    <ul class="home-facts">
+      <li><span class="home-fact-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg></span><strong>Din 2017</strong><span>magazin local în Dăbuleni</span></li>
+      <li><span class="home-fact-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><rect x="1" y="3" width="15" height="13"/><polygon points="16 8 20 8 23 11 23 16 16 16 16 8"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/></svg></span><strong>Livrare în Dolj</strong><span>de obicei în aceeași zi sau a doua zi</span></li>
+      <li><span class="home-fact-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"/><line x1="7" y1="7" x2="7.01" y2="7"/></svg></span><strong>Prețuri cu TVA</strong><span>afișate pe fiecare produs</span></li>
+      <li><span class="home-fact-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg></span><strong>Strada Caracal 66</strong><span>Dăbuleni · L–V 8:00–18:00</span></li>
+    </ul>
+    <div class="home-about-actions">
+      <a href="catalog.html" class="home-btn home-btn--primary">Vezi produsele</a>
+      <a href="despre-noi.html" class="home-btn home-btn--ghost">Despre noi &rarr;</a>
     </div>
   </div>
 </section>
 
 <!-- FAQ -->
-<section style="background:#f5f5f5;padding:44px 0;">
-  <div class="container" style="max-width:820px;">
-    <h2 style="font-family:'Roboto Condensed',sans-serif;font-size:22px;color:#06363A;margin-bottom:28px;">Întrebări frecvente</h2>
-    <div style="margin-bottom:22px;">
-      <h3 style="font-size:15px;font-weight:700;color:#333;margin-bottom:6px;">Pot comanda online de la Mugurel?</h3>
-      <p class="faq-answer" style="font-size:14px;line-height:1.75;color:#555;">Da. Pui produsele în coș, completezi datele de livrare și alegi plata: ramburs, transfer bancar sau ridicare din magazin. Te sunăm în programul de lucru să confirmăm stocul și livrarea.</p>
+<section class="home-faq" aria-labelledby="h-faq">
+  <div class="home-faq-inner">
+    <p class="home-kicker">Întrebări frecvente</p>
+    <h2 id="h-faq">Ai o întrebare? Probabil am răspuns deja</h2>
+    <div class="home-faq-list">
+      <details class="home-faq-item" open>
+        <summary>Pot comanda online de la Mugurel?</summary>
+        <p>Da. Pui produsele în coș, completezi datele de livrare și alegi plata: ramburs, transfer bancar sau ridicare din magazin. Te sunăm în programul de lucru să confirmăm stocul și livrarea.</p>
+      </details>
+      <details class="home-faq-item">
+        <summary>Livrați la domiciliu?</summary>
+        <p>Da, livrăm în tot județul Dolj, de obicei în aceeași zi sau a doua zi în zona Dăbuleni. Costul transportului ți-l spunem la telefon, când confirmăm comanda.</p>
+      </details>
+      <details class="home-faq-item">
+        <summary>Prețurile includ TVA?</summary>
+        <p>Da, toate prețurile de pe site includ TVA.</p>
+      </details>
+      <details class="home-faq-item">
+        <summary>Care este programul magazinului?</summary>
+        <p>Luni–Vineri, 08:00–18:00, pe Strada Caracal 66, Dăbuleni. Comenzile online le poți trimite oricând; le confirmăm în programul de lucru.</p>
+      </details>
+      <details class="home-faq-item">
+        <summary>Vindeți și electrocasnice?</summary>
+        <p>Da: aragazuri, combine frigorifice, aspiratoare, blendere și boxe portabile, alături de materialele de construcții.</p>
+      </details>
     </div>
-    <div style="margin-bottom:22px;">
-      <h3 style="font-size:15px;font-weight:700;color:#333;margin-bottom:6px;">Livrați la domiciliu?</h3>
-      <p class="faq-answer" style="font-size:14px;line-height:1.75;color:#555;">Da, livrăm în tot județul Dolj, de obicei în aceeași zi sau a doua zi în zona Dăbuleni. Costul transportului ți-l spunem la telefon, când confirmăm comanda.</p>
-    </div>
-    <div style="margin-bottom:22px;">
-      <h3 style="font-size:15px;font-weight:700;color:#333;margin-bottom:6px;">Prețurile includ TVA?</h3>
-      <p class="faq-answer" style="font-size:14px;line-height:1.75;color:#555;">Da, toate prețurile de pe site includ TVA.</p>
-    </div>
-    <div style="margin-bottom:22px;">
-      <h3 style="font-size:15px;font-weight:700;color:#333;margin-bottom:6px;">Care este programul magazinului?</h3>
-      <p class="faq-answer" style="font-size:14px;line-height:1.75;color:#555;">Luni–Vineri, 08:00–18:00, pe Strada Caracal 52, Dăbuleni. Comenzile online le poți trimite oricând; le confirmăm în programul de lucru.</p>
-    </div>
-    <div>
-      <h3 style="font-size:15px;font-weight:700;color:#333;margin-bottom:6px;">Vindeți și electrocasnice?</h3>
-      <p class="faq-answer" style="font-size:14px;line-height:1.75;color:#555;">Da: aragazuri, combine frigorifice, aspiratoare, blendere și boxe portabile, alături de materialele de construcții.</p>
-    </div>
+    <p class="home-faq-more">Nu găsești răspunsul? Sună-ne la <a href="tel:+40749130565">0749 130 565</a> sau vezi pagina de <a href="contact.html">contact</a>.</p>
   </div>
 </section>
 

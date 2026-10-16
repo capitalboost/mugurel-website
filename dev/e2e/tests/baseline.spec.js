@@ -12,7 +12,6 @@ const THIRD_PARTY = /googletagmanager|google-analytics|clarity\.ms|fonts\.(googl
 // Probleme existente si pe live, documentate in docs/JURNAL-LUCRU.md (13 oct). Nu le ascundem:
 // fiecare intrare de aici trebuie sa dispara cand problema e reparata.
 const KNOWN = [
-  /Refused to frame 'https:\/\/maps\.google/, // harta de pe contact blocata de CSP (punctul 11)
 ];
 const isKnown = (s) => KNOWN.some((re) => re.test(s));
 

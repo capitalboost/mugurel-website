@@ -115,31 +115,69 @@ document.addEventListener('DOMContentLoaded', function () {
 });
 
 /* ── GDPR Cookie Banner ── */
+// Apare la prima vizita si se redeschide oricand din link-ul „Setari cookie" din footer ([data-cookie-settings]),
+// ca acordul sa se poata retrage la fel de usor cum a fost dat (GDPR).
 (function () {
-  if (localStorage.getItem('gdpr_consent')) return;
+  function read() { try { return localStorage.getItem('gdpr_consent'); } catch (e) { return null; } }
 
-  const banner = document.createElement('div');
-  banner.id = 'gdpr-banner';
-  banner.innerHTML =
-    '<div class="gdpr-text">Folosim cookie-uri pentru functionarea corecta a site-ului si pentru a intelege cum este folosit. Daca accepti, ne ajuti sa imbunatatim site-ul si sa iti oferim o experienta mai buna. <a href="/politica-confidentialitate.html">Politica de confidentialitate</a></div>' +
-    '<div class="gdpr-btns">' +
-    '<button class="gdpr-decline" id="gdpr-decline">Refuz</button>' +
-    '<button class="gdpr-accept" id="gdpr-accept">Accept</button>' +
-    '</div>';
-
-  document.body.appendChild(banner);
-  requestAnimationFrame(function () {
-    requestAnimationFrame(function () { banner.classList.add('gdpr-show'); });
-  });
-
-  function dismiss(val) {
-    localStorage.setItem('gdpr_consent', val);
-    // js/analytics.js porneste analiza imediat dupa „Accept", fara reincarcarea paginii
-    document.dispatchEvent(new CustomEvent('mugurel:consent', { detail: val }));
-    banner.classList.remove('gdpr-show');
-    setTimeout(function () { banner.remove(); }, 320);
+  // Retragerea acordului: stergem cookie-urile Google Analytics / Clarity si reincarcam pagina — scripturile deja
+  // pornite nu se pot opri altfel.
+  function clearAnalyticsCookies() {
+    var host = location.hostname.replace(/^www\./, '');
+    document.cookie.split(';').forEach(function (c) {
+      var name = c.split('=')[0].trim();
+      if (!/^(_ga|_gid|_gat|_clck|_clsk|CLID|MUID)/.test(name)) { return; }
+      ['', host, '.' + host].forEach(function (d) {
+        document.cookie = name + '=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/' + (d ? '; domain=' + d : '');
+      });
+    });
   }
 
-  document.getElementById('gdpr-accept').addEventListener('click', function () { dismiss('accepted'); });
-  document.getElementById('gdpr-decline').addEventListener('click', function () { dismiss('declined'); });
+  function open() {
+    var old = document.getElementById('gdpr-banner');
+    if (old) { old.remove(); } // un banner abia inchis (in animatie) nu blocheaza redeschiderea
+    var previous = read();
+    var banner = document.createElement('div');
+    banner.id = 'gdpr-banner';
+    banner.setAttribute('role', 'dialog');
+    banner.setAttribute('aria-label', 'Setari cookie');
+    banner.innerHTML =
+      '<div class="gdpr-text">Folosim cookie-uri strict necesare pentru funcționarea site-ului (coș, formulare). Cu acordul tău folosim și cookie-uri de analiză (Google Analytics, Microsoft Clarity), ca să înțelegem cum e folosit site-ul. Dacă refuzi, acestea nu se încarcă. Îți poți schimba alegerea oricând din „Setări cookie”, în subsolul paginii. <a href="/politica-confidentialitate.html#cookie">Politica de confidențialitate</a>' +
+      (previous ? '<br><span class="gdpr-current">Alegerea ta actuală: <strong>' + (previous === 'accepted' ? 'accepți' : 'refuzi') + '</strong> cookie-urile de analiză.</span>' : '') + '</div>' +
+      '<div class="gdpr-btns">' +
+      '<button type="button" class="gdpr-decline" id="gdpr-decline">Refuz</button>' +
+      '<button type="button" class="gdpr-accept" id="gdpr-accept">Accept</button>' +
+      '</div>';
+
+    document.body.appendChild(banner);
+    requestAnimationFrame(function () {
+      requestAnimationFrame(function () { banner.classList.add('gdpr-show'); });
+    });
+
+    function dismiss(val) {
+      try { localStorage.setItem('gdpr_consent', val); } catch (e) { /* fara stocare: alegerea tine doar pe pagina curenta */ }
+      banner.classList.remove('gdpr-show');
+      setTimeout(function () { banner.remove(); }, 320);
+      if (val === 'declined' && previous === 'accepted') {
+        clearAnalyticsCookies();
+        setTimeout(function () { location.reload(); }, 350);
+        return;
+      }
+      // js/analytics.js porneste analiza imediat dupa „Accept", fara reincarcarea paginii
+      document.dispatchEvent(new CustomEvent('mugurel:consent', { detail: val }));
+    }
+
+    document.getElementById('gdpr-accept').addEventListener('click', function () { dismiss('accepted'); });
+    document.getElementById('gdpr-decline').addEventListener('click', function () { dismiss('declined'); });
+    document.getElementById(previous === 'accepted' ? 'gdpr-decline' : 'gdpr-accept').focus({ preventScroll: true });
+  }
+
+  document.addEventListener('click', function (e) {
+    var link = e.target.closest && e.target.closest('[data-cookie-settings]');
+    if (!link) { return; }
+    e.preventDefault();
+    open();
+  });
+
+  if (!read()) { open(); }
 }());

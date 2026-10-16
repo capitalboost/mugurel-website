@@ -37,7 +37,7 @@ const ORDER_PLATA = [
     'transfer' => ['label' => 'Transfer bancar (ordin de plata)',
                    'info'  => 'Iti trimitem pe email factura proforma cu datele de plata, dupa ce confirmam comanda.'],
     'ridicare' => ['label' => 'Ridicare si plata in magazin',
-                   'info'  => 'Platesti numerar sau cu cardul cand ridici marfa: Strada Caracal 52, Dabuleni, L–V 8:00–18:00. Te anuntam cand comanda e pregatita.'],
+                   'info'  => 'Platesti numerar sau cu cardul cand ridici marfa: Strada Caracal 66, Dabuleni, L–V 8:00–18:00. Te anuntam cand comanda e pregatita.'],
 ];
 
 /** Mesajul despre transport (acelasi peste tot). */

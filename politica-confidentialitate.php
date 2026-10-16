@@ -17,7 +17,7 @@ require __DIR__ . '/templates/header.php';
     <p class="updated">Ultima actualizare: 16 octombrie 2026</p>
 
     <h2>1. Cine prelucrează datele</h2>
-    <p>Operatorul datelor este <strong>DUNLITE COM SRL</strong> („Mugurel”), cu sediul în Strada Caracal nr. 52, 207220 Dăbuleni, județul Dolj, CIF RO9027530, nr. de înregistrare la Registrul Comerțului J16/1357/1996.</p>
+    <p>Operatorul datelor este <strong>DUNLITE COM SRL</strong> („Mugurel”), cu sediul în Strada Caracal nr. 66, 207220 Dăbuleni, județul Dolj, CIF RO9027530, nr. de înregistrare la Registrul Comerțului J16/1357/1996.</p>
     <p>Pentru orice întrebare despre datele tale: email <a href="mailto:office@mugurel-bricolaj.ro">office@mugurel-bricolaj.ro</a>, telefon <a href="tel:+40749130565">0749 130 565</a>.</p>
 
     <h2>2. Ce date colectăm</h2>
@@ -61,14 +61,14 @@ require __DIR__ . '/templates/header.php';
     <h2>6. Cum le protejăm</h2>
     <p>Site-ul folosește conexiune criptată (HTTPS), formularele sunt protejate împotriva trimiterilor automate, iar accesul la comenzi este limitat la personalul magazinului. Confirmarea comenzii poate fi văzută doar prin legătura unică primită pe email.</p>
 
-    <h2>7. Cookie-uri și analiză</h2>
+    <h2 id="cookie">7. Cookie-uri și analiză</h2>
     <p><strong>Strict necesare</strong> (nu cer acord): reținerea alegerii tale privind cookie-urile, conținutul coșului (localStorage) și un cookie de sesiune care protejează formularele de comandă și de retur.</p>
     <p><strong>De analiză</strong> — se activează <strong>doar dacă apeși „Accept”</strong> în bannerul de la prima vizită:</p>
     <ul>
       <li><strong>Google Analytics 4</strong> (Google Ireland Limited) — statistici agregate: pagini vizitate, sursa vizitei, tipul dispozitivului, durata vizitei;</li>
       <li><strong>Microsoft Clarity</strong> (Microsoft Ireland Operations Limited) — hărți de căldură și înregistrări ale modului de navigare (derulare, clicuri); textul scris în formulare este mascat automat și nu este înregistrat.</li>
     </ul>
-    <p>Dacă apeși „Refuz”, aceste instrumente nu se încarcă deloc. Îți poți retrage oricând acordul ștergând datele site-ului din browser (cookie-uri și „date ale site-urilor”); la următoarea vizită bannerul apare din nou.</p>
+    <p>Dacă apeși „Refuz”, aceste instrumente nu se încarcă deloc. Îți poți schimba alegerea oricând din link-ul <a href="#cookie" data-cookie-settings>„Setări cookie”</a> din subsolul fiecărei pagini; dacă retragi acordul, ștergem cookie-urile de analiză din browserul tău.</p>
 
     <h2>8. Drepturile tale</h2>
     <p>Ai dreptul de acces la datele tale, la rectificarea lor, la ștergere („dreptul de a fi uitat”), la restricționarea prelucrării, la portabilitate, dreptul de a te opune prelucrării bazate pe interesul legitim și dreptul de a-ți retrage consimțământul. Ne poți scrie la <a href="mailto:office@mugurel-bricolaj.ro">office@mugurel-bricolaj.ro</a>; răspundem în cel mult o lună.</p>

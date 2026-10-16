@@ -64,7 +64,7 @@ require __DIR__ . '/templates/header.php';
         <?= $pickup ? 'ca sa confirmam produsele si momentul ridicarii.' : 'ca sa confirmam produsele, costul si termenul de livrare.' ?></li>
       <li><strong><?= mh($plata['label']) ?>:</strong> <?= mh($plata['info']) ?></li>
       <li><?= $pickup
-            ? 'Ridici marfa din magazin: Strada Caracal 52, Dabuleni.'
+            ? 'Ridici marfa din magazin: Strada Caracal 66, Dabuleni.'
             : 'Livram la: ' . mh(trim($order['adresa'] . ', ' . $order['localitate'] . ', jud. ' . $order['judet'], ', ')) . '.' ?></li>
     </ol>
   </section>

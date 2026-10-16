@@ -35,7 +35,7 @@ test('cele trei metode, fiecare cu explicatie, si mesajul despre transport', asy
   await expect(page.locator('.form-plata-option')).toHaveCount(3);
   await expect(page.locator('.form-plata-option', { hasText: 'Ramburs la livrare' })).toContainText('numerar la primirea marfii');
   await expect(page.locator('.form-plata-option', { hasText: 'Transfer bancar' })).toContainText('factura proforma');
-  await expect(page.locator('.form-plata-option', { hasText: 'Ridicare si plata in magazin' })).toContainText('Strada Caracal 52, Dabuleni');
+  await expect(page.locator('.form-plata-option', { hasText: 'Ridicare si plata in magazin' })).toContainText('Strada Caracal 66, Dabuleni');
   await expect(page.locator('[data-transport-info]')).toContainText('Transportul nu este inclus in total');
   await expect(page.locator('.form-plata-option', { hasText: /card online/i })).toHaveCount(0);
 });
