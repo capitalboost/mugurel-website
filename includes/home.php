@@ -7,7 +7,8 @@ require_once __DIR__ . '/catalog_page.php';
 require_once __DIR__ . '/site_nav.php';
 
 /**
- * Produsele recomandate: cate unul din fiecare grupa a meniului (pret fix, verificate intai), apoi completam.
+ * Produsele recomandate: cate unul din fiecare grupa a meniului (pret fix, cu poza, verificate intai), apoi completam.
+ * Doar produse cu poza (cerut de Lucian 18 oct): prima pagina nu arata panouri generate.
  * Ordinea e stabila (aceleasi produse la fiecare incarcare), ca pagina sa poata fi pusa in cache.
  */
 function homeFeatured(int $limit = 6): array
@@ -27,14 +28,14 @@ function homeFeatured(int $limit = 6): array
         }
         foreach ($groups as $it) {
             $ids = catDescendantIds($it['id']);
-            $id = $pdo->query('SELECT id FROM products WHERE is_visible = 1 AND barcode IS NOT NULL AND price > 0
+            $id = $pdo->query('SELECT id FROM products WHERE is_visible = 1 AND barcode IS NOT NULL AND price > 0 AND CHAR_LENGTH(image_path) > 0
                                AND stock_status <> \'indisponibil\' AND category_id IN (' . implode(',', array_map('intval', $ids)) . ")
                                ORDER BY verify_status = 'ok' DESC, sort_order LIMIT 1")->fetchColumn();
             if ($id !== false) { $picked[] = (int) $id; }
             if (count($picked) >= $limit) { break; }
         }
         if (count($picked) < $limit) {
-            $more = $pdo->query('SELECT id FROM products WHERE is_visible = 1 AND barcode IS NOT NULL AND price > 0'
+            $more = $pdo->query('SELECT id FROM products WHERE is_visible = 1 AND barcode IS NOT NULL AND price > 0 AND CHAR_LENGTH(image_path) > 0'
                 . ($picked ? ' AND id NOT IN (' . implode(',', $picked) . ')' : '')
                 . " ORDER BY verify_status = 'ok' DESC, sort_order LIMIT " . ($limit - count($picked)))->fetchAll(PDO::FETCH_COLUMN);
             $picked = array_merge($picked, array_map('intval', $more));
