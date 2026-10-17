@@ -125,16 +125,19 @@ require __DIR__ . '/templates/header.php';
     </div>
 
     <div class="produs-details">
+      <?php /* Secțiuni pliabile (18 oct): Descrierea deschisă, Specificațiile se deschid la click. Textul rămâne în pagină
+               (Google și asistenții AI îl citesc) — <details> doar îl pliază; conținutul închis nu se desenează până la click. */ ?>
       <?php if ($description !== ''): ?>
-      <section class="produs-section produs-desc" aria-labelledby="h-desc">
-        <h2 id="h-desc">Descriere</h2>
-        <?= $description ?>
-      </section>
+      <details class="produs-section produs-fold produs-desc" open>
+        <summary><h2 id="h-desc">Descriere</h2></summary>
+        <div class="produs-fold-body"><?= $description ?></div>
+      </details>
       <?php endif; ?>
 
       <?php if ($p['specs']): ?>
-      <section class="produs-section" aria-labelledby="h-spec">
-        <h2 id="h-spec">Specificații tehnice</h2>
+      <details class="produs-section produs-fold">
+        <summary><h2 id="h-spec">Specificații tehnice</h2> <span class="produs-fold-count"><?= count($p['specs']) ?></span></summary>
+        <div class="produs-fold-body">
         <table class="produs-specs">
           <tbody>
           <?php foreach ($p['specs'] as $s): ?>
@@ -142,7 +145,8 @@ require __DIR__ . '/templates/header.php';
           <?php endforeach; ?>
           </tbody>
         </table>
-      </section>
+        </div>
+      </details>
       <?php endif; ?>
 
       <?php if ($p['documents']): ?>
