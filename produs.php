@@ -121,6 +121,7 @@ require __DIR__ . '/templates/header.php';
           <?php foreach ($tagLinks as [$label, $u]): ?><a class="chip" href="<?= e($u) ?>"><?= e($label) ?></a><?php endforeach; ?>
         </div>
         <?php endif; ?>
+        <p class="produs-raport"><a href="/raporteaza-problema.html?produs=<?= e(rawurlencode($p['slug'])) ?>" rel="nofollow">Ai observat o greșeală la acest produs? Raportează</a></p>
       </div>
     </div>
 

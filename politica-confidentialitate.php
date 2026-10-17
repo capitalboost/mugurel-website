@@ -24,6 +24,7 @@ require __DIR__ . '/templates/header.php';
     <ul>
       <li><strong>Comenzi online:</strong> nume, telefon, email, adresa de livrare (județ, localitate, adresă), metoda de plată, produsele comandate și mențiunile tale; pentru firme și denumirea, CUI-ul, numărul de înregistrare la Registrul Comerțului și sediul.</li>
       <li><strong>Cereri de retur:</strong> numărul comenzii sau al facturii, nume, telefon, email, adresa de unde ridică curierul, produsele returnate, data primirii, motivul (dacă îl spui) și, opțional, IBAN-ul pentru rambursare.</li>
+      <li><strong>Raportarea unei greșeli la un produs:</strong> ce ai observat și, doar dacă vrei răspuns, adresa de email; plus adresa IP, pentru protecția formularului. Folosim aceste date doar ca să corectăm produsul și să-ți răspundem.</li>
       <li><strong>Mesaje pe telefon, WhatsApp sau email:</strong> datele pe care ni le dai când ceri o ofertă sau comanzi.</li>
       <li><strong>Date tehnice la trimiterea unei comenzi sau a unei cereri de retur:</strong> adresa IP și tipul de browser, pentru protecția formularelor împotriva abuzurilor și a comenzilor false.</li>
       <li><strong>Coșul de cumpărături</strong> se păstrează doar în browserul tău (localStorage) până trimiți comanda; nu ajunge la noi înainte de trimitere.</li>
