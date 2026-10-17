@@ -194,3 +194,24 @@ document.addEventListener('click', function (e) {
   f.title = 'Locație Mugurel Dăbuleni';
   btn.replaceWith(f);
 });
+
+/* ── Tema întunecată: doar la cererea vizitatorului (butonul soare/lună), alegerea ținută minte ── */
+(function () {
+  var root = document.documentElement;
+  function sync() {
+    var dark = root.getAttribute('data-theme') === 'dark';
+    document.querySelectorAll('[data-theme-toggle]').forEach(function (b) {
+      b.setAttribute('aria-pressed', dark ? 'true' : 'false');
+      b.setAttribute('aria-label', dark ? 'Temă luminoasă' : 'Temă întunecată');
+    });
+  }
+  document.addEventListener('click', function (e) {
+    if (!e.target.closest || !e.target.closest('[data-theme-toggle]')) { return; }
+    var dark = root.getAttribute('data-theme') !== 'dark';
+    if (dark) { root.setAttribute('data-theme', 'dark'); } else { root.removeAttribute('data-theme'); }
+    try { localStorage.setItem('mugurel_tema', dark ? 'dark' : 'light'); } catch (err) { /* fără stocare: tema ține doar pe pagina curentă */ }
+    sync();
+  });
+  sync();
+}());
+

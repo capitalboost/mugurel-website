@@ -154,7 +154,7 @@ require __DIR__ . '/templates/header.php';
         <h2 id="h-docs">Documente</h2>
         <ul class="produs-docs">
           <?php foreach ($p['documents'] as $i => $d): ?>
-          <li><a href="<?= e($d['url']) ?>" target="_blank" rel="noopener nofollow"><?= e($d['label']) ?><?= count($p['documents']) > 1 ? ' ' . ($i + 1) : '' ?> (PDF<?= str_starts_with($d['url'], '/') ? '' : ', site-ul producătorului' ?>)</a></li>
+          <li><a href="<?= e($d['url']) ?>" target="_blank" rel="noopener nofollow"><?php if (str_contains($d['url'], 'eprel.ec.europa.eu')): /* pagina oficială UE a etichetei energetice, nu un PDF */ ?>Eticheta energetică (baza europeană EPREL)<?php else: ?><?= e($d['label']) ?><?= count($p['documents']) > 1 ? ' ' . ($i + 1) : '' ?> (<?= preg_match('/\.pdf($|\?)/i', $d['url']) ? 'PDF' : 'pagină' ?><?= str_starts_with($d['url'], '/') ? '' : ', site-ul producătorului' ?>)<?php endif; ?></a></li>
           <?php endforeach; ?>
         </ul>
       </section>

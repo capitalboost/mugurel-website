@@ -15,12 +15,12 @@ $extraHead = <<<'HTML'
   .eu-band { width: 100%; height: auto; display: block; }
   .eu-band-wrap { border-bottom: 1px solid #e2e2e2; padding-bottom: 16px; margin-bottom: 22px; }
   .eu-date { text-align: right; font-size: 12px; color: #888; margin: 6px 0 24px; }
-  .eu-title { font-family: 'Roboto Condensed', sans-serif; color: var(--verde); font-size: 26px; font-weight: 700; margin: 0 0 6px; }
+  .eu-title { font-family: 'Roboto Condensed', sans-serif; color: var(--verde-text); font-size: 26px; font-weight: 700; margin: 0 0 6px; }
   .eu-subtitle { font-family: 'Roboto Condensed', sans-serif; color: var(--text); font-size: 17px; font-weight: 700; margin: 0 0 24px; }
   .eu-facts { width: 100%; border-collapse: collapse; font-size: 14px; margin: 20px 0; }
   .eu-facts tr { border-bottom: 1px solid #ececec; }
   .eu-facts td { padding: 9px 6px; vertical-align: top; }
-  .eu-facts td:first-child { font-weight: 700; color: var(--verde); width: 38%; }
+  .eu-facts td:first-child { font-weight: 700; color: var(--verde-text); width: 38%; }
   .eu-text p { margin: 0 0 14px; line-height: 1.65; }
   .eu-objectives { margin: 0 0 14px; padding-left: 20px; line-height: 1.65; }
   .eu-objectives li { margin-bottom: 6px; }
@@ -31,13 +31,13 @@ $extraHead = <<<'HTML'
   .eu-mfe-bar a { color: #fff; text-decoration: underline; }
   .eu-footer-band { width: 100%; height: auto; display: block; margin-top: 10px; }
   .eu-disclaimer { font-size: 12px; color: #888; line-height: 1.5; text-align: center; margin: 14px 0 0; }
-  .eu-section-title { font-family: 'Roboto Condensed', sans-serif; color: var(--verde); font-size: 21px; font-weight: 700; margin: 38px 0 16px; padding-top: 24px; border-top: 1px solid #e2e2e2; }
+  .eu-section-title { font-family: 'Roboto Condensed', sans-serif; color: var(--verde-text); font-size: 21px; font-weight: 700; margin: 38px 0 16px; padding-top: 24px; border-top: 1px solid #e2e2e2; }
   .eu-investitie p { margin: 0 0 14px; line-height: 1.65; }
   .eu-obj-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin: 0 0 24px; }
-  .eu-obj-card { background: var(--verde-light); border-radius: var(--radius); padding: 14px 16px; font-size: 14px; line-height: 1.5; }
-  .eu-obj-card strong { display: block; color: var(--verde); margin-bottom: 4px; }
+  .eu-obj-card { background: var(--verde-light); border-radius: var(--radius); padding: 14px 16px; color: var(--text); font-size: 14px; line-height: 1.5; }
+  .eu-obj-card strong { display: block; color: var(--verde-text); margin-bottom: 4px; }
   .eu-tech-card { border: 1px solid #e2e2e2; border-radius: var(--radius); padding: 16px 18px; margin-bottom: 14px; }
-  .eu-tech-card h3 { font-family: 'Roboto Condensed', sans-serif; color: var(--verde); font-size: 16px; font-weight: 700; margin: 0 0 10px; }
+  .eu-tech-card h3 { font-family: 'Roboto Condensed', sans-serif; color: var(--verde-text); font-size: 16px; font-weight: 700; margin: 0 0 10px; }
   .eu-tech-card p { margin: 0 0 8px; font-size: 14px; line-height: 1.6; }
   .eu-tech-card p:last-child { margin-bottom: 0; }
   .eu-tech-card .eu-tech-label { font-weight: 700; color: var(--rosu); }
@@ -50,8 +50,8 @@ $extraHead = <<<'HTML'
   .eu-beneficiar { display: flex; align-items: center; gap: 16px; margin-top: 20px; padding-top: 16px; border-top: 1px solid #e2e2e2; }
   .eu-beneficiar-logo { height: 40px; width: auto; flex-shrink: 0; }
   .eu-beneficiar-info { font-size: 13px; line-height: 1.6; }
-  .eu-beneficiar-info strong { display: block; color: var(--verde); }
-  .eu-beneficiar-info a { color: var(--verde); text-decoration: none; }
+  .eu-beneficiar-info strong { display: block; color: var(--verde-text); }
+  .eu-beneficiar-info a { color: var(--verde-text); text-decoration: none; }
   .eu-beneficiar-info a:hover { text-decoration: underline; }
   @media (max-width: 480px) { .eu-beneficiar { flex-direction: column; align-items: flex-start; gap: 10px; } }
 </style>
