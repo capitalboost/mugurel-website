@@ -14,6 +14,7 @@ require_once __DIR__ . '/includes/order_security.php';
 require_once __DIR__ . '/includes/cart.php';
 require_once __DIR__ . '/includes/orders.php';
 require_once __DIR__ . '/includes/order_mail.php';
+require_once __DIR__ . '/includes/turnstile.php';
 
 orderSessionStart();
 header('Cache-Control: no-store'); // pagina contine tokenul sesiunii
@@ -66,6 +67,10 @@ if (($_SERVER['REQUEST_METHOD'] ?? 'GET') === 'POST') {
 
         if ($errors || $cartError) {
             http_response_code(422);
+        } elseif (!turnstileVerify($_POST['cf-turnstile-response'] ?? null, orderClientIp($_SERVER))) {
+            // captcha-ul se verifica abia cand formularul e corect: greselile din campuri se vad primele
+            http_response_code(422);
+            $notice = 'Confirmă că nu ești robot (caseta de deasupra butonului „Trimite comanda”), apoi trimite din nou. ' . ORDER_PHONE_HINT;
         } else {
             try {
                 $db = $pdo ?? Database::get();
@@ -93,11 +98,12 @@ if (($_SERVER['REQUEST_METHOD'] ?? 'GET') === 'POST') {
 }
 orderMarkFormShown();
 
+$extraHead       = TURNSTILE_SCRIPT; // captcha-ul Cloudflare, doar pe paginile cu formular
 $pageTitle       = 'Finalizeaza comanda — Mugurel';
 $metaDescription = 'Datele de livrare pentru comanda la Mugurel Materiale Constructii.';
 $canonicalUrl    = SITE_URL . '/comanda.html';
 $metaRobots      = 'noindex, nofollow';
-$pageScripts     = ['comanda-pagina.js'];
+$pageScripts     = ['comanda-pagina.js', 'captcha-asteapta.js'];
 
 $v = fn (string $k): string => htmlspecialchars($values[$k] ?? '', ENT_QUOTES, 'UTF-8');
 
@@ -273,6 +279,7 @@ require __DIR__ . '/templates/header.php';
       </div>
 
       <p class="form-required-note"><span aria-hidden="true">*</span> camp obligatoriu</p>
+      <?= turnstileWidget() ?>
       <button type="submit" class="btn-cart comanda-submit" data-comanda-submit>Trimite comanda</button>
     </form>
 

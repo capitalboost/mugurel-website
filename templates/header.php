@@ -19,16 +19,20 @@ $hs = fn ($v) => htmlspecialchars((string) $v, ENT_QUOTES, 'UTF-8');
 <meta property="og:title" content="<?= $hs($ogTitle ?? $pageTitle ?? 'Mugurel') ?>">
 <meta property="og:description" content="<?= $hs($ogDescription ?? $metaDescription ?? '') ?>">
 <meta property="og:type" content="website">
-<meta property="og:image" content="https://mugurel-bricolaj.ro/img/og-image.jpg">
+<?php // imaginea la distribuire (WhatsApp, Facebook): poza paginii daca are una ($ogImage, ex. produsul), altfel img/og-image.jpg
+$ogImg = $ogImage ?? 'https://mugurel-bricolaj.ro/img/og-image.jpg'; ?>
+<meta property="og:image" content="<?= $hs($ogImg) ?>">
+<?php if (!isset($ogImage)): ?>
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
+<?php endif; ?>
 <meta property="og:url" content="<?= htmlspecialchars($canonicalUrl ?? 'https://mugurel-bricolaj.ro/', ENT_QUOTES, 'UTF-8') ?>">
 <meta property="og:site_name" content="Mugurel — Materiale Constructii Dabuleni">
 <meta property="og:locale" content="ro_RO">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="<?= $hs($ogTitle ?? $pageTitle ?? 'Mugurel') ?>">
 <meta name="twitter:description" content="<?= $hs($ogDescription ?? $metaDescription ?? '') ?>">
-<meta name="twitter:image" content="https://mugurel-bricolaj.ro/img/og-image.jpg">
+<meta name="twitter:image" content="<?= $hs($ogImg) ?>">
 <meta name="robots" content="<?= $hs($metaRobots ?? 'index, follow') ?>">
 <?= $extraHead ?? '' /* date structurate, preload-uri — HTML scris in fisierul paginii, nu date de la utilizator */ ?>
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -51,7 +55,7 @@ $hs = fn ($v) => htmlspecialchars((string) $v, ENT_QUOTES, 'UTF-8');
 <!-- PROMO STRIP -->
 <div class="promo-strip">
   <div class="promo-strip-inner">
-    <div class="promo-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>Stoc permanent disponibil</div>
+    <div class="promo-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>Livrare în județul Dolj</div>
     <span class="promo-sep">|</span>
     <div class="promo-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>L–V 8:00–18:00</div>
   </div>

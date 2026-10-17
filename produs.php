@@ -9,8 +9,8 @@ require_once __DIR__ . '/includes/catalog_page.php';
 $slug = preg_replace('/[^a-z0-9-]/', '', strtolower((string) ($_GET['slug'] ?? '')));
 $p = $slug !== '' ? catProductBySlug($slug) : null;
 if ($p === null) {
-    http_response_code(404);
-    if (is_file(__DIR__ . '/404.html')) { include __DIR__ . '/404.html'; } else { echo '<h1>404 — Produsul nu a fost gasit</h1>'; }
+    $notFoundTitle = 'Produsul nu mai este pe site';
+    require __DIR__ . '/404.php';
     exit;
 }
 
@@ -72,6 +72,7 @@ $crumbLd['itemListElement'][] = ['@type' => 'ListItem', 'position' => $pos, 'nam
 $pageTitle = $p['name'] . ' | Mugurel Dabuleni';
 $metaDescription = mb_substr(($hasPrice ? priceLabel($p) . ' — ' : '') . ($p['short_description'] ?: $p['name']), 0, 300);
 $canonicalUrl = $url;
+if (!empty($p['image_path'])) { $ogImage = SITE_URL . '/' . ltrim($p['image_path'], '/'); } // poza produsului la distribuire
 $categorySlug = $category['slug'] ?? null;
 $jsonFlags = JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_HEX_TAG;
 require __DIR__ . '/templates/header.php';

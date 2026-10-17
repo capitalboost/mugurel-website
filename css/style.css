@@ -306,7 +306,10 @@ img { max-width: 100%; }
 }
 
 @media (max-width: 768px) {
-  .searchbar { display: none; }
+  /* cautarea ramane si pe telefon, pe un rand al ei sub logo (faza 4.2); 16px = fara zoom automat pe iPhone */
+  .hdr { flex-wrap: wrap; }
+  .searchbar { order: 3; flex: 1 1 100%; max-width: none; height: 42px; }
+  .searchbar input { font-size: 16px; }
   .hdr-phone { display: none; }
   .hamburger { display: block; }
   .nav { display: none; }
@@ -995,3 +998,36 @@ img { max-width: 100%; }
 .prod-img-wrap img.prod-img-photo { object-fit: contain; background: #fff; padding: 8px; box-sizing: border-box; }
 .cos-line-img { object-fit: contain; background: #fff; border: 1px solid var(--border); }
 .cos-line--over { background: #fffaf2; border-color: #f0d9a0; }
+
+/* Pagina „nu am gasit" (404.php, faza 4.1) */
+.nf-wrap { max-width: 860px; margin: 0 auto; padding: 32px 20px 56px; }
+.nf-lead { font-size: 16px; color: #444; margin-bottom: 24px; }
+.nf-search label { display: block; font-weight: 700; color: var(--verde); margin-bottom: 8px; }
+.nf-search-row { display: flex; gap: 10px; }
+.nf-search-row input { flex: 1; min-width: 0; padding: 12px 14px; border: 2px solid var(--verde); border-radius: var(--radius); font-size: 16px; }
+.nf-search-row .btn-cart { width: auto; padding: 0 22px; }
+.nf-h2 { font-family: 'Roboto Condensed', sans-serif; color: var(--verde); font-size: 22px; margin: 32px 0 12px; }
+.nf-cats { list-style: none; padding: 0; margin: 0; display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 10px; }
+.nf-cats a { display: flex; justify-content: space-between; gap: 8px; padding: 12px 14px; background: #fff; border: 1px solid var(--border); border-radius: var(--radius); color: var(--verde); font-weight: 600; }
+.nf-cats a:hover { border-color: var(--verde); }
+.nf-cats span { color: var(--text-muted); font-weight: 400; }
+.nf-help { margin-top: 32px; padding: 20px; background: var(--verde-light); border-radius: var(--radius); }
+.nf-help p { margin: 0 0 12px; font-weight: 600; color: var(--verde); }
+.nf-help-actions { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; }
+.nf-help-actions .hdr-phone, .nf-help-actions .hdr-wa { display: inline-flex; }
+.nf-home { color: var(--verde); text-decoration: underline; margin-left: 6px; }
+.home-btn--icon { gap: 8px; }
+.home-btn--icon svg { width: 18px; height: 18px; }
+/* caseta captcha (Cloudflare Turnstile) inainte de butonul de trimitere */
+.form-captcha { margin: 8px 0 14px; min-height: 65px; }
+/* Cos: produs fara poza = panoul verde (regula .cos-line-img pe alb de mai sus il acoperea) */
+.cos-line-img.cos-line-img--none { background: linear-gradient(135deg, #0A5258, #127A6E); border: none; }
+/* Butonul WhatsApp plutitor pe telefon: mai mic si mai jos, iar pagina are loc dedesubt ca ultimul rand sa nu fie acoperit */
+@media (max-width: 768px) {
+  .wa-float { right: 12px; bottom: 16px; }
+  body:has(#gdpr-banner) .wa-float { bottom: 84px; } /* deasupra bannerului de cookie-uri doar cat timp e pe ecran */
+  .wa-float-btn, .wa-float-pulse { width: 48px; height: 48px; }
+  .wa-float-btn svg { width: 26px; height: 26px; }
+  body { padding-bottom: 64px; }
+}
+.cat-typed { margin-top: 6px; opacity: .9; }

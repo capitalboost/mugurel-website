@@ -34,7 +34,7 @@ require __DIR__ . '/templates/header.php';
     <ul>
       <li>procesarea, confirmarea telefonică și livrarea comenzilor; soluționarea retururilor și a reclamațiilor — <strong>executarea contractului</strong> (art. 6 alin. 1 lit. b GDPR);</li>
       <li>facturarea și evidența contabilă — <strong>obligație legală</strong> (art. 6 alin. 1 lit. c);</li>
-      <li>protecția formularelor împotriva abuzurilor (adresa IP, limitarea numărului de trimiteri) — <strong>interesul nostru legitim</strong> de a ține site-ul sigur (art. 6 alin. 1 lit. f);</li>
+      <li>protecția formularelor împotriva abuzurilor (adresa IP, limitarea numărului de trimiteri, verificarea „nu sunt robot” Cloudflare Turnstile) — <strong>interesul nostru legitim</strong> de a ține site-ul sigur (art. 6 alin. 1 lit. f);</li>
       <li>statistici despre folosirea site-ului — <strong>consimțământul tău</strong> (art. 6 alin. 1 lit. a), pe care îl poți retrage oricând.</li>
     </ul>
     <p>Nu folosim datele pentru decizii automate și nu le vindem.</p>
@@ -43,7 +43,7 @@ require __DIR__ . '/templates/header.php';
     <ul>
       <li>firmei de curierat sau transport, pentru livrarea comenzii și ridicarea produselor returnate (nume, telefon, adresă);</li>
       <li>furnizorului de găzduire a site-ului și a email-ului (Hostgate, România);</li>
-      <li>Cloudflare, care protejează și accelerează site-ul (vede adresa IP a vizitatorilor);</li>
+      <li>Cloudflare, care protejează și accelerează site-ul (vede adresa IP a vizitatorilor); pe formularele de comandă și de retur, verificarea Cloudflare Turnstile analizează date tehnice despre browser și dispozitiv ca să deosebească oamenii de programele automate — fără cookie-uri de urmărire și fără reclame;</li>
       <li>Google (serviciul de email Gmail folosit de magazin pentru corespondență; Google Analytics doar cu acordul tău) și Microsoft (Clarity, doar cu acordul tău);</li>
       <li>contabilului nostru și autorităților publice, când legea o cere.</li>
     </ul>

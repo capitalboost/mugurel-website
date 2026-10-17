@@ -14,14 +14,26 @@ if ($cat !== '' && $cat !== 'all') {
 }
 
 $q = is_string($_GET['q'] ?? null) ? mb_substr(trim($_GET['q']), 0, 80) : '';
-$title = $q !== '' ? 'Rezultate pentru „' . $q . '"' : 'Toate produsele';
-$list = catalogListState([
-    'title' => $title,
+$listFor = fn (string $q) => catalogListState([
+    'title' => $q !== '' ? 'Rezultate pentru „' . $q . '"' : 'Toate produsele',
     'intro' => $q !== '' ? null : 'Catalogul Mugurel, Dabuleni: materiale de constructii cu pret si stoc. Comanda online sau pe WhatsApp.',
     'baseUrl' => '/catalog.html',
     'breadcrumbs' => [[$q !== '' ? 'Cautare' : 'Catalog', $q !== '' ? null : '/catalog.html']],
     'q' => $q,
 ], $_GET);
+$list = $listFor($q);
+// nimic gasit? poate e o greseala de scriere („aragazz") — cautam cel mai apropiat cuvant din catalog
+if ($q !== '' && !$list['products'] && !$list['dbDown']) {
+    try {
+        $fixed = searchCorrect(Database::get(), $q);
+        if ($fixed !== null) {
+            $fixedList = $listFor($fixed);
+            if ($fixedList['products']) { $list = $fixedList + ['typed' => $q]; $q = $fixed; }
+        }
+    } catch (Throwable $e) {
+        error_log('searchCorrect: ' . $e->getMessage());
+    }
+}
 extract(catalogListMeta($list, $q !== '' ? 'Cautare: ' . $q : 'Catalog produse',
     'Catalogul Mugurel Dabuleni: ' . $list['total'] . ' produse — adezivi, mortare, gleturi, ciment, metal si profile. Preturi cu TVA, livrare in Dolj.'));
 $searchQuery = $q;

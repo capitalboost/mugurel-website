@@ -11,6 +11,7 @@
  */
 require_once __DIR__ . '/../admin/models/Database.php';
 require_once __DIR__ . '/catalog_text.php';
+require_once __DIR__ . '/catalog_search.php';
 
 const CATALOG_PAGE_SIZE = 30;
 const COLLECTION_MIN_PRODUCTS = 3;
@@ -161,11 +162,17 @@ function catScope(?array $categoryIds, ?array $tagSlugs = null, ?string $search 
             $params = array_merge($params, array_values($tagSlugs));
         }
         if ($search !== null && trim($search) !== '') {
+            // fiecare cuvant trebuie sa se gaseasca; un cuvant = el, forma lui de baza sau un sinonim (catalog_search.php)
             foreach (preg_split('/\s+/u', trim($search)) ?: [] as $word) {
                 if ($word === '') { continue; }
-                $where[] = '(p.name LIKE ? OR p.original_name LIKE ? OR p.manufacturer LIKE ? OR p.barcode = ? OR p.sku = ?)';
-                $like = '%' . addcslashes($word, '%_\\') . '%';
-                array_push($params, $like, $like, $like, $word, $word);
+                $any = ['p.barcode = ?', 'p.sku = ?'];
+                array_push($params, $word, $word);
+                foreach (searchAlternatives($word) as $alt) {
+                    $any[] = 'p.name LIKE ? OR p.original_name LIKE ? OR p.manufacturer LIKE ?';
+                    $like = '%' . addcslashes($alt, '%_\\') . '%';
+                    array_push($params, $like, $like, $like);
+                }
+                $where[] = '(' . implode(' OR ', $any) . ')';
             }
         }
         $stmt = $pdo->prepare('SELECT p.id, p.category_id, p.sort_order FROM products p WHERE ' . implode(' AND ', $where));

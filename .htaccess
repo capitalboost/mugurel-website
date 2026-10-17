@@ -8,6 +8,9 @@
 # Fara listarea continutului folderelor (img/produse/, includes/lib/ ...)
 Options -Indexes
 
+# Orice adresa inexistenta (si /categorie/orice/altceva, care nu mai e servita) => pagina „nu am gasit" a site-ului
+ErrorDocument 404 /404.php
+
 # ============================================================
 # URL Routing — categorii si pagini statice catre router.php
 # ============================================================
@@ -74,5 +77,5 @@ Options -Indexes
     </FilesMatch>
 
     # Content Security Policy
-    Header always set Content-Security-Policy "default-src 'self'; script-src 'self' 'unsafe-inline' https://www.googletagmanager.com https://www.google-analytics.com https://www.clarity.ms https://*.clarity.ms; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https:; frame-src https://maps.google.com https://www.google.com; connect-src 'self' https://www.google-analytics.com https://www.googletagmanager.com https://*.clarity.ms https://c.bing.com; frame-ancestors 'none'"
+    Header always set Content-Security-Policy "default-src 'self'; script-src 'self' 'unsafe-inline' https://challenges.cloudflare.com https://www.googletagmanager.com https://www.google-analytics.com https://www.clarity.ms https://*.clarity.ms; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https:; frame-src https://maps.google.com https://www.google.com https://challenges.cloudflare.com; connect-src 'self' https://challenges.cloudflare.com https://www.google-analytics.com https://www.googletagmanager.com https://*.clarity.ms https://c.bing.com; frame-ancestors 'none'"
 </IfModule>

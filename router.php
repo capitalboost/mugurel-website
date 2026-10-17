@@ -80,6 +80,8 @@ if (isset(LEGACY_REDIRECTS[$slug])) {
     // tinta poate fi la randul ei o categorie/colectie disparuta — atunci catalogul
     $toSlug = basename($to, '.html');
     if ($to !== '/catalog.html' && catCategoryBySlug($toSlug) === null && catCollectionBySlug($toSlug) === null) { $to = '/catalog.html'; }
+    // tinta e o categorie „de trecere" (o singura subcategorie)? un singur salt, direct la pagina finala
+    if (($toCat = catCategoryBySlug($toSlug)) !== null) { $to = '/' . catSkipSingleChild($toCat)['slug'] . '.html'; }
     header('Location: ' . $to, true, 301);
     exit;
 }
@@ -98,12 +100,7 @@ try {
     exit;
 }
 if (!$pageData) {
-    http_response_code(404);
-    if (file_exists(__DIR__ . '/404.html')) {
-        include __DIR__ . '/404.html';
-    } else {
-        echo '<h1>404 — Pagina nu a fost gasita</h1>';
-    }
+    require __DIR__ . '/404.php';
     exit;
 }
 $pageTitle       = $pageData['meta_title'] ?: $pageData['title'] . ' — Mugurel';

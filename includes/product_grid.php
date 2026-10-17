@@ -138,10 +138,12 @@ function renderCatalogCards(array $products): string {
                   . ' loading="lazy" decoding="async" onerror="this.style.display=\'none\'">';
         }
         $img .= '</a>';
+        // fara cos: produs indisponibil => „cand revine?"; fara pret => cerere de oferta
+        $unavailable = ($p['stock_status'] ?? '') === 'indisponibil';
         $action = canAddToCart($p)
             ? cartButton($p)
-            : '<a href="' . e(waLink($p['name'], $p['wa_text'] ?? null)) . '" class="btn-wa-prod" target="_blank" rel="noopener">'
-              . WA_ICON . 'Cere oferta</a>';
+            : '<a href="' . e(waLink($p['name'], $unavailable ? 'Buna ziua! Cand revine pe stoc: ' . $p['name'] . '?' : ($p['wa_text'] ?? null)))
+              . '" class="btn-wa-prod" target="_blank" rel="noopener">' . WA_ICON . ($unavailable ? 'Întreabă când revine' : 'Cere oferta') . '</a>';
         $out .= '<div class="prod-card cat-card" data-product-id="' . (int)$p['id'] . '">'
               . $img
               . '<div class="prod-body">'

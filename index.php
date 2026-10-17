@@ -202,7 +202,7 @@ require __DIR__ . '/templates/header.php';
         <?= renderCatalogCards(homeFeatured(6)) ?>
       </div>
       <div style="text-align:center;margin-top:24px;">
-        <a href="catalog.html" class="btn-catalog-hero" style="display:inline-flex;">
+        <a href="catalog.html" class="home-btn home-btn--primary home-btn--icon">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>
           Vezi toate produsele
         </a>

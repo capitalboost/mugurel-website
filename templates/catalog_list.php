@@ -16,6 +16,7 @@ $L = $list;
       <?php foreach ($L['breadcrumbs'] as $i => [$label, $url]): ?><span>›</span><?php if ($url !== null && $i < count($L['breadcrumbs']) - 1): ?><a href="<?= e($url) ?>"><?= e($label) ?></a><?php else: ?><span aria-current="page"><?= e($label) ?></span><?php endif; ?><?php endforeach; ?>
     </nav>
     <h1><?= e($L['title']) ?></h1>
+    <?php if (!empty($L['typed'])): ?><p class="cat-typed">Ai scris „<?= e($L['typed']) ?>” — îți arătăm rezultatele pentru „<?= e($L['q']) ?>”.</p><?php endif; ?>
     <?php if (!empty($L['intro'])): ?><p><?= e($L['intro']) ?></p><?php endif; ?>
   </div>
 </div>
@@ -102,7 +103,11 @@ $L = $list;
     <?php else: ?>
     <div class="cat-none">
       <p class="cat-none-title"><?= $L['q'] !== '' ? 'Nu am gasit produse pentru „' . e($L['q']) . '"' : 'Niciun produs nu se potriveste filtrelor alese' ?></p>
+      <?php if ($L['q'] !== '' && !$L['activeCount']): ?>
+      <p>Încearcă un alt cuvânt (ex. „adeziv”, „țeavă”, „aragaz”) sau <a href="https://wa.me/40749130565?text=<?= rawurlencode('Buna ziua! Caut: ' . $L['q']) ?>" target="_blank" rel="noopener">scrie-ne pe WhatsApp</a> — îți spunem imediat dacă avem produsul.</p>
+      <?php else: ?>
       <p>Incearca alte filtre sau scrie-ne pe WhatsApp — iti spunem imediat daca avem produsul.</p>
+      <?php endif; ?>
       <?php if ($L['activeCount']): ?><a class="btn-cart" href="<?= e($L['resetUrl']) ?>">Sterge filtrele</a><?php endif; ?>
     </div>
     <?php endif; ?>
@@ -110,14 +115,18 @@ $L = $list;
     <?php if ($L['pages'] > 1): ?>
     <nav class="pagination" aria-label="Paginare">
       <?php if ($L['page'] > 1): ?><a class="pg-btn" href="<?= e($L['pageUrl']($L['page'] - 1)) ?>" rel="prev" aria-label="Pagina anterioara">&laquo;</a><?php endif; ?>
-      <?php for ($i = 1; $i <= $L['pages']; $i++):
-            if ($i > 2 && $i < $L['pages'] - 1 && abs($i - $L['page']) > 1) {
-                if ($i === 3 || $i === $L['pages'] - 2) { echo '<span class="pg-btn" aria-hidden="true">&hellip;</span>'; }
-                continue;
-            } ?>
+      <?php
+        // paginile afisate: primele 2, ultimele 2 si vecinele paginii curente; „…" o singura data in fiecare gol
+        $shown = array_unique(array_filter([1, 2, $L['page'] - 1, $L['page'], $L['page'] + 1, $L['pages'] - 1, $L['pages']],
+            fn ($n) => $n >= 1 && $n <= $L['pages']));
+        sort($shown);
+        $prev = 0;
+        foreach ($shown as $i):
+            if ($i > $prev + 1) { echo '<span class="pg-btn" aria-hidden="true">&hellip;</span>'; }
+            $prev = $i; ?>
         <?php if ($i === $L['page']): ?><span class="pg-btn active" aria-current="page"><?= $i ?></span>
         <?php else: ?><a class="pg-btn" href="<?= e($L['pageUrl']($i)) ?>"><?= $i ?></a><?php endif; ?>
-      <?php endfor; ?>
+      <?php endforeach; ?>
       <?php if ($L['page'] < $L['pages']): ?><a class="pg-btn" href="<?= e($L['pageUrl']($L['page'] + 1)) ?>" rel="next" aria-label="Pagina urmatoare">&raquo;</a><?php endif; ?>
     </nav>
     <?php endif; ?>

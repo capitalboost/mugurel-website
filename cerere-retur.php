@@ -11,6 +11,7 @@ require_once __DIR__ . '/admin/config.php';
 require_once __DIR__ . '/includes/order_security.php';
 require_once __DIR__ . '/includes/orders.php';     // orderNewFormToken(), orderFormTokenValid()
 require_once __DIR__ . '/includes/returns.php';
+require_once __DIR__ . '/includes/turnstile.php';
 
 orderSessionStart();
 header('Cache-Control: no-store'); // pagina contine tokenul sesiunii
@@ -40,6 +41,10 @@ if (($_SERVER['REQUEST_METHOD'] ?? 'GET') === 'POST') {
     } elseif ($result['errors']) {
         $errors = $result['errors'];
         http_response_code(422);
+    } elseif (!turnstileVerify($_POST['cf-turnstile-response'] ?? null, orderClientIp($_SERVER))) {
+        // captcha-ul se verifica abia cand formularul e corect: greselile din campuri se vad primele
+        http_response_code(422);
+        $notice = 'Confirmă că nu ești robot (caseta de deasupra butonului „Trimite cererea”), apoi trimite din nou. ' . RETURN_PHONE_HINT;
     } else {
         try {
             $db = $pdo ?? Database::get();
@@ -58,6 +63,8 @@ if (($_SERVER['REQUEST_METHOD'] ?? 'GET') === 'POST') {
 }
 orderMarkFormShown();
 
+$extraHead       = TURNSTILE_SCRIPT; // captcha-ul Cloudflare, doar pe paginile cu formular
+$pageScripts     = ['captcha-asteapta.js'];
 $pageTitle       = 'Cerere de retur — Mugurel';
 $metaDescription = 'Formularul pentru returnarea produselor cumparate de la Mugurel: retragere in 14 zile sau produs neconform.';
 $canonicalUrl    = SITE_URL . '/cerere-retur.html';
@@ -168,6 +175,7 @@ require __DIR__ . '/templates/header.php';
       <?= $msg ?>
     </div>
 
+    <?= turnstileWidget() ?>
     <button type="submit" class="btn-cart comanda-submit" data-retur-submit>Trimite cererea de retur</button>
     <p class="form-required-note">Campurile marcate cu * sunt obligatorii. Detalii in <a href="/politica-retur.html">Politica de retur</a>.</p>
   </form>

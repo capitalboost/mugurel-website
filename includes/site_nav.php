@@ -21,12 +21,16 @@ function siteNavNode(array $c, int $depth = 0, int $maxDepth = 2): array
             'target_name' => $target['name']]; // „Ciment si var" duce la „Ciment"
 }
 
+/** O ramura apare in meniu abia de la atatea produse (ex. „Instalatii electrice" cu 1 produs nu ocupa loc in meniul de sus;
+ *  pagina ei ramane, iar produsul se gaseste in catalog si la cautare). Cand se adauga produse, ramura apare singura. */
+const NAV_MIN_PRODUCTS = 3;
+
 /** Ramurile principale, cele mai mari primele. @return list<array{id:int, name:string, url:string, count:int, children:list<array>}> */
 function siteNavItems(): array
 {
     static $cache = null;
     if ($cache !== null) { return $cache; }
-    $roots = catRoots();
+    $roots = array_values(array_filter(catRoots(), fn ($r) => $r['count'] >= NAV_MIN_PRODUCTS));
     usort($roots, fn ($a, $b) => $b['count'] <=> $a['count']);
     return $cache = array_map('siteNavNode', $roots);
 }
