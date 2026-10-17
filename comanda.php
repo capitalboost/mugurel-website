@@ -43,7 +43,7 @@ if (($_SERVER['REQUEST_METHOD'] ?? 'GET') === 'POST') {
         $notice = 'Ai trimis formularul de prea multe ori în ultimele minute. ' . ORDER_PHONE_HINT;
     } elseif (!orderCsrfValid($_POST['csrf'] ?? null)) {
         http_response_code(400);
-        $notice = 'Sesiunea a expirat (pagina a stat deschisă prea mult). Datele tale sunt mai jos — apasă din nou „Trimite comanda".';
+        $notice = 'Sesiunea a expirat (pagina a stat deschisă prea mult). Datele tale sunt mai jos — apasă din nou „Comandă cu obligație de plată”.';
     } elseif (orderLooksLikeBot($_POST) || !orderFormTokenValid($_POST['idem'] ?? null)) {
         http_response_code(422);
         $notice = 'Comanda nu a putut fi trimisă. ' . ORDER_PHONE_HINT;
@@ -70,7 +70,7 @@ if (($_SERVER['REQUEST_METHOD'] ?? 'GET') === 'POST') {
         } elseif (!turnstileVerify($_POST['cf-turnstile-response'] ?? null, orderClientIp($_SERVER))) {
             // captcha-ul se verifica abia cand formularul e corect: greselile din campuri se vad primele
             http_response_code(422);
-            $notice = 'Confirmă că nu ești robot (caseta de deasupra butonului „Trimite comanda”), apoi trimite din nou. ' . ORDER_PHONE_HINT;
+            $notice = 'Confirmă că nu ești robot (caseta de deasupra butonului „Comandă cu obligație de plată”), apoi trimite din nou. ' . ORDER_PHONE_HINT;
         } else {
             try {
                 $db = $pdo ?? Database::get();
@@ -280,7 +280,8 @@ require __DIR__ . '/templates/header.php';
 
       <p class="form-required-note"><span aria-hidden="true">*</span> câmp obligatoriu</p>
       <?= turnstileWidget() ?>
-      <button type="submit" class="btn-cart comanda-submit" data-comanda-submit>Trimite comanda</button>
+      <p class="comanda-ferma">Comanda devine fermă după ce o confirmăm telefonic; plătești la livrare, prin transfer sau la ridicare, după metoda aleasă.</p>
+      <button type="submit" class="btn-cart comanda-submit" data-comanda-submit>Comandă cu obligație de plată</button>
     </form>
 
     <aside class="cos-summary comanda-summary" id="comanda-sumar" aria-live="polite">

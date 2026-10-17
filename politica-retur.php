@@ -44,7 +44,7 @@ require __DIR__ . '/templates/header.php';
     <h2>6. Când nu se aplică dreptul de retragere</h2>
     <p>Potrivit art. 16 din OUG nr. 34/2014, dreptul de retragere nu se aplică, printre altele:</p>
     <ul>
-      <li><strong>produselor confecționate la comandă</strong>, după specificațiile clientului, sau personalizate;</li>
+      <li><strong>produselor confecționate la comandă</strong>, după specificațiile clientului, sau personalizate (produsele marcate pe site „Se aduce la comandă” — aduse de la furnizor la cererea ta — nu intră aici: pentru ele ai dreptul de retragere de 14 zile);</li>
       <li>produselor care, după livrare, au fost amestecate în mod inseparabil cu alte produse (de exemplu materiale deja preparate sau puse în operă);</li>
       <li>produselor sigilate care nu pot fi returnate din motive de protecție a sănătății sau de igienă, dacă au fost desigilate după livrare.</li>
     </ul>

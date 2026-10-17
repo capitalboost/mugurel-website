@@ -181,3 +181,16 @@ document.addEventListener('DOMContentLoaded', function () {
 
   if (!read()) { open(); }
 }());
+
+/* ── Harta Google (Contact): se incarca doar la click — inainte nu pleaca nicio cerere spre Google ── */
+document.addEventListener('click', function (e) {
+  var btn = e.target.closest && e.target.closest('[data-map-src]');
+  if (!btn) { return; }
+  var f = document.createElement('iframe');
+  f.src = btn.getAttribute('data-map-src');
+  f.width = '100%'; f.height = '100%'; f.style.border = '0';
+  f.setAttribute('allowfullscreen', '');
+  f.setAttribute('referrerpolicy', 'no-referrer-when-downgrade');
+  f.title = 'Locație Mugurel Dăbuleni';
+  btn.replaceWith(f);
+});

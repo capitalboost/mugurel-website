@@ -44,7 +44,7 @@ require __DIR__ . '/templates/header.php';
       <li>firmei de curierat sau transport, pentru livrarea comenzii și ridicarea produselor returnate (nume, telefon, adresă);</li>
       <li>furnizorului de găzduire a site-ului și a email-ului (Hostgate, România);</li>
       <li>Cloudflare, care protejează și accelerează site-ul (vede adresa IP a vizitatorilor); pe formularele de comandă și de retur, verificarea Cloudflare Turnstile analizează date tehnice despre browser și dispozitiv ca să deosebească oamenii de programele automate — fără cookie-uri de urmărire și fără reclame;</li>
-      <li>Google (serviciul de email Gmail folosit de magazin pentru corespondență; Google Analytics doar cu acordul tău) și Microsoft (Clarity, doar cu acordul tău);</li>
+      <li>Google (serviciul de email Gmail folosit de magazin pentru corespondență; Google Analytics doar cu acordul tău; harta Google Maps de pe pagina Contact, încărcată doar când apeși „Arată harta Google”) și Microsoft (Clarity, doar cu acordul tău);</li>
       <li>contabilului nostru și autorităților publice, când legea o cere.</li>
     </ul>
     <p>Unii dintre acești furnizori pot transfera date în afara Spațiului Economic European, pe baza clauzelor contractuale standard aprobate de Comisia Europeană sau a altor garanții prevăzute de GDPR.</p>

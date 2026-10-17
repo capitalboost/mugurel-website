@@ -27,7 +27,7 @@ function priceLabel(array $p): string {
 /** Starile de stoc (coloana products.stock_status) si textul afisat pe site. */
 const STOCK_LABELS = [
     'in_stoc'      => 'În stoc',
-    'la_comanda'   => 'La comandă',
+    'la_comanda'   => 'Se aduce la comandă',
     'indisponibil' => 'Indisponibil',
 ];
 

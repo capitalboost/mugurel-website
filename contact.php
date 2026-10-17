@@ -112,7 +112,11 @@ require __DIR__ . '/templates/header.php';
       </div>
 
       <div class="map-container">
-        <iframe src="https://maps.google.com/maps?q=Strada+Caracal+66,+D%C4%83buleni,+Dolj,+Romania&z=16&output=embed" width="100%" height="100%" style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade" title="Locație Mugurel Dăbuleni"></iframe>
+        <button type="button" class="map-consent" data-map-src="https://maps.google.com/maps?q=Strada+Caracal+66,+D%C4%83buleni,+Dolj,+Romania&amp;z=16&amp;output=embed">
+          <strong>Strada Caracal 66, Dăbuleni, jud. Dolj</strong>
+          <span>Arată harta Google</span>
+          <small>Harta se încarcă de la Google doar când apeși (Google poate folosi cookie-uri).</small>
+        </button>
       </div>
     </div>
 
