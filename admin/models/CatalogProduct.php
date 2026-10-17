@@ -232,7 +232,7 @@ class CatalogProduct {
 
             $db->prepare('DELETE FROM product_documents WHERE product_id = ?')->execute([$id]);
             $ins = $db->prepare('INSERT INTO product_documents (product_id, sort_order, url, label) VALUES (?, ?, ?, ?)');
-            foreach ($d['documents'] as $i => $u) { $ins->execute([$id, $i + 1, $u, 'Fisa tehnica']); }
+            foreach ($d['documents'] as $i => $u) { $ins->execute([$id, $i + 1, $u, 'Fișa tehnică']); }
 
             $db->prepare('DELETE FROM product_tags WHERE product_id = ?')->execute([$id]);
             $find = $db->prepare('SELECT id FROM tags WHERE slug = ?');

@@ -3,7 +3,7 @@
     <div class="footer-top">
       <div class="f-about">
         <img src="/img/logo.svg" alt="Mugurel" class="f-logo" width="160" height="44" loading="eager" decoding="async">
-        <p>Magazin de materiale de constructii si electrocasnice din Dabuleni. Preturi cu TVA, livrare in Dolj.</p>
+        <p>Magazin de materiale de construcții și electrocasnice din Dăbuleni. Prețuri cu TVA, livrare în Dolj.</p>
         <div class="f-social">
           <a href="https://www.facebook.com/byMUGUREL" class="soc-btn" target="_blank" rel="noopener" aria-label="Facebook"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"/></svg></a>
           <a href="https://wa.me/40749130565" class="soc-btn" target="_blank" rel="noopener" aria-label="WhatsApp"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 0 1-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 0 1-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 0 1 2.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0 0 12.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 0 0 5.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 0 0-3.48-8.413z"/></svg></a>
@@ -22,14 +22,14 @@
         </ul>
       </div>
       <div class="f-col">
-        <h4>Informatii</h4>
+        <h4>Informații</h4>
         <ul>
           <li><a href="/despre-noi.html">Despre noi</a></li>
           <li><a href="/contact.html">Contact</a></li>
           <li><a href="/politica-retur.html">Politica de retur</a></li>
           <li><a href="/cerere-retur.html">Cerere de retur</a></li>
-          <li><a href="/termeni-conditii.html">Termeni si conditii</a></li>
-          <li><a href="/politica-confidentialitate.html">Confidentialitate</a></li>
+          <li><a href="/termeni-conditii.html">Termeni și condiții</a></li>
+          <li><a href="/politica-confidentialitate.html">Confidențialitate</a></li>
           <li><a href="#cookie" data-cookie-settings>Setări cookie</a></li>
         </ul>
       </div>
@@ -44,7 +44,7 @@
       <a href="https://anpc.ro/ce-este-sal/" target="_blank" rel="noopener nofollow" title="Soluționarea alternativă a litigiilor (ANPC)"><img src="/img/anpc-sal.svg" alt="ANPC — Soluționarea alternativă a litigiilor" width="250" height="62" loading="lazy" decoding="async"></a>
     </div>
     <div class="f-bottom">
-      <span>© 2026 DUNLITE COM SRL — CIF: RO9027530 | J16/1357/1996 | Strada Caracal Nr.66, 207220 Dabuleni, Jud. Dolj</span>
+      <span>© 2026 DUNLITE COM SRL — CIF: RO9027530 | J16/1357/1996 | Strada Caracal Nr.66, 207220 Dăbuleni, Jud. Dolj</span>
       <span>Built by <a href="https://capitalboost.ro/" style="color:rgba(255,255,255,0.4);">CapitalBoost.ro</a></span>
     </div>
   </div>
@@ -60,9 +60,9 @@
 <div class="mobile-menu" id="mobile-menu">
   <div class="mobile-menu-header">
     <a href="/index.html" class="logo"><img src="/img/logo.svg" alt="Mugurel" style="height:36px;"></a>
-    <button class="mobile-close" id="mobile-close" aria-label="Inchide meniu"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
+    <button class="mobile-close" id="mobile-close" aria-label="Închide meniu"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
   </div>
-  <a href="/index.html" class="mobile-nav-item">Acasa</a>
+  <a href="/index.html" class="mobile-nav-item">Acasă</a>
   <a href="/catalog.html" class="mobile-nav-item">Toate produsele</a>
   <?php foreach ($navItems ?? siteNavItems() as $it): ?>
   <a href="<?= htmlspecialchars($it['url'], ENT_QUOTES, 'UTF-8') ?>" class="mobile-nav-item"><?= htmlspecialchars($it['name'], ENT_QUOTES, 'UTF-8') ?></a>
@@ -78,7 +78,7 @@
   </a>
 </div>
 
-<button class="back-to-top" id="back-to-top" aria-label="Inapoi sus">
+<button class="back-to-top" id="back-to-top" aria-label="Înapoi sus">
   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="18 15 12 9 6 15"/></svg>
 </button>
 

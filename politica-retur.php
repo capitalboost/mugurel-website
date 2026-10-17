@@ -11,7 +11,7 @@ $canonicalUrl    = 'https://mugurel-bricolaj.ro/politica-retur.html';
 $metaRobots      = 'noindex, follow';
 require __DIR__ . '/templates/header.php';
 ?>
-<div class="page-hero"><div class="page-hero-inner"><div class="breadcrumb"><a href="/index.html">Acasa</a><span>›</span> Politica de retur</div><h1>Politica de retur</h1><p>Retragerea în 14 zile, produsele defecte și formularul de retragere.</p></div></div>
+<div class="page-hero"><div class="page-hero-inner"><div class="breadcrumb"><a href="/index.html">Acasă</a><span>›</span> Politica de retur</div><h1>Politica de retur</h1><p>Retragerea în 14 zile, produsele defecte și formularul de retragere.</p></div></div>
 
 <div class="body-wrap" style="max-width:900px; flex-direction:column;">
   <div class="legal-content">

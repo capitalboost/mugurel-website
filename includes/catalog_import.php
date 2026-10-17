@@ -321,7 +321,7 @@ function applyCatalog(PDO $pdo, array $products, array $tagGroups, bool $apply, 
             $delSpecs->execute([$id]);
             foreach ($p['specs'] as $k => $s) { $insSpec->execute([$id, $k + 1, mb_substr($s['key'], 0, 120), $s['value']]); }
             $delDocs->execute([$id]);
-            foreach ($p['documents'] as $k => $u) { $insDoc->execute([$id, $k + 1, mb_substr($u, 0, 1000), 'Fisa tehnica']); }
+            foreach ($p['documents'] as $k => $u) { $insDoc->execute([$id, $k + 1, mb_substr($u, 0, 1000), 'Fișa tehnică']); }
             $delTags->execute([$id]);
             foreach ($p['tags'] as $t) {
                 $grp = $tagGroups[$t] ?? 'aplicatie';
@@ -441,7 +441,7 @@ function attachCatalogDocuments(PDO $pdo, string $docDir): array
     $find = $pdo->prepare('SELECT id FROM products WHERE UPPER(barcode) = ?');
     $same = $pdo->prepare('SELECT COUNT(*) FROM product_documents WHERE product_id = ? AND url = ?');
     $del = $pdo->prepare('DELETE FROM product_documents WHERE product_id = ?');
-    $ins = $pdo->prepare("INSERT INTO product_documents (product_id, sort_order, url, label) VALUES (?, 1, ?, 'Fisa tehnica')");
+    $ins = $pdo->prepare("INSERT INTO product_documents (product_id, sort_order, url, label) VALUES (?, 1, ?, 'Fișa tehnică')");
     $linked = 0; $unmatched = [];
     foreach (glob(rtrim($docDir, '/\\') . '/mu-*.pdf') ?: [] as $file) {
         $name = basename($file);

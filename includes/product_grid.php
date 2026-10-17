@@ -18,7 +18,7 @@ function e(?string $s): string {
  * (pret minim, produsul nu intra in cos).
  */
 function priceLabel(array $p): string {
-    if (($p['price'] ?? null) === null || (float)$p['price'] <= 0) { return 'Pret la cerere'; }
+    if (($p['price'] ?? null) === null || (float)$p['price'] <= 0) { return 'Preț la cerere'; }
     return (!empty($p['price_is_from']) ? 'de la ' : '')
          . number_format((float)$p['price'], 2, ',', '.') . ' lei'
          . (!empty($p['price_unit']) ? ' / ' . e($p['price_unit']) : '');
@@ -26,8 +26,8 @@ function priceLabel(array $p): string {
 
 /** Starile de stoc (coloana products.stock_status) si textul afisat pe site. */
 const STOCK_LABELS = [
-    'in_stoc'      => 'In stoc',
-    'la_comanda'   => 'La comanda',
+    'in_stoc'      => 'În stoc',
+    'la_comanda'   => 'La comandă',
     'indisponibil' => 'Indisponibil',
 ];
 
@@ -78,7 +78,7 @@ function canAddToCart(array $p): bool {
 function cartButton(array $p): string {
     if (!canAddToCart($p) || empty($p['id'])) { return ''; }
     return '<button type="button" class="btn-cart" data-cart-id="' . (int)$p['id'] . '"'
-         . ' data-cart-name="' . e($p['name']) . '">Adauga in cos</button>';
+         . ' data-cart-name="' . e($p['name']) . '">Adaugă în coș</button>';
 }
 
 /**
@@ -89,7 +89,7 @@ function cartButton(array $p): string {
 function waLink(string $productName, ?string $custom = null): string {
     $msg = ($custom !== null && $custom !== '')
          ? $custom
-         : 'Buna ziua! Sunt interesat de: ' . $productName . '. Puteti confirma disponibilitatea?';
+         : 'Bună ziua! Sunt interesat de: ' . $productName . '. Puteți confirma disponibilitatea?';
     return 'https://wa.me/' . WA_PHONE . '?text=' . rawurlencode($msg);
 }
 
@@ -142,8 +142,8 @@ function renderCatalogCards(array $products): string {
         $unavailable = ($p['stock_status'] ?? '') === 'indisponibil';
         $action = canAddToCart($p)
             ? cartButton($p)
-            : '<a href="' . e(waLink($p['name'], $unavailable ? 'Buna ziua! Cand revine pe stoc: ' . $p['name'] . '?' : ($p['wa_text'] ?? null)))
-              . '" class="btn-wa-prod" target="_blank" rel="noopener">' . WA_ICON . ($unavailable ? 'Întreabă când revine' : 'Cere oferta') . '</a>';
+            : '<a href="' . e(waLink($p['name'], $unavailable ? 'Bună ziua! Când revine pe stoc: ' . $p['name'] . '?' : ($p['wa_text'] ?? null)))
+              . '" class="btn-wa-prod" target="_blank" rel="noopener">' . WA_ICON . ($unavailable ? 'Întreabă când revine' : 'Cere ofertă') . '</a>';
         $out .= '<div class="prod-card cat-card" data-product-id="' . (int)$p['id'] . '">'
               . $img
               . '<div class="prod-body">'
@@ -160,7 +160,7 @@ function renderCatalogCards(array $products): string {
 
 /** Afisat cand o sectiune nu are produse — inclusiv cand DB-ul e cazut. */
 function renderEmptyNotice(): string {
-    return '<p class="cat-empty-note">Lista de produse nu poate fi afisata momentan. '
+    return '<p class="cat-empty-note">Lista de produse nu poate fi afișată momentan. '
          . 'Scrie-ne pe <a href="https://wa.me/' . WA_PHONE . '" target="_blank" rel="noopener">WhatsApp</a> '
-         . 'si iti spunem imediat ce avem in stoc.</p>';
+         . 'și îți spunem imediat ce avem în stoc.</p>';
 }

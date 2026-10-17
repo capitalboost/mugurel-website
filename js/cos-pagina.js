@@ -30,8 +30,8 @@
   function showEmpty() {
     app.innerHTML =
       '<div class="cos-empty" data-cos-state="empty">' +
-        '<p class="cos-empty-title">Cosul tau este gol.</p>' +
-        '<p>Adauga produse din paginile de categorii sau din catalog.</p>' +
+        '<p class="cos-empty-title">Coșul tău este gol.</p>' +
+        '<p>Adaugă produse din paginile de categorii sau din catalog.</p>' +
         '<a class="btn-cart cos-empty-cta" href="/catalog.html">Vezi catalogul</a>' +
       '</div>';
   }
@@ -39,7 +39,7 @@
   function showError(text) {
     app.innerHTML =
       '<p class="cos-msg cos-msg--error" role="alert" data-cos-state="error">' + esc(text) + '</p>' +
-      '<p><button type="button" class="cos-retry">Incearca din nou</button></p>';
+      '<p><button type="button" class="cos-retry">Încearcă din nou</button></p>';
   }
 
   function lineHtml(l) {
@@ -55,7 +55,7 @@
           '<p class="cos-line-name">' + name + '</p>' +
           '<p class="cos-line-problem">' + esc(l.problem) + '</p>' +
         '</div>' +
-        '<button type="button" class="cos-remove" data-action="remove" aria-label="Scoate ' + name + ' din cos">Scoate din cos</button>' +
+        '<button type="button" class="cos-remove" data-action="remove" aria-label="Scoate ' + name + ' din coș">Scoate din coș</button>' +
       '</li>';
     }
 
@@ -78,11 +78,11 @@
           '<button type="button" data-action="minus" aria-label="Scade cantitatea">−</button>' +
           // type="text": un camp numeric refuza virgula in multe browsere, iar clientii scriu „2,5".
           '<input id="' + inputId + '" type="text" inputmode="' + (l.decimals ? 'decimal' : 'numeric') + '" autocomplete="off" maxlength="9" value="' + esc(fmtQty(l.qty)) + '">' +
-          '<button type="button" data-action="plus" aria-label="Creste cantitatea">+</button>' +
+          '<button type="button" data-action="plus" aria-label="Crește cantitatea">+</button>' +
         '</div>' +
       '</div>' +
       '<p class="cos-line-total" aria-label="Subtotal">' + esc(l.line_label || '') + '</p>' +
-      '<button type="button" class="cos-remove" data-action="remove" aria-label="Scoate ' + name + ' din cos">Scoate</button>' +
+      '<button type="button" class="cos-remove" data-action="remove" aria-label="Scoate ' + name + ' din coș">Scoate</button>' +
     '</li>';
   }
 
@@ -102,13 +102,13 @@
           '<p class="cos-summary-note">Costul transportului nu este inclus.</p>' +
           (blocked
             ? '<p class="cos-msg cos-msg--warn" role="alert">' + (onlyOver
-                ? 'Micsoreaza cantitatea la produsele marcate (nu avem destul pe stoc) ca sa continui — sau suna la ' + PHONE + '.'
-                : 'Unele produse nu se pot comanda online. Scoate-le din cos ca sa continui — sau suna la ' + PHONE + '.') + '</p>'
+                ? 'Micșorează cantitatea la produsele marcate (nu avem destul pe stoc) ca să continui — sau sună la ' + PHONE + '.'
+                : 'Unele produse nu se pot comanda online. Scoate-le din coș ca să continui — sau sună la ' + PHONE + '.') + '</p>'
             : '') +
           (canContinue
-            ? '<a class="btn-cart cos-continue" href="/comanda.html">Continua comanda</a>'
-            : '<button type="button" class="btn-cart cos-continue" disabled>Continua comanda</button>') +
-          '<a class="cos-back" href="/catalog.html">← Continua cumparaturile</a>' +
+            ? '<a class="btn-cart cos-continue" href="/comanda.html">Continuă comanda</a>'
+            : '<button type="button" class="btn-cart cos-continue" disabled>Continuă comanda</button>') +
+          '<a class="cos-back" href="/catalog.html">← Continuă cumpărăturile</a>' +
         '</aside>' +
       '</div>';
   }
@@ -125,7 +125,7 @@
       credentials: 'same-origin',
     }).then(function (res) {
       return res.json().catch(function () { return {}; }).then(function (body) {
-        if (!res.ok) { throw new Error(body.error || 'Eroare la verificarea cosului.'); }
+        if (!res.ok) { throw new Error(body.error || 'Eroare la verificarea coșului.'); }
         return body;
       });
     }).then(function (cart) {
@@ -133,7 +133,7 @@
       render(cart);
     }).catch(function (err) {
       if (seq !== requestSeq) { return; }
-      showError((err && err.message) || ('Cosul nu poate fi verificat acum. Suna la ' + PHONE + '.'));
+      showError((err && err.message) || ('Coșul nu poate fi verificat acum. Sună la ' + PHONE + '.'));
     }).then(function () {
       app.removeAttribute('aria-busy');
     });

@@ -5,7 +5,7 @@ $pageTitle       = 'Despre noi — Mugurel | Materiale de construcții și elect
 $metaDescription = 'Mugurel, brandul DUNLITE COM SRL din Dăbuleni: materiale de construcții și electrocasnice cu prețuri afișate, comandă online sau pe WhatsApp, livrare în județul Dolj.';
 $canonicalUrl    = 'https://mugurel-bricolaj.ro/despre-noi.html';
 $metaRobots      = 'index, follow';
-$ogTitle         = 'Despre noi — Mugurel Materiale Constructii';
+$ogTitle         = 'Despre noi — Mugurel Materiale Construcții';
 $ogDescription   = 'Materiale de construcții și electrocasnice în Dăbuleni. Comandă online sau pe WhatsApp la 0749 130 565.';
 require_once __DIR__ . '/includes/home.php';
 require __DIR__ . '/templates/header.php';
@@ -13,7 +13,7 @@ require __DIR__ . '/templates/header.php';
 <!-- PAGE HERO -->
 <div class="page-hero">
   <div class="page-hero-inner">
-    <div class="breadcrumb"><a href="index.html">Acasa</a><span>›</span> Despre noi</div>
+    <div class="breadcrumb"><a href="index.html">Acasă</a><span>›</span> Despre noi</div>
     <h1>Despre Mugurel</h1>
     <p>Magazinul tău de materiale de construcții și electrocasnice din Dăbuleni.</p>
   </div>
@@ -24,28 +24,28 @@ require __DIR__ . '/templates/header.php';
   <div class="about-content">
     <h2>Cine suntem</h2>
     <p>Mugurel este brandul comercial al DUNLITE COM SRL, magazin de materiale de construcții și electrocasnice din Dăbuleni. Avem produse pentru toate etapele unei construcții — de la zidărie și metal până la acoperiș și finisaje — și electrocasnice pentru casă.</p>
-    <p>Ne-am construit reputatia pe baza unor principii simple: produse de calitate, preturi corecte si o relatie directa cu clientii nostri. Credem ca cel mai bun mod de a face afaceri este prin comunicare sincera si transparenta — de aceea te sunăm la fiecare comandă și îți răspundem direct pe WhatsApp.</p>
-    <p>Indiferent ca esti un profesionist in constructii, un meserias sau pur si simplu renovezi casa, la Mugurel gasesti tot ce ai nevoie sub un singur acoperis.</p>
+    <p>Ne-am construit reputația pe baza unor principii simple: produse de calitate, prețuri corecte și o relație directă cu clienții noștri. Credem că cel mai bun mod de a face afaceri este prin comunicare sinceră și transparență — de aceea te sunăm la fiecare comandă și îți răspundem direct pe WhatsApp.</p>
+    <p>Indiferent dacă ești un profesionist în construcții, un meseriaș sau pur și simplu renovezi casa, la Mugurel găsești tot ce ai nevoie sub un singur acoperiș.</p>
 
     <h2>Ce oferim</h2>
-    <p>Gama noastra de produse acopera toate nevoile unei case:</p>
+    <p>Gama noastră de produse acoperă toate nevoile unei case:</p>
     <ul style="margin-left:20px; margin-bottom:16px; color:#444; font-size:14px; line-height:2;">
       <?= renderHomeOfferList() /* generata din catalog */ ?>
     </ul>
 
-    <h2>Cum functionam</h2>
+    <h2>Cum funcționăm</h2>
     <p>Alegi produsele de pe site — toate au prețul afișat cu TVA — și le pui în coș. Trimiți comanda cu datele de livrare și metoda de plată preferată: ramburs, transfer bancar sau ridicare din magazin. Te sunăm să confirmăm stocul și livrarea, apoi pregătim marfa. Preferi să vorbești direct? Scrie-ne pe WhatsApp.</p>
 
     <div class="about-values">
       <div class="value-card">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
-        <h4>Calitate garantata</h4>
-        <p>Lucram cu producatori si distribuitori verificati. Toate produsele vin cu garantia producatorului.</p>
+        <h4>Calitate garantată</h4>
+        <p>Lucrăm cu producători și distribuitori verificați. Toate produsele vin cu garanția producătorului.</p>
       </div>
       <div class="value-card">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 13 19.79 19.79 0 0 1 1.61 4.4 2 2 0 0 1 3.6 2.2h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.91 9.91a16 16 0 0 0 6.16 6.16l1.87-1.87a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
-        <h4>Comunicare directa</h4>
-        <p>Vorbesti direct cu noi pe WhatsApp. Fara call center, fara asteptari. Raspuns rapid in programul de lucru.</p>
+        <h4>Comunicare directă</h4>
+        <p>Vorbești direct cu noi pe WhatsApp. Fără call center, fără așteptări. Răspuns rapid în programul de lucru.</p>
       </div>
       <div class="value-card">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="1" y="3" width="15" height="13"/><polygon points="16 8 20 8 23 11 23 16 16 16 16 8"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/></svg>

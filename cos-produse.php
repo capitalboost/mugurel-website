@@ -23,12 +23,12 @@ function cartJson(int $status, array $body): void
 
 if (($_SERVER['REQUEST_METHOD'] ?? '') !== 'POST') {
     header('Allow: POST');
-    cartJson(405, ['error' => 'Metoda nepermisa.']);
+    cartJson(405, ['error' => 'Metodă nepermisă.']);
 }
 
 $raw = file_get_contents('php://input', false, null, 0, 20001);
 if ($raw === false || strlen($raw) > 20000) {
-    cartJson(413, ['error' => 'Cosul trimis e prea mare.']);
+    cartJson(413, ['error' => 'Coșul trimis e prea mare.']);
 }
 $data = json_decode($raw, true);
 if (!is_array($data) || !array_key_exists('items', $data) || !is_array($data['items'])) {
@@ -38,7 +38,7 @@ if (!is_array($data) || !array_key_exists('items', $data) || !is_array($data['it
 $items = cartNormalizeItems($data['items']);
 $products = cartProducts(array_column($items, 'id'));
 if ($products === null) {
-    cartJson(503, ['error' => 'Cosul nu poate fi verificat acum. Incearca din nou in cateva minute sau suna la 0749 130 565.']);
+    cartJson(503, ['error' => 'Coșul nu poate fi verificat acum. Încearcă din nou în câteva minute sau sună la 0749 130 565.']);
 }
 
 $cart = priceCart($items, $products);

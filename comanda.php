@@ -19,7 +19,7 @@ require_once __DIR__ . '/includes/turnstile.php';
 orderSessionStart();
 header('Cache-Control: no-store'); // pagina contine tokenul sesiunii
 
-const ORDER_PHONE_HINT = 'Te rugam sa incerci din nou sau sa comanzi telefonic la 0749 130 565.';
+const ORDER_PHONE_HINT = 'Te rugăm să încerci din nou sau să comanzi telefonic la 0749 130 565.';
 
 $values = array_fill_keys(array_keys(ORDER_MAX), '') + ['tip' => 'pf', 'plata' => '', 'acord' => ''];
 $errors = [];
@@ -40,13 +40,13 @@ if (($_SERVER['REQUEST_METHOD'] ?? 'GET') === 'POST') {
 
     if ($pdo !== null && orderRateLimited($pdo, orderClientIp($_SERVER))) {
         http_response_code(429);
-        $notice = 'Ai trimis formularul de prea multe ori in ultimele minute. ' . ORDER_PHONE_HINT;
+        $notice = 'Ai trimis formularul de prea multe ori în ultimele minute. ' . ORDER_PHONE_HINT;
     } elseif (!orderCsrfValid($_POST['csrf'] ?? null)) {
         http_response_code(400);
-        $notice = 'Sesiunea a expirat (pagina a stat deschisa prea mult). Datele tale sunt mai jos — apasa din nou „Trimite comanda".';
+        $notice = 'Sesiunea a expirat (pagina a stat deschisă prea mult). Datele tale sunt mai jos — apasă din nou „Trimite comanda".';
     } elseif (orderLooksLikeBot($_POST) || !orderFormTokenValid($_POST['idem'] ?? null)) {
         http_response_code(422);
-        $notice = 'Comanda nu a putut fi trimisa. ' . ORDER_PHONE_HINT;
+        $notice = 'Comanda nu a putut fi trimisă. ' . ORDER_PHONE_HINT;
     } else {
         $errors = $result['errors'];
 
@@ -55,13 +55,13 @@ if (($_SERVER['REQUEST_METHOD'] ?? 'GET') === 'POST') {
         $items = is_string($cosRaw) && strlen($cosRaw) <= 20000 ? cartNormalizeItems(json_decode($cosRaw, true)) : [];
         $cart = null;
         if ($items === []) {
-            $cartError = 'Cosul tau este gol sau nu a putut fi citit.';
+            $cartError = 'Coșul tău este gol sau nu a putut fi citit.';
         } elseif (($products = cartProducts(array_column($items, 'id'))) === null) {
-            $cartError = 'Nu putem verifica acum produsele din cos. ' . ORDER_PHONE_HINT;
+            $cartError = 'Nu putem verifica acum produsele din coș. ' . ORDER_PHONE_HINT;
         } else {
             $cart = priceCart($items, $products);
             if ($cart['problem_count'] > 0 || $cart['orderable_count'] === 0) {
-                $cartError = 'Unele produse din cos nu se mai pot comanda (pret sau stoc schimbat).';
+                $cartError = 'Unele produse din coș nu se mai pot comanda (preț sau stoc schimbat).';
             }
         }
 
@@ -87,11 +87,11 @@ if (($_SERVER['REQUEST_METHOD'] ?? 'GET') === 'POST') {
                 exit;
             } catch (OrderStockException $e) {
                 http_response_code(409);
-                $cartError = 'Intre timp s-a schimbat stocul — ' . $e->getMessage();
+                $cartError = 'Între timp s-a schimbat stocul — ' . $e->getMessage();
             } catch (Throwable $e) {
                 error_log('orderCreate: ' . $e->getMessage());
                 http_response_code(503);
-                $notice = 'Comanda nu a putut fi salvata din cauza unei erori tehnice. Datele tale sunt mai jos. ' . ORDER_PHONE_HINT;
+                $notice = 'Comanda nu a putut fi salvată din cauza unei erori tehnice. Datele tale sunt mai jos. ' . ORDER_PHONE_HINT;
             }
         }
     }
@@ -99,8 +99,8 @@ if (($_SERVER['REQUEST_METHOD'] ?? 'GET') === 'POST') {
 orderMarkFormShown();
 
 $extraHead       = TURNSTILE_SCRIPT; // captcha-ul Cloudflare, doar pe paginile cu formular
-$pageTitle       = 'Finalizeaza comanda — Mugurel';
-$metaDescription = 'Datele de livrare pentru comanda la Mugurel Materiale Constructii.';
+$pageTitle       = 'Finalizează comanda — Mugurel';
+$metaDescription = 'Datele de livrare pentru comanda la Mugurel Materiale Construcții.';
 $canonicalUrl    = SITE_URL . '/comanda.html';
 $metaRobots      = 'noindex, nofollow';
 $pageScripts     = ['comanda-pagina.js', 'captcha-asteapta.js'];
@@ -113,26 +113,26 @@ require __DIR__ . '/templates/header.php';
 <div class="page-hero">
   <div class="page-hero-inner">
     <div class="breadcrumb">
-      <a href="/index.html">Acasa</a><span>›</span><a href="/cos.html">Cos</a><span>›</span><span>Comanda</span>
+      <a href="/index.html">Acasă</a><span>›</span><a href="/cos.html">Coș</a><span>›</span><span>Comanda</span>
     </div>
-    <h1>Finalizeaza comanda</h1>
+    <h1>Finalizează comanda</h1>
   </div>
 </div>
 
 <main class="cos-wrap comanda-wrap">
   <noscript>
-    <p class="cos-msg cos-msg--error">Comanda online functioneaza doar cu JavaScript activat. Poti comanda pe WhatsApp sau la telefon: 0749 130 565.</p>
+    <p class="cos-msg cos-msg--error">Comanda online funcționează doar cu JavaScript activat. Poți comanda pe WhatsApp sau la telefon: 0749 130 565.</p>
   </noscript>
 
   <?php if ($notice): ?>
   <p class="cos-msg cos-msg--warn" role="alert" data-form-notice><?= htmlspecialchars($notice, ENT_QUOTES, 'UTF-8') ?></p>
   <?php endif; ?>
   <?php if ($cartError): ?>
-  <p class="cos-msg cos-msg--error" role="alert" data-cart-error><?= htmlspecialchars($cartError, ENT_QUOTES, 'UTF-8') ?> <a href="/cos.html">Verifica cosul</a>.</p>
+  <p class="cos-msg cos-msg--error" role="alert" data-cart-error><?= htmlspecialchars($cartError, ENT_QUOTES, 'UTF-8') ?> <a href="/cos.html">Verifică coșul</a>.</p>
   <?php endif; ?>
   <?php if ($errors): ?>
   <div class="cos-msg cos-msg--error" role="alert" data-form-errors tabindex="-1">
-    Verifica campurile marcate mai jos (<?= count($errors) ?>).
+    Verifică câmpurile marcate mai jos (<?= count($errors) ?>).
   </div>
   <?php endif; ?>
 
@@ -142,7 +142,7 @@ require __DIR__ . '/templates/header.php';
       <input type="hidden" name="idem" value="<?= htmlspecialchars($formToken, ENT_QUOTES, 'UTF-8') ?>">
       <input type="hidden" name="csrf" value="<?= htmlspecialchars(orderCsrfToken(), ENT_QUOTES, 'UTF-8') ?>">
       <div class="form-hp" aria-hidden="true">
-        <label for="f-<?= ORDER_HONEYPOT ?>">Nu completa acest camp</label>
+        <label for="f-<?= ORDER_HONEYPOT ?>">Nu completa acest câmp</label>
         <input id="f-<?= ORDER_HONEYPOT ?>" name="<?= ORDER_HONEYPOT ?>" type="text" tabindex="-1" autocomplete="off" value="">
       </div>
       <?php $isPj = ($values['tip'] ?? 'pf') === 'pj'; ?>
@@ -161,7 +161,7 @@ require __DIR__ . '/templates/header.php';
 
       <fieldset class="form-block" data-pj-block<?= $isPj ? '' : ' hidden' ?>>
         <legend>Date firma</legend>
-        <p class="form-hint">Pentru factura pe firma.</p>
+        <p class="form-hint">Pentru factura pe firmă.</p>
         <?php [$a, $msg] = fieldError($errors, 'firma'); ?>
         <div class="form-field">
           <label for="f-firma">Denumire firma <span aria-hidden="true">*</span></label>
@@ -177,14 +177,14 @@ require __DIR__ . '/templates/header.php';
           </div>
           <?php [$a, $msg] = fieldError($errors, 'reg_com'); ?>
           <div class="form-field">
-            <label for="f-reg_com">Nr. Registrul Comertului <span aria-hidden="true">*</span></label>
+            <label for="f-reg_com">Nr. Registrul Comerțului <span aria-hidden="true">*</span></label>
             <input id="f-reg_com" name="reg_com" type="text" autocomplete="off" maxlength="<?= ORDER_MAX['reg_com'] ?>" placeholder="ex. J16/123/2020" value="<?= $v('reg_com') ?>"<?= $a ?>>
             <?= $msg ?>
           </div>
         </div>
         <?php [$a, $msg] = fieldError($errors, 'sediu'); ?>
         <div class="form-field">
-          <label for="f-sediu">Sediul social (adresa completa) <span aria-hidden="true">*</span></label>
+          <label for="f-sediu">Sediul social (adresa completă) <span aria-hidden="true">*</span></label>
           <input id="f-sediu" name="sediu" type="text" autocomplete="off" maxlength="<?= ORDER_MAX['sediu'] ?>" value="<?= $v('sediu') ?>"<?= $a ?>>
           <?= $msg ?>
         </div>
@@ -195,7 +195,7 @@ require __DIR__ . '/templates/header.php';
 
         <?php [$a, $msg] = fieldError($errors, 'nume'); ?>
         <div class="form-field">
-          <label for="f-nume" data-nume-label data-pf="Nume si prenume" data-pj="Persoana de contact (nume si prenume)"><?= $isPj ? 'Persoana de contact (nume si prenume)' : 'Nume si prenume' ?> <span aria-hidden="true">*</span></label>
+          <label for="f-nume" data-nume-label data-pf="Nume și prenume" data-pj="Persoana de contact (nume și prenume)"><?= $isPj ? 'Persoana de contact (nume și prenume)' : 'Nume și prenume' ?> <span aria-hidden="true">*</span></label>
           <input id="f-nume" name="nume" type="text" autocomplete="name" required maxlength="<?= ORDER_MAX['nume'] ?>" value="<?= $v('nume') ?>"<?= $a ?>>
           <?= $msg ?>
         </div>
@@ -218,7 +218,7 @@ require __DIR__ . '/templates/header.php';
 
       <?php [$a, $msg] = fieldError($errors, 'plata'); ?>
       <fieldset class="form-block form-plata"<?= $a ? ' aria-describedby="err-plata"' : '' ?>>
-        <legend>Livrare si plata <span aria-hidden="true">*</span></legend>
+        <legend>Livrare și plată <span aria-hidden="true">*</span></legend>
         <div class="form-plata-options">
           <?php foreach (ORDER_PLATA as $plVal => $pl): ?>
           <label class="form-plata-option">
@@ -239,7 +239,7 @@ require __DIR__ . '/templates/header.php';
         <div class="form-row">
           <?php [$a, $msg] = fieldError($errors, 'judet'); ?>
           <div class="form-field">
-            <label for="f-judet">Judet <span aria-hidden="true">*</span></label>
+            <label for="f-judet">Județ <span aria-hidden="true">*</span></label>
             <select id="f-judet" name="judet" autocomplete="address-level1" required<?= $a ? str_replace('aria-describedby="err-judet"', 'aria-describedby="hint-judet err-judet"', $a) : ' aria-describedby="hint-judet"' ?>>
               <?php foreach (ORDER_DELIVERY_JUDETE as $j): /* livram doar aici; Dolj e preselectat */ ?>
               <option value="<?= $j ?>"<?= ($values['judet'] ?? '') === $j || count(ORDER_DELIVERY_JUDETE) === 1 ? ' selected' : '' ?>><?= $j ?></option>
@@ -257,12 +257,12 @@ require __DIR__ . '/templates/header.php';
         </div>
         <?php [$a, $msg] = fieldError($errors, 'adresa'); ?>
         <div class="form-field">
-          <label for="f-adresa">Adresa (strada, numar, bloc, apartament) <span aria-hidden="true">*</span></label>
+          <label for="f-adresa">Adresa (strada, număr, bloc, apartament) <span aria-hidden="true">*</span></label>
           <input id="f-adresa" name="adresa" type="text" autocomplete="street-address" required maxlength="<?= ORDER_MAX['adresa'] ?>" value="<?= $v('adresa') ?>"<?= $a ?>>
           <?= $msg ?>
         </div>
         <div class="form-field">
-          <label for="f-mentiuni">Mentiuni pentru comanda <span class="form-optional">(optional)</span></label>
+          <label for="f-mentiuni">Mențiuni pentru comandă <span class="form-optional">(opțional)</span></label>
           <textarea id="f-mentiuni" name="mentiuni" rows="3" maxlength="<?= ORDER_MAX['mentiuni'] ?>"><?= $v('mentiuni') ?></textarea>
         </div>
       </fieldset>
@@ -271,20 +271,20 @@ require __DIR__ . '/templates/header.php';
       <div class="form-acord">
         <label class="form-acord-label">
           <input type="checkbox" name="acord" value="1"<?= ($values['acord'] ?? '') === '1' ? ' checked' : '' ?><?= $a ?>>
-          <span>Am citit si accept <a href="/termeni-conditii.html" target="_blank" rel="noopener">Termenii si conditiile</a>
-          si <a href="/politica-confidentialitate.html" target="_blank" rel="noopener">Politica de confidentialitate</a>.
-          Datele mele sunt folosite doar pentru aceasta comanda. <span aria-hidden="true">*</span></span>
+          <span>Am citit și accept <a href="/termeni-conditii.html" target="_blank" rel="noopener">Termenii și condițiile</a>
+          si <a href="/politica-confidentialitate.html" target="_blank" rel="noopener">Politica de confidențialitate</a>.
+          Datele mele sunt folosite doar pentru această comandă. <span aria-hidden="true">*</span></span>
         </label>
         <?= $msg ?>
       </div>
 
-      <p class="form-required-note"><span aria-hidden="true">*</span> camp obligatoriu</p>
+      <p class="form-required-note"><span aria-hidden="true">*</span> câmp obligatoriu</p>
       <?= turnstileWidget() ?>
       <button type="submit" class="btn-cart comanda-submit" data-comanda-submit>Trimite comanda</button>
     </form>
 
     <aside class="cos-summary comanda-summary" id="comanda-sumar" aria-live="polite">
-      <p class="cos-loading">Se incarca produsele…</p>
+      <p class="cos-loading">Se încarcă produsele…</p>
     </aside>
   </div>
 </main>

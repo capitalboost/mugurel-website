@@ -16,9 +16,9 @@ if ($cat !== '' && $cat !== 'all') {
 $q = is_string($_GET['q'] ?? null) ? mb_substr(trim($_GET['q']), 0, 80) : '';
 $listFor = fn (string $q) => catalogListState([
     'title' => $q !== '' ? 'Rezultate pentru „' . $q . '"' : 'Toate produsele',
-    'intro' => $q !== '' ? null : 'Catalogul Mugurel, Dabuleni: materiale de constructii cu pret si stoc. Comanda online sau pe WhatsApp.',
+    'intro' => $q !== '' ? null : 'Catalogul Mugurel, Dăbuleni: materiale de construcții cu preț și stoc. Comandă online sau pe WhatsApp.',
     'baseUrl' => '/catalog.html',
-    'breadcrumbs' => [[$q !== '' ? 'Cautare' : 'Catalog', $q !== '' ? null : '/catalog.html']],
+    'breadcrumbs' => [[$q !== '' ? 'Căutare' : 'Catalog', $q !== '' ? null : '/catalog.html']],
     'q' => $q,
 ], $_GET);
 $list = $listFor($q);
@@ -34,8 +34,8 @@ if ($q !== '' && !$list['products'] && !$list['dbDown']) {
         error_log('searchCorrect: ' . $e->getMessage());
     }
 }
-extract(catalogListMeta($list, $q !== '' ? 'Cautare: ' . $q : 'Catalog produse',
-    'Catalogul Mugurel Dabuleni: ' . $list['total'] . ' produse — adezivi, mortare, gleturi, ciment, metal si profile. Preturi cu TVA, livrare in Dolj.'));
+extract(catalogListMeta($list, $q !== '' ? 'Căutare: ' . $q : 'Catalog produse',
+    'Catalogul Mugurel Dăbuleni: ' . $list['total'] . ' produse — adezivi, mortare, gleturi, ciment, metal și profile. Prețuri cu TVA, livrare în Dolj.'));
 $searchQuery = $q;
 $navCatalog = $q === '';
 $pageScripts = ['catalog-filtre.js'];

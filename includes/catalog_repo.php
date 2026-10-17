@@ -19,8 +19,8 @@ const COLLECTION_MIN_PRODUCTS = 3;
 const FACET_SKIP_GROUPS = ['aplicatie', 'ignorat'];
 const CATALOG_SORTS = [
     'recomandate' => 'Recomandate',
-    'pret-asc'    => 'Pret crescator',
-    'pret-desc'   => 'Pret descrescator',
+    'pret-asc'    => 'Preț crescător',
+    'pret-desc'   => 'Preț descrescător',
     'nume'        => 'Nume (A–Z)',
 ];
 

@@ -48,7 +48,7 @@ function catalogListState(array $opts, array $query): array
     $crumbs = $opts['breadcrumbs'];
     $jsonLd = ['@context' => 'https://schema.org', '@type' => 'BreadcrumbList', 'itemListElement' => []];
     $pos = 1;
-    $jsonLd['itemListElement'][] = ['@type' => 'ListItem', 'position' => $pos++, 'name' => 'Acasa', 'item' => SITE_URL . '/'];
+    $jsonLd['itemListElement'][] = ['@type' => 'ListItem', 'position' => $pos++, 'name' => 'Acasă', 'item' => SITE_URL . '/'];
     foreach ($crumbs as [$label, $u]) {
         $jsonLd['itemListElement'][] = ['@type' => 'ListItem', 'position' => $pos++, 'name' => $label]
             + ($u !== null ? ['item' => SITE_URL . $u] : []);
@@ -127,7 +127,7 @@ function catTreeNode(array $n, array $activeIds, int $depth = 0): string
 function catalogListMeta(array $list, string $title, string $description): array
 {
     return [
-        'pageTitle' => $title . ($list['page'] > 1 ? ' — pagina ' . $list['page'] : '') . ' | Mugurel Dabuleni',
+        'pageTitle' => $title . ($list['page'] > 1 ? ' — pagina ' . $list['page'] : '') . ' | Mugurel Dăbuleni',
         'metaDescription' => $description,
         'canonicalUrl' => SITE_URL . $list['baseUrl'],
         // paginile filtrate/sortate/paginate nu se indexeaza (continut duplicat), dar link-urile se urmaresc

@@ -1,12 +1,12 @@
 <?php
 /** Pagina statica, trecuta pe sabloanele comune (header/meniu/footer generate din catalog). */
 require_once __DIR__ . '/admin/config.php';
-$pageTitle       = 'Contact — Mugurel | Materiale Constructii';
+$pageTitle       = 'Contact — Mugurel | Materiale Construcții';
 $metaDescription = 'Contactează-ne la 0749 130 565 (telefon și WhatsApp) sau la office@mugurel-bricolaj.ro. Program: Luni–Vineri 8:00–18:00, Strada Caracal 66, Dăbuleni.';
 $canonicalUrl    = 'https://mugurel-bricolaj.ro/contact.html';
 $metaRobots      = 'index, follow';
-$ogTitle         = 'Contact — Mugurel Materiale Constructii';
-$ogDescription   = 'Scrie-ne pe WhatsApp la 0749 130 565. Raspundem rapid!';
+$ogTitle         = 'Contact — Mugurel Materiale Construcții';
+$ogDescription   = 'Scrie-ne pe WhatsApp la 0749 130 565. Răspundem rapid!';
 $pageSlugActive  = 'contact';
 $extraHead = <<<'HTML'
 <script type="application/ld+json">
@@ -42,8 +42,8 @@ require __DIR__ . '/templates/header.php';
 <!-- PAGE HERO -->
 <div class="page-hero">
   <div class="page-hero-inner">
-    <div class="breadcrumb"><a href="index.html">Acasa</a><span>›</span> Contact</div>
-    <h1>Contacteaza-ne</h1>
+    <div class="breadcrumb"><a href="index.html">Acasă</a><span>›</span> Contact</div>
+    <h1>Contactează-ne</h1>
     <p>Suntem aici pentru tine. Scrie-ne pe WhatsApp sau trimite-ne un email.</p>
   </div>
 </div>
@@ -53,8 +53,8 @@ require __DIR__ . '/templates/header.php';
 
   <!-- WA CTA PRINCIPAL -->
   <div class="wa-cta-card" style="margin-bottom:24px;">
-    <h3>Cea mai rapida cale: WhatsApp</h3>
-    <p>Trimite-ne un mesaj pe WhatsApp si iti raspundem in cel mai scurt timp. Poti cere oferte, verifica disponibilitatea produselor sau plasa o comanda direct din chat.</p>
+    <h3>Cea mai rapidă cale: WhatsApp</h3>
+    <p>Trimite-ne un mesaj pe WhatsApp și îți răspundem în cel mai scurt timp. Poți cere oferte, verifica disponibilitatea produselor sau plasa o comandă direct din chat.</p>
     <a href="https://wa.me/40749130565?text=Buna%20ziua!%20Va%20contactez%20de%20pe%20site-ul%20Mugurel.%20Puteti%20sa%20ma%20ajutati%3F" class="btn-wa-big" target="_blank" rel="noopener">
       <svg viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 0 1-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 0 1-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 0 1 2.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0 0 12.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 0 0 5.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 0 0-3.48-8.413z"/></svg>
       Scrie pe WhatsApp — 0749 130 565
@@ -97,7 +97,7 @@ require __DIR__ . '/templates/header.php';
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
         </div>
         <div class="contact-row-info">
-          <div class="label">Adresa</div>
+          <div class="label">Adresă</div>
           <div class="value">Strada Caracal Nr.66, 207220 Dăbuleni, Jud. Dolj</div>
         </div>
       </div>
@@ -112,12 +112,12 @@ require __DIR__ . '/templates/header.php';
       </div>
 
       <div class="map-container">
-        <iframe src="https://maps.google.com/maps?q=Strada+Caracal+66,+D%C4%83buleni,+Dolj,+Romania&z=16&output=embed" width="100%" height="100%" style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade" title="Locatie Mugurel Dabuleni"></iframe>
+        <iframe src="https://maps.google.com/maps?q=Strada+Caracal+66,+D%C4%83buleni,+Dolj,+Romania&z=16&output=embed" width="100%" height="100%" style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade" title="Locație Mugurel Dăbuleni"></iframe>
       </div>
     </div>
 
     <div class="contact-card">
-      <h3>Intrebari frecvente</h3>
+      <h3>Întrebări frecvente</h3>
       <div style="margin-bottom:20px;">
         <p style="font-weight:700;color:#222;margin-bottom:6px;font-size:14px;">Cum pot comanda un produs?</p>
         <p style="font-size:13px;color:#666;line-height:1.6;">Direct pe site: pui produsele în coș și trimiți comanda — te sunăm noi să o confirmăm. Sau ne scrii pe WhatsApp la <a href="https://wa.me/40749130565" style="color:#06363A;font-weight:600;">0749 130 565</a> și îți confirmăm disponibilitatea și prețul.</p>
@@ -131,12 +131,12 @@ require __DIR__ . '/templates/header.php';
         <p style="font-size:13px;color:#666;line-height:1.6;">Da, ne găsești în magazin, pe Strada Caracal 66, Dăbuleni, de Luni până Vineri între 8:00 și 18:00.</p>
       </div>
       <div style="margin-bottom:20px;">
-        <p style="font-weight:700;color:#222;margin-bottom:6px;font-size:14px;">Ce metode de plata acceptati?</p>
+        <p style="font-weight:700;color:#222;margin-bottom:6px;font-size:14px;">Ce metode de plată acceptați?</p>
         <p style="font-size:13px;color:#666;line-height:1.6;">Ramburs (numerar la livrare), transfer bancar pe baza facturii proforme, sau numerar ori card când ridici marfa din magazin.</p>
       </div>
       <div>
-        <p style="font-weight:700;color:#222;margin-bottom:6px;font-size:14px;">Cat dureaza pana primesc raspuns?</p>
-        <p style="font-size:13px;color:#666;line-height:1.6;">Pe WhatsApp raspundem de obicei in cateva minute in timpul programului de lucru. In afara programului, raspundem a doua zi dimineata.</p>
+        <p style="font-weight:700;color:#222;margin-bottom:6px;font-size:14px;">Cât durează până primesc răspuns?</p>
+        <p style="font-size:13px;color:#666;line-height:1.6;">Pe WhatsApp răspundem de obicei în câteva minute în timpul programului de lucru. În afara programului, răspundem a doua zi dimineața.</p>
       </div>
     </div>
   </div>

@@ -106,7 +106,7 @@ function orderCreate(PDO $pdo, array $data, array $cart, string $formToken, stri
 {
     $lines = array_values(array_filter($cart['lines'], fn ($l) => $l['orderable']));
     if ($lines === [] || $cart['problem_count'] > 0) {
-        throw new InvalidArgumentException('Cosul nu poate fi comandat.');
+        throw new InvalidArgumentException('Coșul nu poate fi comandat.');
     }
     $hash = orderContentHash($data, $lines);
     orderPurgeTechnicalData($pdo);

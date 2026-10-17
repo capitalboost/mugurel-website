@@ -30,7 +30,7 @@ function orderItemsHtml(array $order): string
     }
     return '<table style="border-collapse:collapse;width:100%;font-size:14px">'
          . '<tr style="background:#f2f6f6"><th align="left" style="padding:6px 8px">Produs</th><th align="left" style="padding:6px 8px">Cantitate</th>'
-         . '<th align="right" style="padding:6px 8px">Pret</th><th align="right" style="padding:6px 8px">Subtotal</th></tr>'
+         . '<th align="right" style="padding:6px 8px">Preț</th><th align="right" style="padding:6px 8px">Subtotal</th></tr>'
          . $rows
          . '<tr><td colspan="3" style="padding:8px;text-align:right"><b>Total (cu TVA)</b></td>'
          . '<td style="padding:8px;text-align:right;white-space:nowrap"><b>' . mh(formatLei((int) $order['total_bani'])) . '</b></td></tr></table>';
@@ -62,7 +62,7 @@ function orderDetails(array $order): array
         'Livrare'       => $order['plata'] === 'ridicare'
                            ? 'Ridicare din magazin'
                            : trim($order['adresa'] . ', ' . $order['localitate'] . ', jud. ' . $order['judet'], ', '),
-        'Mentiuni'      => (string) $order['mentiuni'],
+        'Mențiuni'      => (string) $order['mentiuni'],
     ];
     return array_filter($d, fn ($v) => $v !== '' && $v !== null);
 }
@@ -70,10 +70,10 @@ function orderDetails(array $order): array
 /** Notificarea interna: comanda noua, cu tot ce trebuie ca sa suni clientul. */
 function orderAdminEmail(array $order): array
 {
-    $subject = 'Comanda noua ' . $order['order_number'] . ' — ' . formatLei((int) $order['total_bani'])
+    $subject = 'Comandă nouă ' . $order['order_number'] . ' — ' . formatLei((int) $order['total_bani'])
              . ' — ' . ($order['tip'] === 'pj' && $order['firma'] !== '' ? $order['firma'] : $order['nume']);
     $rows = '';
-    $text = "Comanda noua {$order['order_number']} din {$order['created_at']}\n\n";
+    $text = "Comandă nouă {$order['order_number']} din {$order['created_at']}\n\n";
     foreach (orderDetails($order) as $label => $value) {
         $rows .= '<tr><td style="padding:4px 12px 4px 0;color:#666;vertical-align:top">' . mh($label) . '</td>'
                . '<td style="padding:4px 0">' . nl2br(mh($value)) . '</td></tr>';
@@ -81,7 +81,7 @@ function orderAdminEmail(array $order): array
     }
     $tel = mh($order['telefon']);
     $html = '<div style="font-family:Arial,sans-serif;color:#222;max-width:680px">'
-          . '<h2 style="color:#06363A;margin:0 0 4px">Comanda noua ' . mh($order['order_number']) . '</h2>'
+          . '<h2 style="color:#06363A;margin:0 0 4px">Comandă nouă ' . mh($order['order_number']) . '</h2>'
           . '<p style="margin:0 0 16px;color:#666">' . mh($order['created_at']) . ' · de confirmat telefonic: '
           . '<a href="tel:' . $tel . '">' . $tel . '</a></p>'
           . '<table style="font-size:14px;margin-bottom:16px">' . $rows . '</table>'
@@ -102,13 +102,13 @@ function orderNotifyAdmin(PDO $pdo, array $order, array $smtp = []): bool
     if ($ok) {
         $pdo->prepare('UPDATE orders SET email_admin_at = NOW() WHERE id = ?')->execute([$order['id']]);
     } else {
-        error_log("orderNotifyAdmin: notificarea pentru {$order['order_number']} NU a fost trimisa");
+        error_log("orderNotifyAdmin: notificarea pentru {$order['order_number']} NU a fost trimisă");
     }
     return $ok;
 }
 
 /** Datele firmei din subsolul emailului catre client (aceleasi ca in subsolul site-ului). */
-const SHOP_FOOTER = 'DUNLITE COM SRL — CIF RO9027530 — J16/1357/1996 — Strada Caracal 66, Dabuleni, jud. Dolj';
+const SHOP_FOOTER = 'DUNLITE COM SRL — CIF RO9027530 — J16/1357/1996 — Strada Caracal 66, Dăbuleni, jud. Dolj';
 const SHOP_PHONE  = '0749 130 565';
 
 /** Confirmarea pentru client (T13): ce a comandat, ce urmeaza, cum plateste. Fara date interne (IP etc.). */
@@ -116,28 +116,28 @@ function orderClientEmail(array $order): array
 {
     $plata = ORDER_PLATA[$order['plata']] ?? ['label' => $order['plata'], 'info' => ''];
     $link  = SITE_URL . '/comanda-trimisa.html?t=' . $order['public_token'];
-    $next  = 'Te sunam in cel mai scurt timp (L–V 8:00–18:00) ca sa confirmam disponibilitatea produselor'
-           . ($order['plata'] === 'ridicare' ? ' si momentul in care poti ridica marfa.' : ', costul si termenul de livrare.')
-           . ' Comanda devine ferma dupa ce o confirmam telefonic.';
+    $next  = 'Te sunăm în cel mai scurt timp (L–V 8:00–18:00) ca să confirmăm disponibilitatea produselor'
+           . ($order['plata'] === 'ridicare' ? ' și momentul în care poți ridica marfa.' : ', costul și termenul de livrare.')
+           . ' Comanda devine fermă după ce o confirmăm telefonic.';
     $where = $order['plata'] === 'ridicare'
-           ? 'Ridicare din magazin: Strada Caracal 66, Dabuleni (L–V 8:00–18:00).'
+           ? 'Ridicare din magazin: Strada Caracal 66, Dăbuleni (L–V 8:00–18:00).'
            : 'Livrare la: ' . trim($order['adresa'] . ', ' . $order['localitate'] . ', jud. ' . $order['judet'], ', ') . '.';
 
     $subject = 'Am primit comanda ta ' . $order['order_number'] . ' — Mugurel';
     $html = '<div style="font-family:Arial,sans-serif;color:#222;max-width:640px">'
-          . '<h2 style="color:#06363A;margin:0 0 8px">Multumim pentru comanda!</h2>'
-          . '<p style="margin:0 0 6px">Buna ziua, ' . mh($order['nume']) . ',</p>'
+          . '<h2 style="color:#06363A;margin:0 0 8px">Mulțumim pentru comandă!</h2>'
+          . '<p style="margin:0 0 6px">Bună ziua, ' . mh($order['nume']) . ',</p>'
           . '<p style="margin:0 0 12px">Am primit comanda <b>' . mh($order['order_number']) . '</b>. ' . mh($next) . '</p>'
           . '<p style="margin:0 0 4px"><b>Plata:</b> ' . mh($plata['label']) . '. ' . mh($plata['info']) . '</p>'
           . '<p style="margin:0 0 16px"><b>' . ($order['plata'] === 'ridicare' ? 'Ridicare' : 'Livrare') . ':</b> ' . mh(preg_replace('/^(Ridicare din magazin|Livrare la): /', '', $where)) . '</p>'
           . orderItemsHtml($order)
           . ($order['plata'] === 'ridicare' ? '' : '<p style="margin-top:12px;font-size:13px;color:#555">' . mh(ORDER_TRANSPORT_INFO) . '</p>')
-          . '<p style="margin-top:16px">Poti vedea comanda oricand aici: <a href="' . mh($link) . '">' . mh($link) . '</a></p>'
-          . '<p>Ai o intrebare? Suna-ne la <a href="tel:+40749130565">' . SHOP_PHONE . '</a> sau scrie-ne pe '
+          . '<p style="margin-top:16px">Poți vedea comanda oricând aici: <a href="' . mh($link) . '">' . mh($link) . '</a></p>'
+          . '<p>Ai o întrebare? Suna-ne la <a href="tel:+40749130565">' . SHOP_PHONE . '</a> sau scrie-ne pe '
           . '<a href="https://wa.me/40749130565">WhatsApp</a>.</p>'
           . '<p style="margin-top:24px;font-size:12px;color:#888">' . mh(SHOP_FOOTER) . '</p></div>';
 
-    $text = "Multumim pentru comanda!\n\nBuna ziua, {$order['nume']},\n\n"
+    $text = "Mulțumim pentru comandă!\n\nBună ziua, {$order['nume']},\n\n"
           . "Am primit comanda {$order['order_number']}. $next\n\n"
           . "Plata: {$plata['label']}. {$plata['info']}\n$where\n\nProduse:\n" . orderItemsText($order)
           . ($order['plata'] === 'ridicare' ? '' : "\n" . ORDER_TRANSPORT_INFO . "\n")
@@ -154,7 +154,7 @@ function orderNotifyClient(PDO $pdo, array $order, array $smtp = []): bool
     if ($ok) {
         $pdo->prepare('UPDATE orders SET email_client_at = NOW() WHERE id = ?')->execute([$order['id']]);
     } else {
-        error_log("orderNotifyClient: confirmarea pentru {$order['order_number']} NU a fost trimisa");
+        error_log("orderNotifyClient: confirmarea pentru {$order['order_number']} NU a fost trimisă");
     }
     return $ok;
 }

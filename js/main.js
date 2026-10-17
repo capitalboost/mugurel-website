@@ -3,7 +3,7 @@
    ═══════════════════════════════════════════════ */
 
 const WA_NUMBER = '40749130565';
-const WA_DEFAULT_MSG = 'Buna ziua! Va contactez de pe site-ul Mugurel. Puteti sa ma ajutati?';
+const WA_DEFAULT_MSG = 'Bună ziua! Vă contactez de pe site-ul Mugurel. Puteți să mă ajutați?';
 
 /* ── WhatsApp link builder ── */
 function waLink(msg) {
@@ -39,7 +39,7 @@ document.addEventListener('DOMContentLoaded', function () {
       e.preventDefault();
       const product = btn.getAttribute('data-wa-product');
       const custom = btn.getAttribute('data-wa-text');
-      const msg = custom || ('Buna ziua! Sunt interesat de produsul: ' + product + '. Puteti sa imi confirmati disponibilitatea si pretul?');
+      const msg = custom || ('Bună ziua! Sunt interesat de produsul: ' + product + '. Puteți să îmi confirmați disponibilitatea și prețul?');
       window.open(waLink(msg), '_blank');
     });
   });
@@ -140,7 +140,7 @@ document.addEventListener('DOMContentLoaded', function () {
     var banner = document.createElement('div');
     banner.id = 'gdpr-banner';
     banner.setAttribute('role', 'dialog');
-    banner.setAttribute('aria-label', 'Setari cookie');
+    banner.setAttribute('aria-label', 'Setări cookie');
     banner.innerHTML =
       '<div class="gdpr-text">Folosim cookie-uri strict necesare pentru funcționarea site-ului (coș, formulare). Cu acordul tău folosim și cookie-uri de analiză (Google Analytics, Microsoft Clarity), ca să înțelegem cum e folosit site-ul. Dacă refuzi, acestea nu se încarcă. Îți poți schimba alegerea oricând din „Setări cookie”, în subsolul paginii. <a href="/politica-confidentialitate.html#cookie">Politica de confidențialitate</a>' +
       (previous ? '<br><span class="gdpr-current">Alegerea ta actuală: <strong>' + (previous === 'accepted' ? 'accepți' : 'refuzi') + '</strong> cookie-urile de analiză.</span>' : '') + '</div>' +

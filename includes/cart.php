@@ -127,16 +127,16 @@ function priceCart(array $items, array $products): array
 
         if (!canAddToCart($p)) {
             $line['problem'] = ($p['stock_status'] ?? '') === 'indisponibil'
-                ? 'Produsul nu mai este in stoc.'
-                : 'Pretul acestui produs se stabileste la cerere — te contactam pentru oferta.';
+                ? 'Produsul nu mai este în stoc.'
+                : 'Prețul acestui produs se stabilește la cerere — te contactăm pentru ofertă.';
         } elseif (!$line['decimals'] && floor($it['qty']) != $it['qty']) {
-            $line['problem'] = 'Cantitatea trebuie sa fie un numar intreg.';
+            $line['problem'] = 'Cantitatea trebuie să fie un număr întreg.';
         } elseif ($line['max'] !== null && $it['qty'] > $line['max']) {
             // randul ramane cu pret si cantitate, ca clientul sa poata micsora cantitatea direct din cos
             $line['over_stock'] = true;
             $line['price_bani'] = (int) round((float) $p['price'] * 100);
             $line['problem'] = 'Mai avem doar ' . formatQty($line['max']) . ($line['unit'] ? ' ' . $line['unit'] : '')
-                . ' pe stoc — micsoreaza cantitatea.';
+                . ' pe stoc — micșorează cantitatea.';
         } else {
             $priceBani = (int) round((float) $p['price'] * 100);
             $line['price_bani'] = $priceBani;

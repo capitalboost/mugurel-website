@@ -179,7 +179,7 @@ function returnNotify(PDO $pdo, array $r, array $smtp = []): void
     if (mailSend(ORDER_NOTIFY_TO, $a['subject'], $a['html'], $a['text'], $r['email'], $smtp)) {
         $pdo->prepare('UPDATE return_requests SET email_admin_at = NOW() WHERE id = ?')->execute([$r['id']]);
     } else {
-        error_log("returnNotify: emailul catre magazin pentru {$r['request_number']} NU a plecat");
+        error_log("returnNotify: emailul către magazin pentru {$r['request_number']} NU a plecat");
     }
     $c = returnClientEmail($r);
     if (mailSend($r['email'], $c['subject'], $c['html'], $c['text'], ORDER_NOTIFY_TO, $smtp)) {

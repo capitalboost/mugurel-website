@@ -8,16 +8,16 @@
  */
 
 const ORDER_JUDETE = [
-    'Alba', 'Arad', 'Arges', 'Bacau', 'Bihor', 'Bistrita-Nasaud', 'Botosani', 'Braila', 'Brasov',
-    'Bucuresti', 'Buzau', 'Calarasi', 'Caras-Severin', 'Cluj', 'Constanta', 'Covasna', 'Dambovita',
-    'Dolj', 'Galati', 'Giurgiu', 'Gorj', 'Harghita', 'Hunedoara', 'Ialomita', 'Iasi', 'Ilfov',
-    'Maramures', 'Mehedinti', 'Mures', 'Neamt', 'Olt', 'Prahova', 'Salaj', 'Satu Mare', 'Sibiu',
-    'Suceava', 'Teleorman', 'Timis', 'Tulcea', 'Valcea', 'Vaslui', 'Vrancea',
+    'Alba', 'Arad', 'Argeș', 'Bacău', 'Bihor', 'Bistrita-Nasaud', 'Botoșani', 'Brăila', 'Brașov',
+    'București', 'Buzău', 'Călărași', 'Caraș-Severin', 'Cluj', 'Constanța', 'Covasna', 'Dâmbovița',
+    'Dolj', 'Galați', 'Giurgiu', 'Gorj', 'Harghita', 'Hunedoara', 'Ialomița', 'Iași', 'Ilfov',
+    'Maramureș', 'Mehedinți', 'Mureș', 'Neamț', 'Olt', 'Prahova', 'Sălaj', 'Satu Mare', 'Sibiu',
+    'Suceava', 'Teleorman', 'Timiș', 'Tulcea', 'Vâlcea', 'Vaslui', 'Vrancea',
 ];
 
 /** Judetele in care livram (decizia din 16 oct: doar Dolj). Ridicarea din magazin e posibila de oriunde. */
 const ORDER_DELIVERY_JUDETE = ['Dolj'];
-const ORDER_DELIVERY_NOTE = 'Livram doar in judetul Dolj. Pentru alt judet alege „Ridicare din magazin" sau suna-ne la 0749 130 565.';
+const ORDER_DELIVERY_NOTE = 'Livrăm doar în județul Dolj. Pentru alt județ alege „Ridicare din magazin" sau sună-ne la 0749 130 565.';
 
 /** Lungimile maxime (si in HTML, ca maxlength). */
 const ORDER_MAX = [
@@ -33,18 +33,18 @@ const ORDER_MAX = [
  */
 const ORDER_PLATA = [
     'ramburs'  => ['label' => 'Ramburs la livrare',
-                   'info'  => 'Platesti numerar la primirea marfii.'],
-    'transfer' => ['label' => 'Transfer bancar (ordin de plata)',
-                   'info'  => 'Iti trimitem pe email factura proforma cu datele de plata, dupa ce confirmam comanda.'],
-    'ridicare' => ['label' => 'Ridicare si plata in magazin',
-                   'info'  => 'Platesti numerar sau cu cardul cand ridici marfa: Strada Caracal 66, Dabuleni, L–V 8:00–18:00. Te anuntam cand comanda e pregatita.'],
+                   'info'  => 'Plătești numerar la primirea mărfii.'],
+    'transfer' => ['label' => 'Transfer bancar (ordin de plată)',
+                   'info'  => 'Îți trimitem pe email factura proformă cu datele de plată, după ce confirmăm comanda.'],
+    'ridicare' => ['label' => 'Ridicare și plată în magazin',
+                   'info'  => 'Plătești numerar sau cu cardul când ridici marfa: Strada Caracal 66, Dăbuleni, L–V 8:00–18:00. Te anunțăm când comanda e pregătită.'],
 ];
 
 /** Mesajul despre transport (acelasi peste tot). */
-const ORDER_TRANSPORT_INFO = 'Livram in judetul Dolj. Transportul nu este inclus in total — costul ti-l spunem la telefon, cand confirmam comanda.';
+const ORDER_TRANSPORT_INFO = 'Livrăm în județul Dolj. Transportul nu este inclus în total — costul ți-l spunem la telefon, când confirmăm comanda.';
 
 /** Tipurile de client acceptate. */
-const ORDER_TIPURI = ['pf' => 'Persoana fizica', 'pj' => 'Persoana juridica'];
+const ORDER_TIPURI = ['pf' => 'Persoană fizică', 'pj' => 'Persoană juridică'];
 
 /** Text dintr-un camp: string, fara caractere de control, spatii comprimate, taiat la limita. */
 function orderText(mixed $v, int $max, bool $multiline = false): string
@@ -146,31 +146,31 @@ function orderFormValidate(array $in): array
     $e = [];
 
     if (mb_strlen($d['nume']) < 3) {
-        $e['nume'] = $d['tip'] === 'pj' ? 'Scrie numele persoanei de contact.' : 'Scrie numele si prenumele.';
+        $e['nume'] = $d['tip'] === 'pj' ? 'Scrie numele persoanei de contact.' : 'Scrie numele și prenumele.';
     } elseif (!preg_match("/^[\p{L}][\p{L} .'\-]*$/u", $d['nume'])) {
-        $e['nume'] = 'Numele poate contine doar litere, spatii, cratima si apostrof.';
+        $e['nume'] = 'Numele poate conține doar litere, spații, cratimă și apostrof.';
     }
 
     if ($d['telefon'] === '') {
-        $e['telefon'] = 'Scrie un numar de telefon — te sunam ca sa confirmam comanda.';
+        $e['telefon'] = 'Scrie un număr de telefon — te sunăm ca să confirmăm comanda.';
     } elseif (($phone = orderPhone($d['telefon'])) === null) {
-        $e['telefon'] = 'Numarul de telefon nu pare corect (ex. 0749 130 565).';
+        $e['telefon'] = 'Numărul de telefon nu pare corect (ex. 0749 130 565).';
     } else {
         $d['telefon'] = $phone;
     }
 
     if ($d['email'] === '') {
-        $e['email'] = 'Scrie adresa de email — iti trimitem confirmarea comenzii.';
+        $e['email'] = 'Scrie adresa de email — îți trimitem confirmarea comenzii.';
     } elseif (!filter_var($d['email'], FILTER_VALIDATE_EMAIL) || !preg_match('/\.[a-z]{2,}$/', $d['email'])) {
-        $e['email'] = 'Adresa de email nu pare corecta.';
+        $e['email'] = 'Adresa de email nu pare corectă.';
     }
 
     if ($d['plata'] === '') {
-        $e['plata'] = 'Alege cum vrei sa platesti.';
+        $e['plata'] = 'Alege cum vrei să plătești.';
     }
     if ($d['plata'] !== 'ridicare') {
         if (!in_array($d['judet'], ORDER_JUDETE, true)) {
-            $e['judet'] = 'Alege judetul.';
+            $e['judet'] = 'Alege județul.';
         } elseif (!in_array($d['judet'], ORDER_DELIVERY_JUDETE, true)) {
             $e['judet'] = ORDER_DELIVERY_NOTE;
         }
@@ -178,12 +178,12 @@ function orderFormValidate(array $in): array
             $e['localitate'] = 'Scrie localitatea.';
         }
         if (mb_strlen($d['adresa']) < 5) {
-            $e['adresa'] = 'Scrie adresa de livrare (strada, numar, bloc, apartament).';
+            $e['adresa'] = 'Scrie adresa de livrare (strada, număr, bloc, apartament).';
         }
     }
 
     if ($d['acord'] !== '1') {
-        $e['acord'] = 'Ca sa trimiti comanda, trebuie sa accepti Termenii si Politica de confidentialitate.';
+        $e['acord'] = 'Ca să trimiți comanda, trebuie să accepți Termenii și Politica de confidențialitate.';
     }
 
     if ($d['tip'] === 'pj') {
@@ -193,15 +193,15 @@ function orderFormValidate(array $in): array
         if ($d['cui'] === '') {
             $e['cui'] = 'Scrie codul fiscal (CUI) al firmei.';
         } elseif (($cui = orderCui($d['cui'])) === null) {
-            $e['cui'] = 'Codul fiscal nu este valid — verifica cifrele (ex. RO14399840).';
+            $e['cui'] = 'Codul fiscal nu este valid — verifică cifrele (ex. RO14399840).';
         } else {
             // Pastram prefixul RO daca a fost scris: arata ca firma e platitoare de TVA.
             $d['cui'] = (stripos(ltrim($d['cui']), 'RO') === 0 ? 'RO' : '') . $cui;
         }
         if ($d['reg_com'] === '') {
-            $e['reg_com'] = 'Scrie numarul de la Registrul Comertului.';
+            $e['reg_com'] = 'Scrie numărul de la Registrul Comerțului.';
         } elseif (($rc = orderRegCom($d['reg_com'])) === null) {
-            $e['reg_com'] = 'Numarul de la Registrul Comertului nu pare corect (ex. J16/123/2020).';
+            $e['reg_com'] = 'Numărul de la Registrul Comerțului nu pare corect (ex. J16/123/2020).';
         } else {
             $d['reg_com'] = $rc;
         }

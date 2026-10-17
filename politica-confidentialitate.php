@@ -10,7 +10,7 @@ $canonicalUrl    = 'https://mugurel-bricolaj.ro/politica-confidentialitate.html'
 $metaRobots      = 'noindex, follow';
 require __DIR__ . '/templates/header.php';
 ?>
-<div class="page-hero"><div class="page-hero-inner"><div class="breadcrumb"><a href="/index.html">Acasa</a><span>›</span> Politica de confidențialitate</div><h1>Politica de confidențialitate</h1><p>Ce date personale folosim, de ce, cât timp și ce drepturi ai.</p></div></div>
+<div class="page-hero"><div class="page-hero-inner"><div class="breadcrumb"><a href="/index.html">Acasă</a><span>›</span> Politica de confidențialitate</div><h1>Politica de confidențialitate</h1><p>Ce date personale folosim, de ce, cât timp și ce drepturi ai.</p></div></div>
 
 <div class="body-wrap" style="max-width:900px; flex-direction:column;">
   <div class="legal-content">

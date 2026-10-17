@@ -8,7 +8,7 @@ $metaRobots      = 'noindex, follow';
 $pageSlugActive  = 'termeni-conditii';
 require __DIR__ . '/templates/header.php';
 ?>
-<div class="page-hero"><div class="page-hero-inner"><div class="breadcrumb"><a href="/index.html">Acasa</a><span>›</span> Termeni și condiții</div><h1>Termeni și condiții</h1><p>Cum comanzi, cum plătești și cum primești produsele de la Mugurel.</p></div></div>
+<div class="page-hero"><div class="page-hero-inner"><div class="breadcrumb"><a href="/index.html">Acasă</a><span>›</span> Termeni și condiții</div><h1>Termeni și condiții</h1><p>Cum comanzi, cum plătești și cum primești produsele de la Mugurel.</p></div></div>
 
 <div class="body-wrap" style="max-width:900px; flex-direction:column;">
   <div class="legal-content">

@@ -87,17 +87,17 @@ function countTable(PDO $pdo, string $table): ?int
 
 function main(array $argv): int
 {
-    out('=== deploy_db.php — pregatire baza de date la deploy ===');
+    out('=== deploy_db.php — pregătire baza de date la deploy ===');
 
     $publicHtml = $argv[1] ?? null;
     if ($publicHtml === null || $publicHtml === '') {
-        out('EROARE: lipseste argumentul <public_html>. Sar peste pasul de baza de date.');
+        out('EROARE: lipsește argumentul <public_html>. Sar peste pasul de baza de date.');
         return 0;
     }
 
     $configPath = rtrim($publicHtml, '/\\') . '/admin/config.local.php';
     if (!is_file($configPath)) {
-        out("EROARE: nu gasesc config-ul la $configPath. Sar peste pasul de baza de date.");
+        out("EROARE: nu găsesc config-ul la $configPath. Sar peste pasul de baza de date.");
         return 0;
     }
 
@@ -110,7 +110,7 @@ function main(array $argv): int
 
     foreach (['DB_HOST', 'DB_NAME', 'DB_USER', 'DB_PASS'] as $const) {
         if (!defined($const)) {
-            out("EROARE: constanta $const nu e definita in config.local.php. Sar peste pasul de baza de date.");
+            out("EROARE: constanta $const nu e definită în config.local.php. Sar peste pasul de baza de date.");
             return 0;
         }
     }
@@ -126,7 +126,7 @@ function main(array $argv): int
             ]
         );
     } catch (Throwable $e) {
-        out('EROARE: conectare esuata la baza de date: ' . $e->getMessage());
+        out('EROARE: conectare eșuată la baza de date: ' . $e->getMessage());
         return 0;
     }
 
@@ -154,7 +154,7 @@ function main(array $argv): int
         foreach ($migrations as $file) {
             $path = $dbDir . '/' . $file;
             if (!is_file($path)) {
-                out("ATENTIE: migrarea $file lipseste din db/, o sar.");
+                out("ATENȚIE: migrarea $file lipsește din db/, o sar.");
                 continue;
             }
             try {
@@ -190,15 +190,15 @@ function main(array $argv): int
         $stmt = $pdo->query('SELECT COUNT(*) FROM products WHERE barcode IS NOT NULL');
         $newProducts = $stmt === false ? null : (int) $stmt->fetchColumn();
     } catch (Throwable $e) {
-        out('EROARE: nu pot citi produsele (probabil migrarea 011 a esuat mai sus): ' . $e->getMessage());
+        out('EROARE: nu pot citi produsele (probabil migrarea 011 a eșuat mai sus): ' . $e->getMessage());
     }
 
     if ($newProducts === null) {
         out('Catalog SARIT: tabela `products` nu poate fi citita.');
     } elseif ($newProducts > 0) {
-        out("Catalog SARIT: catalogul nou exista deja ($newProducts produse cu cod de bare) — nu-l ating.");
+        out("Catalog SARIT: catalogul nou există deja ($newProducts produse cu cod de bare) — nu-l ating.");
     } elseif (!$files) {
-        out('ATENTIE: niciun fisier in db/catalog/*.xlsx — catalogul nou nu s-a importat.');
+        out('ATENȚIE: niciun fisier în db/catalog/*.xlsx — catalogul nou nu s-a importat.');
     } else {
         try {
             require_once $dbDir . '/../includes/catalog_import.php';
@@ -214,7 +214,7 @@ function main(array $argv): int
             $st = applyCatalog($pdo, $all, classifyCatalogTags($all), true, true);
             $importStatus = 'importat';
             out("OK — catalog nou: {$st['created']} produse, {$st['categories_created']} categorii, {$st['tags_created']} tag-uri; "
-                . "catalog vechi sters: {$st['old_deleted']} produse, {$st['old_categories_deleted']} categorii.");
+                . "catalog vechi șters: {$st['old_deleted']} produse, {$st['old_categories_deleted']} categorii.");
         } catch (Throwable $e) {
             // applyCatalog lucreaza intr-o singura tranzactie: la eroare baza ramane exact cum era.
             out('EROARE la importul catalogului (nimic schimbat): ' . $e->getMessage());
@@ -227,8 +227,8 @@ function main(array $argv): int
             require_once $dbDir . '/../includes/catalog_import.php';
             $ph = attachCatalogPhotos($pdo, $dbDir . '/../img/produse');
             $fd = attachCatalogDocuments($pdo, $dbDir . '/../fise-tehnice');
-            out("Fise tehnice de pe site legate acum: {$fd['linked']}" . ($fd['unmatched'] ? '; fara produs: ' . implode(', ', $fd['unmatched']) : ''));
-            out("Poze catalog legate acum: {$ph['linked']}" . ($ph['unmatched'] ? '; fara produs: ' . implode(', ', $ph['unmatched']) : ''));
+            out("Fise tehnice de pe site legate acum: {$fd['linked']}" . ($fd['unmatched'] ? '; fără produs: ' . implode(', ', $fd['unmatched']) : ''));
+            out("Poze catalog legate acum: {$ph['linked']}" . ($ph['unmatched'] ? '; fără produs: ' . implode(', ', $ph['unmatched']) : ''));
         } catch (Throwable $e) {
             out('EROARE la legarea pozelor (catalogul nu e afectat): ' . $e->getMessage());
         }
@@ -258,7 +258,7 @@ try {
     $exitCode = main($argv);
 } catch (Throwable $e) {
     // Ultima plasa de siguranta: deploy-ul de fisiere nu trebuie sa se opreasca niciodata din cauza acestui script.
-    fwrite(STDOUT, 'EROARE NEASTEPTATA in deploy_db.php: ' . $e->getMessage() . "\n");
+    fwrite(STDOUT, 'EROARE NEASTEPTATA în deploy_db.php: ' . $e->getMessage() . "\n");
     $exitCode = 0;
 }
 

@@ -102,7 +102,7 @@
     link = document.createElement('a');
     link.href = '/cos.html';
     link.className = 'hdr-cart';
-    link.innerHTML = CART_ICON + '<span class="hdr-cart-label">Cos</span><span class="hdr-cart-count" hidden></span>';
+    link.innerHTML = CART_ICON + '<span class="hdr-cart-label">Coș</span><span class="hdr-cart-count" hidden></span>';
     var hamburger = right.querySelector('.hamburger');
     right.insertBefore(link, hamburger || null);
     return link;
@@ -115,7 +115,7 @@
     var badge = link.querySelector('.hdr-cart-count');
     badge.textContent = n > 99 ? '99+' : String(n);
     badge.hidden = n === 0;
-    link.setAttribute('aria-label', 'Cos de cumparaturi: ' + (n === 1 ? '1 produs' : n + ' produse'));
+    link.setAttribute('aria-label', 'Coș de cumpărături: ' + (n === 1 ? '1 produs' : n + ' produse'));
   }
 
   // ── Mesaj de confirmare ─────────────────────────────────────────────────
@@ -140,7 +140,7 @@
 
   function confirmButton(btn) {
     if (!btn.dataset.label) { btn.dataset.label = btn.textContent; }
-    btn.textContent = 'Adaugat in cos ✓';
+    btn.textContent = 'Adăugat în coș ✓';
     btn.classList.add('is-added');
     clearTimeout(btn._cartTimer);
     btn._cartTimer = setTimeout(function () {
@@ -159,12 +159,12 @@
     var name = btn.getAttribute('data-cart-name') || 'Produsul';
 
     if (!add(id, 1)) {
-      toast('Cosul nu poate fi salvat in acest browser. Comanda pe WhatsApp sau la 0749 130 565.', true);
+      toast('Coșul nu poate fi salvat în acest browser. Comandă pe WhatsApp sau la 0749 130 565.', true);
       return;
     }
     document.dispatchEvent(new CustomEvent('cos:adauga', { detail: { id: id, name: name } }));
     confirmButton(btn);
-    toast(name + ' a fost adaugat in cos.');
+    toast(name + ' a fost adăugat în coș.');
   });
 
   // Alt tab a modificat cosul => actualizam contorul.

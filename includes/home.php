@@ -76,7 +76,7 @@ function renderHomeSidebar(): string
     $out .= '</ul>';
     $cols = catCollections();
     if ($cols) {
-        $out .= '<div class="sidebar-head"><span>Colectii</span></div><ul class="cat-tree">';
+        $out .= '<div class="sidebar-head"><span>Colecții</span></div><ul class="cat-tree">';
         foreach ($cols as $c) {
             $out .= '<li class="cat-tree-item cat-tree-item--d1"><a href="/' . e($c['slug']) . '.html">' . e($c['name'])
                   . ' <span class="cat-tree-n">' . (int) $c['count'] . '</span></a></li>';

@@ -32,8 +32,8 @@
     var layout = document.querySelector('.comanda-layout');
     layout.innerHTML =
       '<div class="cos-empty" data-cos-state="empty">' +
-        '<p class="cos-empty-title">Cosul tau este gol.</p>' +
-        '<p>Adauga produse ca sa poti plasa o comanda.</p>' +
+        '<p class="cos-empty-title">Coșul tău este gol.</p>' +
+        '<p>Adaugă produse ca să poți plasa o comandă.</p>' +
         '<a class="btn-cart cos-empty-cta" href="/catalog.html">Vezi catalogul</a>' +
       '</div>';
   }
@@ -45,8 +45,8 @@
         '<span>' + esc(l.line_label) + '</span></li>';
     }).join('');
     var problems = cart.problem_count > 0
-      ? '<p class="cos-msg cos-msg--warn" role="alert">Unele produse din cos nu se mai pot comanda. ' +
-        '<a href="/cos.html">Verifica cosul</a> inainte sa trimiti comanda.</p>'
+      ? '<p class="cos-msg cos-msg--warn" role="alert">Unele produse din coș nu se mai pot comanda. ' +
+        '<a href="/cos.html">Verifică coșul</a> înainte să trimiți comanda.</p>'
       : '';
     summary.innerHTML =
       '<h2 class="comanda-sum-title">Comanda ta</h2>' +
@@ -54,7 +54,7 @@
       '<p class="cos-summary-row cos-summary-total"><span>Total (cu TVA)</span><span data-cos-total>' + esc(cart.total_label) + '</span></p>' +
       '<p class="cos-summary-note">Costul transportului nu este inclus.</p>' +
       problems +
-      '<a class="cos-back" href="/cos.html">← Modifica cosul</a>';
+      '<a class="cos-back" href="/cos.html">← Modifică coșul</a>';
     if (cart.problem_count > 0 || cart.orderable_count === 0) { block('cos'); }
   }
 
@@ -74,7 +74,7 @@
       });
     }).then(renderSummary).catch(function (err) {
       summary.innerHTML = '<p class="cos-msg cos-msg--error" role="alert">' +
-        esc((err && err.message !== 'Eroare' && err.message) || ('Cosul nu poate fi verificat acum. Suna la ' + PHONE + '.')) + '</p>';
+        esc((err && err.message !== 'Eroare' && err.message) || ('Coșul nu poate fi verificat acum. Sună la ' + PHONE + '.')) + '</p>';
       block('server');
     });
   }
@@ -82,20 +82,20 @@
   // ── verificare rapida in browser ──────────────────────────────────────
 
   var CHECKS = {
-    nume: function (v) { return v.length >= 3 ? '' : 'Scrie numele si prenumele.'; },
-    telefon: function (v) { return v.replace(/\D/g, '').length >= 9 ? '' : (v ? 'Numarul de telefon nu pare corect (ex. 0749 130 565).' : 'Scrie un numar de telefon — te sunam ca sa confirmam comanda.'); },
-    email: function (v) { return /^[^\s@]+@[^\s@]+\.[a-z]{2,}$/i.test(v) ? '' : (v ? 'Adresa de email nu pare corecta.' : 'Scrie adresa de email — iti trimitem confirmarea comenzii.'); },
-    plata: function () { return form.querySelector('[data-plata]:checked') ? '' : 'Alege cum vrei sa platesti.'; },
-    acord: function () { return form.elements.acord.checked ? '' : 'Ca sa trimiti comanda, trebuie sa accepti Termenii si Politica de confidentialitate.'; },
-    judet: function (v) { return v ? '' : 'Alege judetul.'; },
+    nume: function (v) { return v.length >= 3 ? '' : 'Scrie numele și prenumele.'; },
+    telefon: function (v) { return v.replace(/\D/g, '').length >= 9 ? '' : (v ? 'Numărul de telefon nu pare corect (ex. 0749 130 565).' : 'Scrie un număr de telefon — te sunăm ca să confirmăm comanda.'); },
+    email: function (v) { return /^[^\s@]+@[^\s@]+\.[a-z]{2,}$/i.test(v) ? '' : (v ? 'Adresa de email nu pare corectă.' : 'Scrie adresa de email — îți trimitem confirmarea comenzii.'); },
+    plata: function () { return form.querySelector('[data-plata]:checked') ? '' : 'Alege cum vrei să plătești.'; },
+    acord: function () { return form.elements.acord.checked ? '' : 'Ca să trimiți comanda, trebuie să accepți Termenii și Politica de confidențialitate.'; },
+    judet: function (v) { return v ? '' : 'Alege județul.'; },
     localitate: function (v) { return v.length >= 2 ? '' : 'Scrie localitatea.'; },
-    adresa: function (v) { return v.length >= 5 ? '' : 'Scrie adresa de livrare (strada, numar, bloc, apartament).'; },
+    adresa: function (v) { return v.length >= 5 ? '' : 'Scrie adresa de livrare (strada, număr, bloc, apartament).'; },
   };
   // Doar pentru persoana juridica. CUI si Registrul Comertului se verifica complet pe server.
   var CHECKS_PJ = {
     firma: function (v) { return v.length >= 2 ? '' : 'Scrie denumirea firmei.'; },
     cui: function (v) { return v ? '' : 'Scrie codul fiscal (CUI) al firmei.'; },
-    reg_com: function (v) { return v ? '' : 'Scrie numarul de la Registrul Comertului.'; },
+    reg_com: function (v) { return v ? '' : 'Scrie numărul de la Registrul Comerțului.'; },
     sediu: function (v) { return v.length >= 5 ? '' : 'Scrie adresa sediului social.'; },
   };
 

@@ -63,13 +63,13 @@ $jsonLd = array_filter([
 ], fn ($v) => $v !== null);
 $crumbLd = ['@context' => 'https://schema.org', '@type' => 'BreadcrumbList', 'itemListElement' => []];
 $pos = 1;
-$crumbLd['itemListElement'][] = ['@type' => 'ListItem', 'position' => $pos++, 'name' => 'Acasa', 'item' => SITE_URL . '/'];
+$crumbLd['itemListElement'][] = ['@type' => 'ListItem', 'position' => $pos++, 'name' => 'Acasă', 'item' => SITE_URL . '/'];
 foreach ($breadcrumbs as [$label, $u]) {
     $crumbLd['itemListElement'][] = ['@type' => 'ListItem', 'position' => $pos++, 'name' => $label, 'item' => SITE_URL . $u];
 }
 $crumbLd['itemListElement'][] = ['@type' => 'ListItem', 'position' => $pos, 'name' => $p['name']];
 
-$pageTitle = $p['name'] . ' | Mugurel Dabuleni';
+$pageTitle = $p['name'] . ' | Mugurel Dăbuleni';
 $metaDescription = mb_substr(($hasPrice ? priceLabel($p) . ' — ' : '') . ($p['short_description'] ?: $p['name']), 0, 300);
 $canonicalUrl = $url;
 if (!empty($p['image_path'])) { $ogImage = SITE_URL . '/' . ltrim($p['image_path'], '/'); } // poza produsului la distribuire
@@ -81,7 +81,7 @@ require __DIR__ . '/templates/header.php';
 <div class="page-hero">
   <div class="page-hero-inner">
     <nav class="breadcrumb" aria-label="Breadcrumb">
-      <a href="/index.html">Acasa</a>
+      <a href="/index.html">Acasă</a>
       <?php foreach ($breadcrumbs as [$label, $u]): ?><span>›</span><a href="<?= e($u) ?>"><?= e($label) ?></a><?php endforeach; ?>
     </nav>
   </div>
@@ -103,21 +103,21 @@ require __DIR__ . '/templates/header.php';
 
         <div class="produs-buy">
           <div class="produs-price"><?= priceLabel($p) ?></div>
-          <?php if ($hasPrice): ?><div class="produs-tva">Pret cu TVA inclus</div><?php endif; ?>
+          <?php if ($hasPrice): ?><div class="produs-tva">Preț cu TVA inclus</div><?php endif; ?>
           <?= stockLabel($p) ?>
           <?php if (canAddToCart($p)): ?>
             <?= cartButton($p) ?>
           <?php endif; ?>
-          <a href="<?= e(waLink($p['name'], 'Buna ziua! Am o intrebare despre: ' . $p['name'] . ' (cod ' . ($p['sku'] ?: $p['barcode']) . ').')) ?>" class="btn-wa-prod produs-wa" target="_blank" rel="noopener"><?= WA_ICON ?><?= $hasPrice ? 'Intreaba pe WhatsApp' : 'Cere oferta pe WhatsApp' ?></a>
+          <a href="<?= e(waLink($p['name'], 'Bună ziua! Am o întrebare despre: ' . $p['name'] . ' (cod ' . ($p['sku'] ?: $p['barcode']) . ').')) ?>" class="btn-wa-prod produs-wa" target="_blank" rel="noopener"><?= WA_ICON ?><?= $hasPrice ? 'Întreabă pe WhatsApp' : 'Cere ofertă pe WhatsApp' ?></a>
           <ul class="produs-benefits">
-            <li>Livrare in Dabuleni si in judetul Dolj</li>
-            <li>Ridicare din magazin: Strada Caracal 66, Dabuleni</li>
-            <li>Te sunam sa confirmam comanda (L–V 8:00–18:00)</li>
+            <li>Livrare în Dăbuleni și în județul Dolj</li>
+            <li>Ridicare din magazin: Strada Caracal 66, Dăbuleni</li>
+            <li>Te sunăm să confirmăm comanda (L–V 8:00–18:00)</li>
           </ul>
         </div>
 
         <?php if ($tagLinks): ?>
-        <div class="produs-tags" aria-label="Vezi si">
+        <div class="produs-tags" aria-label="Vezi și">
           <?php foreach ($tagLinks as [$label, $u]): ?><a class="chip" href="<?= e($u) ?>"><?= e($label) ?></a><?php endforeach; ?>
         </div>
         <?php endif; ?>
@@ -134,7 +134,7 @@ require __DIR__ . '/templates/header.php';
 
       <?php if ($p['specs']): ?>
       <section class="produs-section" aria-labelledby="h-spec">
-        <h2 id="h-spec">Specificatii tehnice</h2>
+        <h2 id="h-spec">Specificații tehnice</h2>
         <table class="produs-specs">
           <tbody>
           <?php foreach ($p['specs'] as $s): ?>
@@ -150,7 +150,7 @@ require __DIR__ . '/templates/header.php';
         <h2 id="h-docs">Documente</h2>
         <ul class="produs-docs">
           <?php foreach ($p['documents'] as $i => $d): ?>
-          <li><a href="<?= e($d['url']) ?>" target="_blank" rel="noopener nofollow"><?= e($d['label']) ?><?= count($p['documents']) > 1 ? ' ' . ($i + 1) : '' ?> (PDF<?= str_starts_with($d['url'], '/') ? '' : ', site-ul producatorului' ?>)</a></li>
+          <li><a href="<?= e($d['url']) ?>" target="_blank" rel="noopener nofollow"><?= e($d['label']) ?><?= count($p['documents']) > 1 ? ' ' . ($i + 1) : '' ?> (PDF<?= str_starts_with($d['url'], '/') ? '' : ', site-ul producătorului' ?>)</a></li>
           <?php endforeach; ?>
         </ul>
       </section>
@@ -160,7 +160,7 @@ require __DIR__ . '/templates/header.php';
 
   <?php if ($related): ?>
   <section class="produs-related" aria-labelledby="h-rel">
-    <h2 id="h-rel">Din aceeasi categorie</h2>
+    <h2 id="h-rel">Din aceeași categorie</h2>
     <div class="prod-grid"><?= renderCatalogCards($related) ?></div>
     <?php if ($category): ?><p><a class="cat-filters-reset" href="/<?= e($category['slug']) ?>.html">Toate produsele din <?= e($category['name']) ?> →</a></p><?php endif; ?>
   </section>

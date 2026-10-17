@@ -44,7 +44,7 @@ function turnstileVerify($token, string $ip = ''): bool
 {
     $secret = turnstileSecret();
     if ($secret === null) {
-        error_log('turnstile: TURNSTILE_SECRET lipseste din config.local.php — captcha neverificat');
+        error_log('turnstile: TURNSTILE_SECRET lipsește din config.local.php — captcha neverificat');
         return true;
     }
     if (!is_string($token) || $token === '' || strlen($token) > 2048) { return false; }
@@ -64,7 +64,7 @@ function turnstileVerify($token, string $ip = ''): bool
     }
     $res = is_string($raw) ? json_decode($raw, true) : null;
     if (!is_array($res) || !array_key_exists('success', $res)) {
-        error_log('turnstile: Cloudflare nu a raspuns — formularul trece');
+        error_log('turnstile: Cloudflare nu a răspuns — formularul trece');
         return true;
     }
     return $res['success'] === true;

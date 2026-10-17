@@ -27,8 +27,8 @@ if ($order === null) {
     http_response_code(404);
 }
 
-$pageTitle       = $order ? 'Comanda ' . $order['order_number'] . ' — Mugurel' : 'Comanda nu a fost gasita — Mugurel';
-$metaDescription = 'Confirmarea comenzii la Mugurel Materiale Constructii.';
+$pageTitle       = $order ? 'Comanda ' . $order['order_number'] . ' — Mugurel' : 'Comanda nu a fost găsită — Mugurel';
+$metaDescription = 'Confirmarea comenzii la Mugurel Materiale Construcții.';
 $canonicalUrl    = SITE_URL . '/comanda-trimisa.html';
 $metaRobots      = 'noindex, nofollow';
 $skipAnalytics   = true;
@@ -39,33 +39,33 @@ require __DIR__ . '/templates/header.php';
 
 <div class="page-hero">
   <div class="page-hero-inner">
-    <h1><?= $order ? 'Multumim! Comanda a fost trimisa' : 'Comanda nu a fost gasita' ?></h1>
+    <h1><?= $order ? 'Mulțumim! Comanda a fost trimisă' : 'Comanda nu a fost găsită' ?></h1>
   </div>
 </div>
 
 <main class="cos-wrap confirmare-wrap" data-confirmare<?= $order ? ' data-order="' . mh($order['order_number']) . '"' : '' ?>>
 <?php if (!$order): ?>
   <div class="cos-empty">
-    <p class="cos-empty-title">Nu am gasit aceasta comanda.</p>
-    <p>Verifica legatura din emailul de confirmare sau suna-ne la <a href="tel:+40749130565">0749 130 565</a>.</p>
-    <a class="btn-cart cos-empty-cta" href="/catalog.html">Inapoi la catalog</a>
+    <p class="cos-empty-title">Nu am găsit această comandă.</p>
+    <p>Verifică legătura din emailul de confirmare sau sună-ne la <a href="tel:+40749130565">0749 130 565</a>.</p>
+    <a class="btn-cart cos-empty-cta" href="/catalog.html">Înapoi la catalog</a>
   </div>
 <?php else:
     $plata = ORDER_PLATA[$order['plata']] ?? ['label' => $order['plata'], 'info' => ''];
     $pickup = $order['plata'] === 'ridicare';
 ?>
   <section class="confirmare-box">
-    <p class="confirmare-nr">Numarul comenzii: <strong data-order-number><?= mh($order['order_number']) ?></strong></p>
-    <p>Am trimis confirmarea si pe email, la <strong><?= mh($order['email']) ?></strong>.</p>
+    <p class="confirmare-nr">Numărul comenzii: <strong data-order-number><?= mh($order['order_number']) ?></strong></p>
+    <p>Am trimis confirmarea și pe email, la <strong><?= mh($order['email']) ?></strong>.</p>
 
-    <h2 class="confirmare-h2">Ce urmeaza</h2>
+    <h2 class="confirmare-h2">Ce urmează</h2>
     <ol class="confirmare-pasi">
-      <li>Te sunam la <strong><?= mh($order['telefon']) ?></strong> in cel mai scurt timp (L–V 8:00–18:00)
-        <?= $pickup ? 'ca sa confirmam produsele si momentul ridicarii.' : 'ca sa confirmam produsele, costul si termenul de livrare.' ?></li>
+      <li>Te sunăm la <strong><?= mh($order['telefon']) ?></strong> în cel mai scurt timp (L–V 8:00–18:00)
+        <?= $pickup ? 'ca să confirmăm produsele și momentul ridicării.' : 'ca să confirmăm produsele, costul și termenul de livrare.' ?></li>
       <li><strong><?= mh($plata['label']) ?>:</strong> <?= mh($plata['info']) ?></li>
       <li><?= $pickup
-            ? 'Ridici marfa din magazin: Strada Caracal 66, Dabuleni.'
-            : 'Livram la: ' . mh(trim($order['adresa'] . ', ' . $order['localitate'] . ', jud. ' . $order['judet'], ', ')) . '.' ?></li>
+            ? 'Ridici marfa din magazin: Strada Caracal 66, Dăbuleni.'
+            : 'Livrăm la: ' . mh(trim($order['adresa'] . ', ' . $order['localitate'] . ', jud. ' . $order['judet'], ', ')) . '.' ?></li>
     </ol>
   </section>
 
@@ -80,9 +80,9 @@ require __DIR__ . '/templates/header.php';
     <?php if (!$pickup): ?><p class="cos-summary-note"><?= mh(ORDER_TRANSPORT_INFO) ?></p><?php endif; ?>
   </section>
 
-  <p class="confirmare-contact">Ai o intrebare sau vrei sa modifici comanda? Suna-ne la <a href="tel:+40749130565">0749 130 565</a>
-    sau scrie-ne pe <a href="https://wa.me/40749130565?text=<?= rawurlencode('Buna ziua! Am o intrebare despre comanda ' . $order['order_number'] . '.') ?>" target="_blank" rel="noopener">WhatsApp</a>.</p>
-  <p><a class="cos-back" href="/catalog.html">← Inapoi la catalog</a></p>
+  <p class="confirmare-contact">Ai o întrebare sau vrei să modifici comanda? Sună-ne la <a href="tel:+40749130565">0749 130 565</a>
+    sau scrie-ne pe <a href="https://wa.me/40749130565?text=<?= rawurlencode('Bună ziua! Am o întrebare despre comanda ' . $order['order_number'] . '.') ?>" target="_blank" rel="noopener">WhatsApp</a>.</p>
+  <p><a class="cos-back" href="/catalog.html">← Înapoi la catalog</a></p>
 <?php endif; ?>
 </main>
 

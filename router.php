@@ -23,7 +23,7 @@ if ($category !== null && $category['count'] > 0) {
     $breadcrumbs = catBreadcrumbs($category);
     $list = catalogListState([
         'title' => $category['name'],
-        'intro' => count($breadcrumbs) > 1 ? null : 'Materiale si produse la Mugurel, Dabuleni. Preturi cu TVA, livrare in Dolj.',
+        'intro' => count($breadcrumbs) > 1 ? null : 'Materiale și produse la Mugurel, Dăbuleni. Prețuri cu TVA, livrare în Dolj.',
         'description' => $category['description'],
         'baseUrl' => '/' . $category['slug'] . '.html',
         'breadcrumbs' => $breadcrumbs,
@@ -32,7 +32,7 @@ if ($category !== null && $category['count'] > 0) {
         'subcats' => $subcats,
     ], $_GET);
     extract(catalogListMeta($list, $category['name'],
-        $category['name'] . ' la Mugurel Dabuleni: ' . $list['total'] . ' produse cu pret si stoc, comanda online sau pe WhatsApp 0749 130 565. Livrare in Dolj.'));
+        $category['name'] . ' la Mugurel Dăbuleni: ' . $list['total'] . ' produse cu preț și stoc, comandă online sau pe WhatsApp 0749 130 565. Livrare în Dolj.'));
     $categorySlug = $category['slug'];
     $pageScripts = ['catalog-filtre.js'];
     require __DIR__ . '/templates/catalog_list.php';
@@ -50,7 +50,7 @@ if ($collection !== null) {
         'tagSlugs' => $collection['tag_slugs'],
     ], $_GET);
     extract(catalogListMeta($list, $collection['name'] . ' — materiale',
-        $collection['name'] . ' la Mugurel Dabuleni: ' . $list['total'] . ' produse. ' . (string) $collection['description']));
+        $collection['name'] . ' la Mugurel Dăbuleni: ' . $list['total'] . ' produse. ' . (string) $collection['description']));
     $pageScripts = ['catalog-filtre.js'];
     require __DIR__ . '/templates/catalog_list.php';
     exit;
@@ -96,7 +96,7 @@ try {
     error_log('router.php: ' . $e->getMessage());
     http_response_code(503);
     header('Retry-After: 300');
-    echo '<h1>Site-ul este temporar indisponibil</h1><p>Revino in cateva minute sau suna la 0749 130 565.</p>';
+    echo '<h1>Site-ul este temporar indisponibil</h1><p>Revino în câteva minute sau sună la 0749 130 565.</p>';
     exit;
 }
 if (!$pageData) {
