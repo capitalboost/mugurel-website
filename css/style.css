@@ -1034,8 +1034,6 @@ img { max-width: 100%; }
 .nf-home { color: var(--verde-text); text-decoration: underline; margin-left: 6px; }
 .home-btn--icon { gap: 8px; }
 .home-btn--icon svg { width: 18px; height: 18px; }
-/* caseta captcha (Cloudflare Turnstile) inainte de butonul de trimitere */
-.form-captcha { margin: 8px 0 14px; min-height: 65px; }
 /* Cos: produs fara poza = panoul verde (regula .cos-line-img pe alb de mai sus il acoperea) */
 .cos-line-img.cos-line-img--none { background: linear-gradient(135deg, #0A5258, #127A6E); border: none; }
 /* Butonul WhatsApp plutitor pe telefon: mai mic si mai jos, iar pagina are loc dedesubt ca ultimul rand sa nu fie acoperit */

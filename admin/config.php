@@ -29,8 +29,6 @@ if (!defined('ORDER_MIN_FILL_SEC'))    { define('ORDER_MIN_FILL_SEC', 3); }     
 // Emailuri (T12/T13). IMPLICIT = mediu de test: SMTP local (Mailpit) si nicio adresa @mugurel-bricolaj.ro.
 // Pe server, config.local.php trebuie sa defineasca APP_ENV = 'production', SMTP-ul real si ORDER_NOTIFY_TO.
 if (!defined('APP_ENV'))         { define('APP_ENV', 'local'); }
-// Cloudflare Turnstile (captcha): cheia publica aici; TURNSTILE_SECRET DOAR in config.local.php pe server (includes/turnstile.php)
-if (!defined('TURNSTILE_SITE_KEY')) { define('TURNSTILE_SITE_KEY', '0x4AAAAAAAFY0nxRLxCyKOV4_'); }
 if (!defined('ORDER_NOTIFY_TO')) { define('ORDER_NOTIFY_TO', 'lucian@capitalboost.ro'); } // cine primeste comenzile
 // copie a rapoartelor „produsul are o problemă” (includes/product_reports.php); '' = fără copie
 if (!defined('REPORT_COPY_TO'))  { define('REPORT_COPY_TO', 'lucian@capitalboost.ro'); }

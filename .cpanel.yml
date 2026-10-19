@@ -28,7 +28,7 @@ deployment:
     - /bin/rm -f $DEPLOYPATH/__diag.php
     # Catalogul vechi (pana la 16 oct 2026): paginile fixe de categorie ar avea prioritate fata de categoriile noi
     # (/acoperis.html ar deschide acoperis.php, nu categoria noua). Deploy-ul doar copiaza, deci le stergem explicit.
-    - cd $DEPLOYPATH && /bin/rm -f acoperis.php izolatie.php gips-carton.php zidarie-bca.php gard-imprejmuiri.php electrice.php incalzire.php sanitare.php apa-canal.php gradina.php mobilier.php electrocasnice.php scule-unelte.php includes/page_bootstrap.php templates/category.php js/produse-acasa.js sitemap.xml finantari-europene/index.html includes/products_repo.php includes/product_icons.php admin/models/Product.php admin/models/ProductProperty.php && /bin/rm -rf admin/tests
+    - cd $DEPLOYPATH && /bin/rm -f acoperis.php izolatie.php gips-carton.php zidarie-bca.php gard-imprejmuiri.php electrice.php incalzire.php sanitare.php apa-canal.php gradina.php mobilier.php electrocasnice.php scule-unelte.php includes/page_bootstrap.php templates/category.php js/produse-acasa.js sitemap.xml finantari-europene/index.html includes/turnstile.php js/captcha-asteapta.js includes/products_repo.php includes/product_icons.php admin/models/Product.php admin/models/ProductProperty.php && /bin/rm -rf admin/tests
     # PHP din linia de comanda pe cPanel e adesea alta versiune decat handlerul web.
     # Incercam intai binarul ea-php81 explicit, apoi alternativele, si scriem tot
     # output-ul intr-un log ca sa nu mai esueze in tacere.

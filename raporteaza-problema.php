@@ -1,15 +1,14 @@
 <?php
 /**
  * /raporteaza-problema.html?produs=<slug> — „Ai observat o greșeală la acest produs?" (18 oct 2026).
- * Pagină separată, ca paginile de produs să rămână ușoare (fără sesiune, captcha sau formular pe fiecare produs).
- * POST, în ordine (ca la retur): limită pe IP -> CSRF -> capcană anti-robot -> validare -> captcha -> salvare -> email la
+ * Pagină separată, ca paginile de produs să rămână ușoare (fără sesiune sau formular pe fiecare produs).
+ * POST, în ordine (ca la retur): limită pe IP -> CSRF -> capcană anti-robot -> validare -> salvare -> email la
  * magazin + copie (includes/product_reports.php) -> redirect 303 spre ?produs=…&trimis=1.
  */
 require_once __DIR__ . '/admin/config.php';
 require_once __DIR__ . '/includes/order_security.php';
 require_once __DIR__ . '/includes/orders.php';
 require_once __DIR__ . '/includes/product_reports.php';
-require_once __DIR__ . '/includes/turnstile.php';
 require_once __DIR__ . '/includes/catalog_page.php';
 
 $slug = preg_replace('/[^a-z0-9-]/', '', strtolower((string) ($_GET['produs'] ?? $_POST['produs'] ?? '')));
@@ -46,9 +45,6 @@ if (($_SERVER['REQUEST_METHOD'] ?? 'GET') === 'POST') {
     } elseif ($result['errors']) {
         $errors = $result['errors'];
         http_response_code(422);
-    } elseif (!turnstileVerify($_POST['cf-turnstile-response'] ?? null, orderClientIp($_SERVER))) {
-        http_response_code(422);
-        $notice = 'Confirmă că nu ești robot (caseta de deasupra butonului „Trimite raportul”), apoi trimite din nou.';
     } else {
         try {
             $db = $pdo ?? Database::get();
@@ -65,8 +61,6 @@ if (($_SERVER['REQUEST_METHOD'] ?? 'GET') === 'POST') {
 }
 orderMarkFormShown();
 
-$extraHead       = TURNSTILE_SCRIPT;
-$pageScripts     = ['captcha-asteapta.js'];
 $pageTitle       = 'Raportează o problemă — ' . $product['name'];
 $metaDescription = 'Ai observat o greșeală la un produs Mugurel? Spune-ne și o corectăm.';
 $canonicalUrl    = SITE_URL . $self;
@@ -131,7 +125,6 @@ require __DIR__ . '/templates/header.php';
       </div>
     </fieldset>
 
-    <?= turnstileWidget() ?>
     <button type="submit" class="btn-cart comanda-submit" data-raport-submit>Trimite raportul</button>
     <p class="form-required-note">Folosim datele doar ca să corectăm produsul și, dacă ne lași emailul, ca să-ți răspundem. Detalii în <a href="/politica-confidentialitate.html">Politica de confidențialitate</a>.</p>
   </form>
